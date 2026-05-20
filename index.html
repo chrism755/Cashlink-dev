@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CASHLINK AGENCIES - Register</title>
+<title>NETLINK AGENCIES - Register</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-purple-600 via-blue-500 to-indigo-600 min-h-screen flex items-center justify-center p-4">
@@ -143,3 +143,123 @@ function showAlert(message, color) {
 
 </body>
   </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CASHLINK AGENCIES - Login</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-600 via-blue-500 to-indigo-600 min-h-screen flex items-center justify-center p-4">
+
+<div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">
+  <div class="text-center mb-6">
+    <h1 class="text-3xl font-bold text-purple-700">CASHLINK AGENCIES</h1>
+    <p class="text-gray-600 mt-1">Welcome Back</p>
+  </div>
+  
+  <div id="alert"></div>
+  
+  <form id="loginForm" class="space-y-4">
+    
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Username</label>
+      <input type="text" name="username" placeholder="Enter username" required
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition">
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+      <input type="password" name="password" placeholder="Enter password" required
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition">
+    </div>
+
+    <button type="submit"
+      class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transform hover:scale-[1.02] transition-all shadow-lg">
+      Login
+    </button>
+  </form>
+
+  <div class="mt-4 text-center">
+    <button onclick="forgotPassword()" class="text-purple-600 font-semibold hover:underline text-sm">
+      Forgot Password?
+    </button>
+  </div>
+
+  <p class="text-center text-sm text-gray-600 mt-5">
+    Don't have an account? 
+    <a href="register.html" class="text-purple-600 font-semibold hover:underline">Register</a>
+  </p>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const formData = new FormData(e.target);
+  const username = formData.get('username');
+  const password = formData.get('password');
+  
+  // Admin login
+  if(username === 'admin' && password === 'Cashlink2026') {
+    localStorage.setItem('cashlink_current', JSON.stringify({username: 'admin', is_admin: true}));
+    showAlert('Admin login successful!', 'green');
+    setTimeout(() => alert('Next: Admin Dashboard'), 1000);
+    return;
+  }
+  
+  // Check user
+  let users = JSON.parse(localStorage.getItem('cashlink_users') || '[]');
+  const user = users.find(u => u.username === username && u.password === password);
+  
+  if(!user) {
+    showAlert('Invalid username or password', 'red');
+    return;
+  }
+  
+  localStorage.setItem('cashlink_current', JSON.stringify(user));
+  showAlert('Login successful! Redirecting...', 'green');
+  
+  setTimeout(() => {
+    if(user.activated) {
+      alert('Next: Dashboard');
+    } else {
+      alert('Next: Activation Page');
+    }
+  }, 1000);
+});
+
+function forgotPassword() {
+  const email = prompt('Enter your registered email to reset password:');
+  
+  if(!email) return;
+  
+  let users = JSON.parse(localStorage.getItem('cashlink_users') || '[]');
+  const user = users.find(u => u.email === email);
+  
+  if(!user) {
+    alert('No account found with that email');
+    return;
+  }
+  
+  // In real site this would send email. For now we just show it.
+  alert(`Password reset link would be sent to ${email}\n\nFor testing: Your password is "${user.password}"`);
+}
+
+function showAlert(message, color) {
+  const alertDiv = document.getElementById('alert');
+  alertDiv.innerHTML = `
+    <div class="bg-${color}-100 border-${color}-400 text-${color}-700 px-4 py-3 rounded-xl mb-4 font-semibold">
+      ${message}
+    </div>
+  `;
+  
+  setTimeout(() => {
+    alertDiv.innerHTML = '';
+  }, 3000);
+}
+</script>
+
+</body>
+                                                                                            </html>
