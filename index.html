@@ -2,14 +2,80 @@
 <html>
 <head>
   <title>Cashlink Agencies</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: Arial; text-align: center; padding: 50px; }
+    body { font-family: Arial; text-align: center; padding: 20px; background: #f5f7fa; }
+    .box { background: white; padding: 20px; margin: 20px auto; max-width: 400px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    input, button { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; }
+    button { background: #2c3e50; color: white; border: none; cursor: pointer; }
+    button:hover { background: #34495e; }
     h1 { color: #2c3e50; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
   <h1>Welcome to Cashlink Agencies</h1>
-  <p>Site is live 🚀</p>
+
+  <!-- Login/Signup Section -->
+  <div id="auth" class="box">
+    <h3>Login / Sign Up</h3>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="signup()">Sign Up</button>
+    <button onclick="login()">Login</button>
+  </div>
+
+  <!-- Dashboard Section -->
+  <div id="dashboard" class="box hidden">
+    <h3>Hello, <span id="userDisplay"></span></h3>
+    <p><b>Earnings:</b> $<span id="earnings">0</span></p>
+    <button onclick="completeJob()">Complete Job (+$5)</button>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    let currentUser = localStorage.getItem("currentUser");
+    
+    if (currentUser) showDashboard(currentUser);
+
+    function signup() {
+      let u = document.getElementById("username").value;
+      let p = document.getElementById("password").value;
+      if (!u || !p) return alert("Fill all fields");
+      if (localStorage.getItem("user_" + u)) return alert("User exists");
+      localStorage.setItem("user_" + u, JSON.stringify({pass: p, earnings: 0}));
+      alert("Account created! Now login.");
+    }
+
+    function login() {
+      let u = document.getElementById("username").value;
+      let p = document.getElementById("password").value;
+      let user = JSON.parse(localStorage.getItem("user_" + u));
+      if (!user || user.pass !== p) return alert("Wrong credentials");
+      localStorage.setItem("currentUser", u);
+      showDashboard(u);
+    }
+
+    function showDashboard(u) {
+      currentUser = u;
+      let user = JSON.parse(localStorage.getItem("user_" + u));
+      document.getElementById("auth").classList.add("hidden");
+      document.getElementById("dashboard").classList.remove("hidden");
+      document.getElementById("userDisplay").innerText = u;
+      document.getElementById("earnings").innerText = user.earnings;
+    }
+
+    function completeJob() {
+      let user = JSON.parse(localStorage.getItem("user_" + currentUser));
+      user.earnings += 5;
+      localStorage.setItem("user_" + currentUser, JSON.stringify(user));
+      document.getElementById("earnings").innerText = user.earnings;
+    }
+
+    function logout() {
+      localStorage.removeItem("currentUser");
+      location.reload();
+    }
+  </script>
 </body>
-</html>
+  </html>
