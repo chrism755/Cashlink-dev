@@ -162,7 +162,7 @@ regForm.addEventListener('submit', function(e) {
     return;
   }
   
-  users.push({
+  const newUser = {
     username: data.username,
     email: data.email,
     phone: data.phone,
@@ -172,12 +172,18 @@ regForm.addEventListener('submit', function(e) {
     activated: false,
     balance: 0,
     earnings: 0
-  });
+  };
   
+  users.push(newUser);
   localStorage.setItem('cashlink_users', JSON.stringify(users));
-  showAlert('Account created! Switch to Login tab', 'green');
-  e.target.reset();
-  showLogin();
+  localStorage.setItem('cashlink_current', JSON.stringify(newUser));
+  
+  // Show success message then redirect
+  showAlert('Registration successful! Redirecting to activation page...', 'green');
+  
+  setTimeout(() => {
+    window.location.href = 'activate.html';
+  }, 1500);
 });
 
 // LOGIN LOGIC
@@ -185,12 +191,6 @@ loginForm.addEventListener('submit', function(e) {
   e.preventDefault();
   const username = e.target.username.value;
   const password = e.target.password.value;
-  
-  if(username === 'admin' && password === 'Cashlink2026') {
-    localStorage.setItem('cashlink_current', JSON.stringify({username: 'admin', is_admin: true}));
-    showAlert('Admin login successful!', 'green');
-    return;
-  }
   
   let users = JSON.parse(localStorage.getItem('cashlink_users') || '[]');
   const user = users.find(u => u.username === username && u.password === password);
@@ -201,10 +201,14 @@ loginForm.addEventListener('submit', function(e) {
   }
   
   localStorage.setItem('cashlink_current', JSON.stringify(user));
-  showAlert('Login successful!', 'green');
+  
+  if(user.activated) {
+    window.location.href = 'dashboard.html';
+  } else {
+    window.location.href = 'activate.html';
+  }
 });
 
-// FORGOT PASSWORD
 function forgotPassword() {
   const email = prompt('Enter your registered email:');
   if(!email) return;
@@ -217,7 +221,7 @@ function forgotPassword() {
     return;
   }
   
-  alert(`Password for ${user.username}: ${user.password}\n\nThis is for testing only.`);
+  alert(`Password for ${user.username}: ${user.password}`);
 }
 
 function showAlert(message, color) {
@@ -227,7 +231,6 @@ function showAlert(message, color) {
       ${message}
     </div>
   `;
-  setTimeout(() => alertDiv.innerHTML = '', 3000);
 }
 </script>
 
