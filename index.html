@@ -177,6 +177,7 @@ regForm.addEventListener('submit', function(e) {
   localStorage.setItem('cashlink_users', JSON.stringify(users));
   showAlert('Account created! Switch to Login tab', 'green');
   e.target.reset();
+  showLogin();
 });
 
 // LOGIN LOGIC
@@ -231,4 +232,4 @@ function showAlert(message, color) {
 </script>
 
 </body>
-        </html>
+  </html>
