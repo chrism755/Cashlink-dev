@@ -3,162 +3,244 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CASHLINK AGENCIES - Activate Account</title>
+<title>CASHLINK AGENCIES</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-purple-600 via-blue-500 to-indigo-600 min-h-screen flex items-center justify-center p-4">
 
-<div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg">
+<div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">
   <div class="text-center mb-6">
-    <h1 class="text-3xl font-bold text-purple-700">Activate Account</h1>
-    <p class="text-gray-600 mt-1">Pay KES 150 to activate and start earning</p>
+    <h1 class="text-3xl font-bold text-purple-700">CASHLINK AGENCIES</h1>
+    <p class="text-gray-600 mt-1" id="subtitle">Create Your Account</p>
   </div>
   
   <div id="alert"></div>
 
-  <!-- Payment Method Tabs -->
+  <!-- Toggle Tabs -->
   <div class="flex mb-6 bg-gray-100 rounded-xl p-1">
-    <button id="tabMpesa" onclick="showMpesa()" 
+    <button id="tabRegister" onclick="showRegister()" 
       class="flex-1 py-2 rounded-lg font-semibold bg-white text-purple-700 shadow">
-      M-PESA
+      Register
     </button>
-    <button id="tabPaypal" onclick="showPaypal()" 
+    <button id="tabLogin" onclick="showLogin()" 
       class="flex-1 py-2 rounded-lg font-semibold text-gray-600">
-      PAYPAL
+      Login
     </button>
   </div>
 
-  <!-- M-PESA Instructions -->
-  <div id="mpesaBox">
-    <div class="bg-green-50 border-2 border-green-200 rounded-xl p-5 mb-4">
-      <h3 class="font-bold text-green-800 mb-3">M-PESA Payment Instructions</h3>
-      <ol class="text-sm text-gray-700 space-y-2 list-decimal list-inside">
-        <li>Go to M-PESA on your phone</li>
-        <li>Select <b>Lipa na M-PESA</b></li>
-        <li>Select <b>Send Money</b></li>
-        <li>Enter Phone Number: <b>254706494401</b></li>
-        <li>Enter Amount: <b>150</b></li>
-        <li>Enter M-PESA PIN and confirm</li>
-        <li>Copy the Transaction ID from the SMS</li>
-      </ol>
-      <div class="mt-3 p-3 bg-white rounded-lg border-green-200">
-        <p class="text-sm"><b>Pay To:</b> 254706494401</p>
-        <p class="text-sm"><b>Name:</b> MARY MPURUNGA</p>
-        <p class="text-sm"><b>Amount:</b> KES 150</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- PAYPAL Instructions -->
-  <div id="paypalBox" class="hidden">
-    <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-5 mb-4">
-      <h3 class="font-bold text-blue-800 mb-3">PayPal Payment Instructions</h3>
-      <ol class="text-sm text-gray-700 space-y-2 list-decimal list-inside">
-        <li>Login to your PayPal account</li>
-        <li>Click <b>Send & Request</b></li>
-        <li>Enter email: <b>marympurunga@gmail.com</b></li>
-        <li>Enter amount: <b>$1.50 USD</b> or equivalent</li>
-        <li>Add note: Your CASHLINK username</li>
-        <li>Send payment and copy Transaction ID</li>
-      </ol>
-      <div class="mt-3 p-3 bg-white rounded-lg border-blue-200">
-        <p class="text-sm"><b>PayPal Email:</b> marympurunga@gmail.com</p>
-        <p class="text-sm"><b>Amount:</b> $1.50 USD</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Transaction ID Form -->
-  <form id="activateForm" class="space-y-4">
+  <!-- REGISTER FORM -->
+  <form id="regForm" class="space-y-4">
     <div>
-      <label class="block text-sm font-semibold text-gray-700 mb-1">Payment Method</label>
-      <select id="method" required
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Username</label>
+      <input type="text" name="username" placeholder="Enter username" required
         class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
-        <option value="">Select Method</option>
-        <option value="M-PESA">M-PESA</option>
-        <option value="PAYPAL">PAYPAL</option>
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+      <input type="email" name="email" placeholder="Enter valid email" required
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
+      <input type="tel" name="phone" placeholder="Enter phone number" required
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">WhatsApp Number</label>
+      <input type="tel" name="whatsapp" placeholder="Enter WhatsApp number" required
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Country</label>
+      <select name="country" required
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none bg-white">
+        <option value="">Select Country</option>
+        <option>Kenya</option>
+        <option>Uganda</option>
+        <option>Tanzania</option>
+        <option>Nigeria</option>
+        <option>Ghana</option>
+        <option>South Africa</option>
       </select>
     </div>
 
     <div>
-      <label class="block text-sm font-semibold text-gray-700 mb-1">Transaction ID</label>
-      <input type="text" id="txnId" placeholder="Enter M-PESA or PayPal Transaction ID" required
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+      <input type="password" name="password" placeholder="Enter password" required
         class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
-      <p class="text-xs text-gray-500 mt-1">Example M-PESA: QFH5K9G8T1</p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Confirm Password</label>
+      <input type="password" name="confirmPassword" placeholder="Confirm password" required
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
     </div>
 
     <button type="submit"
       class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg">
-      Submit for Activation
+      Register Now
     </button>
   </form>
 
-  <p class="text-center text-xs text-gray-500 mt-4">
-    Activation takes 1-24 hours after payment confirmation
-  </p>
+  <!-- LOGIN FORM -->
+  <form id="loginForm" class="space-y-4 hidden">
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Username</label>
+      <input type="text" name="username" placeholder="Enter username" required
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+      <input type="password" name="password" placeholder="Enter password" required
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
+    </div>
+
+    <button type="submit"
+      class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg">
+      Login
+    </button>
+
+    <div class="text-center">
+      <button type="button" onclick="forgotPassword()" class="text-purple-600 font-semibold hover:underline text-sm">
+        Forgot Password?
+      </button>
+    </div>
+  </form>
 </div>
 
 <script>
-// Check if user is logged in
-const currentUser = JSON.parse(localStorage.getItem('cashlink_current') || 'null');
-if(!currentUser) {
-  alert('Please login first');
-  window.location.href = 'index.html';
+const regForm = document.getElementById('regForm');
+const loginForm = document.getElementById('loginForm');
+const subtitle = document.getElementById('subtitle');
+const tabRegister = document.getElementById('tabRegister');
+const tabLogin = document.getElementById('tabLogin');
+
+// Check if already logged in and redirect
+window.onload = function() {
+  const currentUser = JSON.parse(localStorage.getItem('cashlink_current') || 'null');
+  if(currentUser) {
+    if(currentUser.activated) {
+      window.location.href = 'dashboard.html';
+    } else {
+      window.location.href = 'activate.html';
+    }
+  }
 }
 
-function showMpesa() {
-  document.getElementById('mpesaBox').classList.remove('hidden');
-  document.getElementById('paypalBox').classList.add('hidden');
-  document.getElementById('tabMpesa').classList.add('bg-white', 'text-purple-700', 'shadow');
-  document.getElementById('tabPaypal').classList.remove('bg-white', 'text-purple-700', 'shadow');
-  document.getElementById('method').value = 'M-PESA';
+function showRegister() {
+  regForm.classList.remove('hidden');
+  loginForm.classList.add('hidden');
+  subtitle.textContent = 'Create Your Account';
+  tabRegister.classList.add('bg-white', 'text-purple-700', 'shadow');
+  tabLogin.classList.remove('bg-white', 'text-purple-700', 'shadow');
+  tabLogin.classList.add('text-gray-600');
 }
 
-function showPaypal() {
-  document.getElementById('paypalBox').classList.remove('hidden');
-  document.getElementById('mpesaBox').classList.add('hidden');
-  document.getElementById('tabPaypal').classList.add('bg-white', 'text-purple-700', 'shadow');
-  document.getElementById('tabMpesa').classList.remove('bg-white', 'text-purple-700', 'shadow');
-  document.getElementById('method').value = 'PAYPAL';
+function showLogin() {
+  loginForm.classList.remove('hidden');
+  regForm.classList.add('hidden');
+  subtitle.textContent = 'Welcome Back';
+  tabLogin.classList.add('bg-white', 'text-purple-700', 'shadow');
+  tabRegister.classList.remove('bg-white', 'text-purple-700', 'shadow');
+  tabRegister.classList.add('text-gray-600');
 }
 
-document.getElementById('activateForm').addEventListener('submit', function(e) {
+// REGISTER LOGIC
+regForm.addEventListener('submit', function(e) {
   e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target));
   
-  const method = document.getElementById('method').value;
-  const txnId = document.getElementById('txnId').value.trim();
-  
-  if(!method || !txnId) {
-    showAlert('Please fill all fields', 'red');
+  if(data.password !== data.confirmPassword) {
+    showAlert('Passwords do not match', 'red');
+    return;
+  }
+  if(data.password.length < 6) {
+    showAlert('Password must be at least 6 characters', 'red');
     return;
   }
   
-  // Save pending activation
-  let pending = JSON.parse(localStorage.getItem('cashlink_pending') || '[]');
-  
-  if(pending.find(p => p.txnId === txnId)) {
-    showAlert('This Transaction ID already submitted', 'red');
+  let users = JSON.parse(localStorage.getItem('cashlink_users') || '[]');
+  if(users.find(u => u.username === data.username)) {
+    showAlert('Username already exists', 'red');
+    return;
+  }
+  if(users.find(u => u.email === data.email)) {
+    showAlert('Email already registered', 'red');
     return;
   }
   
-  pending.push({
-    username: currentUser.username,
-    email: currentUser.email,
-    method: method,
-    txnId: txnId,
-    submittedAt: new Date().toISOString(),
-    status: 'pending'
-  });
+  const newUser = {
+    username: data.username,
+    email: data.email,
+    phone: data.phone,
+    whatsapp: data.whatsapp,
+    country: data.country,
+    password: data.password,
+    activated: false,
+    balance: 0,
+    earnings: 0
+  };
   
-  localStorage.setItem('cashlink_pending', JSON.stringify(pending));
+  users.push(newUser);
+  localStorage.setItem('cashlink_users', JSON.stringify(users));
+  localStorage.setItem('cashlink_current', JSON.stringify(newUser));
   
-  showAlert('Transaction submitted! Wait for admin approval', 'green');
-  e.target.reset();
+  showAlert('Account created! Redirecting to activation...', 'green');
   
   setTimeout(() => {
-    alert('Once admin activates you, login again to access dashboard');
+    window.location.href = 'activate.html';
   }, 1500);
 });
+
+// LOGIN LOGIC
+loginForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const username = e.target.username.value;
+  const password = e.target.password.value;
+  
+  if(username === 'admin' && password === 'Cashlink2026') {
+    localStorage.setItem('cashlink_current', JSON.stringify({username: 'admin', is_admin: true}));
+    window.location.href = 'admin.html';
+    return;
+  }
+  
+  let users = JSON.parse(localStorage.getItem('cashlink_users') || '[]');
+  const user = users.find(u => u.username === username && u.password === password);
+  
+  if(!user) {
+    showAlert('Invalid username or password', 'red');
+    return;
+  }
+  
+  localStorage.setItem('cashlink_current', JSON.stringify(user));
+  
+  if(user.activated) {
+    window.location.href = 'dashboard.html';
+  } else {
+    window.location.href = 'activate.html';
+  }
+});
+
+// FORGOT PASSWORD
+function forgotPassword() {
+  const email = prompt('Enter your registered email:');
+  if(!email) return;
+  
+  let users = JSON.parse(localStorage.getItem('cashlink_users') || '[]');
+  const user = users.find(u => u.email === email);
+  
+  if(!user) {
+    alert('No account found with that email');
+    return;
+  }
+  
+  alert(`Password for ${user.username}: ${user.password}\n\nThis is for testing only.`);
+}
 
 function showAlert(message, color) {
   const alertDiv = document.getElementById('alert');
@@ -167,7 +249,7 @@ function showAlert(message, color) {
       ${message}
     </div>
   `;
-  setTimeout(() => alertDiv.innerHTML = '', 4000);
+  setTimeout(() => alertDiv.innerHTML = '', 3000);
 }
 </script>
 
