@@ -123,7 +123,7 @@ const tabLogin = document.getElementById('tabLogin');
 // Check if already logged in and redirect
 window.onload = function() {
   const currentUser = JSON.parse(localStorage.getItem('cashlink_current') || 'null');
-  if(currentUser) {
+  if(currentUser && !currentUser.is_admin) {
     if(currentUser.activated) {
       window.location.href = 'dashboard.html';
     } else {
@@ -190,11 +190,12 @@ regForm.addEventListener('submit', function(e) {
   localStorage.setItem('cashlink_users', JSON.stringify(users));
   localStorage.setItem('cashlink_current', JSON.stringify(newUser));
   
-  showAlert('Account created! Redirecting to activation...', 'green');
+  showAlert('Account created! Redirecting...', 'green');
   
   setTimeout(() => {
-    window.location.href = 'activate.html';
-  }, 1500);
+    // Force redirect to activate.html
+    window.location.replace('activate.html');
+  }, 1200);
 });
 
 // LOGIN LOGIC
@@ -239,7 +240,7 @@ function forgotPassword() {
     return;
   }
   
-  alert(`Password for ${user.username}: ${user.password}\n\nThis is for testing only.`);
+  alert(`Password for ${user.username}: ${user.password}`);
 }
 
 function showAlert(message, color) {
