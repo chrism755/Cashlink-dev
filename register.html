@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cashlink Agencies</title>
+<style>
+body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+.container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 350px; }
+h2 { text-align: center; color: #333; }
+input, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+button { background: #4CAF50; color: white; border: none; cursor: pointer; font-size: 16px; }
+button:hover { background: #45a049; }
+button:disabled { background: #ccc; cursor: not-allowed; }
+.toggle { text-align: center; margin-top: 15px; color: #666; cursor: pointer; }
+.toggle:hover { text-decoration: underline; }
+.error { color: red; font-size: 14px; text-align: center; }
+.success { color: green; font-size: 14px; text-align: center; }
+.hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2 id="formTitle">Login</h2>
+  
+  <div id="loginForm">
+    <input type="email" id="loginEmail" placeholder="Email" required>
+    <input type="password" id="loginPassword" placeholder="Password" required>
+    <button id="loginBtn">Login</button>
+    <p class="error" id="loginError"></p>
+  </div>
+
+  <div id="registerForm" class="hidden">
+    <input type="text" id="regName" placeholder="Full Name" required>
+    <input type="email" id="regEmail" placeholder="Email" required>
+    <input type="password" id="regPassword" placeholder="Password (min 6 chars)" required>
+    <button id="registerBtn">Register</button>
+    <p class="error" id="registerError"></p>
+    <p class="success" id="registerSuccess"></p>
+  </div>
+
+  <p class="toggle" id="toggleForm">Don't have an account? Register</p>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// REPLACE THIS WITH YOUR CONFIG
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Toggle between login and register
+const toggle = document.getElementById('toggleForm');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const formTitle = document.getElementById('formTitle');
+
+toggle.onclick = () => {
+  loginForm.classList.toggle('hidden');
+  registerForm.classList.toggle('hidden');
+  formTitle.textContent = loginForm.classList.contains('hidden') ? 'Register' : 'Login';
+  toggle.textContent = loginForm.classList.contains('hidden') ? 'Already have an account? Login' : "Don't have an account? Register";
+};
+
+// Register
+document.getElementById('registerBtn').onclick = async () => {
+  const name = document.getElementById('regName').value;
+  const email = document.getElementById('regEmail').value;
+  const password = document.getElementById('regPassword').value;
+  const errorEl = document.getElementById('registerError');
+  const successEl = document.getElementById('registerSuccess');
+  
+  errorEl.textContent = '';
+  successEl.textContent = '';
+  
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, "users", userCred.user.uid), {
+      name: name,
+      email: email,
+      status: "pending",
+      createdAt: new Date()
+    });
+    successEl.textContent = "Account created! Wait for admin approval.";
+  } catch (error) {
+    errorEl.textContent = error.message;
+  }
+};
+
+// Login
+document.getElementById('loginBtn').onclick = async () => {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const errorEl = document.getElementById('loginError');
+  
+  errorEl.textContent = '';
+  
+  try {
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+    const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
+    
+    if (!userDoc.exists()) {
+      errorEl.textContent = "User data not found.";
+      return;
+    }
+    
+    const userData = userDoc.data();
+    if (userData.status !== "active") {
+      errorEl.textContent = "Account pending approval by admin.";
+      return;
+    }
+    
+    alert("Login successful! Welcome " + userData.name);
+    // Here you can redirect to dashboard: window.location.href = "dashboard.html";
+  } catch (error) {
+    errorEl.textContent = error.message;
+  }
+};
+</script>
+</body>
+  </html>
