@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NETLINK AGENCIES - Register</title>
+<title>CASHLINK AGENCIES</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-purple-600 via-blue-500 to-indigo-600 min-h-screen flex items-center justify-center p-4">
@@ -11,41 +11,53 @@
 <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">
   <div class="text-center mb-6">
     <h1 class="text-3xl font-bold text-purple-700">CASHLINK AGENCIES</h1>
-    <p class="text-gray-600 mt-1">Create Your Account</p>
+    <p class="text-gray-600 mt-1" id="subtitle">Create Your Account</p>
   </div>
   
   <div id="alert"></div>
-  
+
+  <!-- Toggle Tabs -->
+  <div class="flex mb-6 bg-gray-100 rounded-xl p-1">
+    <button id="tabRegister" onclick="showRegister()" 
+      class="flex-1 py-2 rounded-lg font-semibold bg-white text-purple-700 shadow">
+      Register
+    </button>
+    <button id="tabLogin" onclick="showLogin()" 
+      class="flex-1 py-2 rounded-lg font-semibold text-gray-600">
+      Login
+    </button>
+  </div>
+
+  <!-- REGISTER FORM -->
   <form id="regForm" class="space-y-4">
-    
     <div>
       <label class="block text-sm font-semibold text-gray-700 mb-1">Username</label>
       <input type="text" name="username" placeholder="Enter username" required
-        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition">
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
     </div>
 
     <div>
       <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
       <input type="email" name="email" placeholder="Enter valid email" required
-        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition">
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
     </div>
 
     <div>
       <label class="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
       <input type="tel" name="phone" placeholder="Enter phone number" required
-        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition">
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
     </div>
 
     <div>
       <label class="block text-sm font-semibold text-gray-700 mb-1">WhatsApp Number</label>
       <input type="tel" name="whatsapp" placeholder="Enter WhatsApp number" required
-        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition">
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
     </div>
 
     <div>
       <label class="block text-sm font-semibold text-gray-700 mb-1">Country</label>
       <select name="country" required
-        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition bg-white">
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none bg-white">
         <option value="">Select Country</option>
         <option>Kenya</option>
         <option>Uganda</option>
@@ -59,53 +71,92 @@
     <div>
       <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
       <input type="password" name="password" placeholder="Enter password" required
-        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition">
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
     </div>
 
     <div>
       <label class="block text-sm font-semibold text-gray-700 mb-1">Confirm Password</label>
       <input type="password" name="confirmPassword" placeholder="Confirm password" required
-        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition">
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
     </div>
 
     <button type="submit"
-      class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transform hover:scale-[1.02] transition-all shadow-lg">
+      class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg">
       Register Now
     </button>
   </form>
 
-  <p class="text-center text-sm text-gray-600 mt-5">
-    Already have an account? 
-    <a href="#" class="text-purple-600 font-semibold hover:underline">Login</a>
-  </p>
+  <!-- LOGIN FORM -->
+  <form id="loginForm" class="space-y-4 hidden">
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Username</label>
+      <input type="text" name="username" placeholder="Enter username" required
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+      <input type="password" name="password" placeholder="Enter password" required
+        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none">
+    </div>
+
+    <button type="submit"
+      class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 rounded-xl font-bold text-lg hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg">
+      Login
+    </button>
+
+    <div class="text-center">
+      <button type="button" onclick="forgotPassword()" class="text-purple-600 font-semibold hover:underline text-sm">
+        Forgot Password?
+      </button>
+    </div>
+  </form>
 </div>
 
 <script>
-document.getElementById('regForm').addEventListener('submit', function(e) {
+const regForm = document.getElementById('regForm');
+const loginForm = document.getElementById('loginForm');
+const subtitle = document.getElementById('subtitle');
+const tabRegister = document.getElementById('tabRegister');
+const tabLogin = document.getElementById('tabLogin');
+
+function showRegister() {
+  regForm.classList.remove('hidden');
+  loginForm.classList.add('hidden');
+  subtitle.textContent = 'Create Your Account';
+  tabRegister.classList.add('bg-white', 'text-purple-700', 'shadow');
+  tabLogin.classList.remove('bg-white', 'text-purple-700', 'shadow');
+  tabLogin.classList.add('text-gray-600');
+}
+
+function showLogin() {
+  loginForm.classList.remove('hidden');
+  regForm.classList.add('hidden');
+  subtitle.textContent = 'Welcome Back';
+  tabLogin.classList.add('bg-white', 'text-purple-700', 'shadow');
+  tabRegister.classList.remove('bg-white', 'text-purple-700', 'shadow');
+  tabRegister.classList.add('text-gray-600');
+}
+
+// REGISTER LOGIC
+regForm.addEventListener('submit', function(e) {
   e.preventDefault();
+  const data = Object.fromEntries(new FormData(e.target));
   
-  const formData = new FormData(e.target);
-  const data = Object.fromEntries(formData);
-  
-  // Basic validation
   if(data.password !== data.confirmPassword) {
     showAlert('Passwords do not match', 'red');
     return;
   }
-  
   if(data.password.length < 6) {
     showAlert('Password must be at least 6 characters', 'red');
     return;
   }
   
-  // Save to localStorage for testing
   let users = JSON.parse(localStorage.getItem('cashlink_users') || '[]');
-  
   if(users.find(u => u.username === data.username)) {
     showAlert('Username already exists', 'red');
     return;
   }
-  
   if(users.find(u => u.email === data.email)) {
     showAlert('Email already registered', 'red');
     return;
@@ -124,12 +175,49 @@ document.getElementById('regForm').addEventListener('submit', function(e) {
   });
   
   localStorage.setItem('cashlink_users', JSON.stringify(users));
-  
-  showAlert('Account created successfully!', 'green');
+  showAlert('Account created! Switch to Login tab', 'green');
   e.target.reset();
-  
-  console.log('User saved:', data);
 });
+
+// LOGIN LOGIC
+loginForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const username = e.target.username.value;
+  const password = e.target.password.value;
+  
+  if(username === 'admin' && password === 'Cashlink2026') {
+    localStorage.setItem('cashlink_current', JSON.stringify({username: 'admin', is_admin: true}));
+    showAlert('Admin login successful!', 'green');
+    return;
+  }
+  
+  let users = JSON.parse(localStorage.getItem('cashlink_users') || '[]');
+  const user = users.find(u => u.username === username && u.password === password);
+  
+  if(!user) {
+    showAlert('Invalid username or password', 'red');
+    return;
+  }
+  
+  localStorage.setItem('cashlink_current', JSON.stringify(user));
+  showAlert('Login successful!', 'green');
+});
+
+// FORGOT PASSWORD
+function forgotPassword() {
+  const email = prompt('Enter your registered email:');
+  if(!email) return;
+  
+  let users = JSON.parse(localStorage.getItem('cashlink_users') || '[]');
+  const user = users.find(u => u.email === email);
+  
+  if(!user) {
+    alert('No account found with that email');
+    return;
+  }
+  
+  alert(`Password for ${user.username}: ${user.password}\n\nThis is for testing only.`);
+}
 
 function showAlert(message, color) {
   const alertDiv = document.getElementById('alert');
@@ -138,12 +226,9 @@ function showAlert(message, color) {
       ${message}
     </div>
   `;
-  
-  setTimeout(() => {
-    alertDiv.innerHTML = '';
-  }, 3000);
+  setTimeout(() => alertDiv.innerHTML = '', 3000);
 }
 </script>
 
 </body>
-  </html>
+        </html>
