@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NETLINK AGENCIES</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+ .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+ .card { backdrop-filter: blur(10px); background: rgba(255,255,255,0.95); }
+</style>
+</head>
+<body class="gradient-bg min-h-screen font-sans">
+
+<div id="app" class="min-h-screen flex items-center justify-center p-4"></div>
+
+<script>
+const app = document.getElementById('app');
+const routes = {
+  '/register': renderRegister,
+  '/login': renderLogin,
+  '/activation': renderActivation,
+  '/dashboard': renderDashboard
+};
+
+// Router
+function navigate(path) {
+  history.pushState({}, '', path);
+  render();
+}
+
+function render() {
+  const path = window.location.pathname;
+  const route = routes[path] || routes['/register'];
+  route();
+}
+window.onpopstate = render;
+
+// Utils
+function getUser() {
+  return JSON.parse(localStorage.getItem('netlink_user') || 'null');
+}
+
+function saveUser(user) {
+  localStorage.setItem('netlink_user', JSON.stringify(user));
+}
+
+function getUsers() {
+  return JSON.parse(localStorage.getItem('netlink_users') || '[]');
+}
+
+function saveUsers(users) {
+  localStorage.setItem('netlink_users', JSON.stringify(users));
+}
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function showAlert(msg, color='red') {
+  return `<div class="bg-${color}-100 border-${color}-400 text-${color}-700 px-4 py-3 rounded-lg mb-4">${msg}</div>`;
+}
+
+// 1. REGISTER PAGE
+function renderRegister() {
+  app.innerHTML = `
+  <div class="card rounded-2xl shadow-2xl p-8 w-full max-w-md">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-2">NETLINK AGENCIES</h1>
+    <p class="text-center text-gray-600 mb-6">Create your account</p>
+    <div id="alert"></div>
+    <form id="registerForm" class="space-y-4">
+      <input type="text" id="username" placeholder="Enter username" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
+      <input type="email" id="email" placeholder="Enter valid Email" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
+      <input type="tel" id="phone" placeholder="Enter phone number" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
+      <input type="tel" id="whatsapp" placeholder="Enter WhatsApp number" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
+
+      <select id="country" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
+        <option value="">Select country</option>
+        <option>Kenya</option><option>Uganda</option><option>Tanzania</option>
+        <option>Nigeria</option><option>Ghana</option><option>Other</option>
+      </select>
+
+      <input type="password" id="password" placeholder="Enter password" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
+      <input type="password" id="confirmPassword" placeholder="Confirm password" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
+
+      <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold text-lg transition">Create Account</button>
+    </form>
+    <p class="text-center mt-4 text-gray-600">Already registered?
+      <a href="/login" onclick="event.preventDefault(); navigate('/login')" class="text-purple-600 font-semibold">Log in</a>
+    </p>
+  </div>`;
+
+  document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const user = {
+      username: username.value.trim(),
+      email: email.value.trim(),
+      phone: phone.value.trim(),
+      whatsapp: whatsapp.value.trim(),
+      country: country.value,
+      password: password.value,
+      active: false,
+      balance: 0,
+      earnings: 0,
+      withdrawn: 0,
+      pending: 0,
+      referrals: 0
+    };
+
+    if (user.password!== confirmPassword.value) {
+      document.getElementById('alert').innerHTML = showAlert('Passwords do not match');
+      return;
+    }
+
+    let users = getUsers();
+    if (users.find(u => u.username === user.username)) {
+      document.getElementById('alert').innerHTML = showAlert('Username already exists');
+      return;
+    }
+
+    users.push(user);
+    saveUsers(users);
+    saveUser(user);
+
+    document.getElementById('alert').innerHTML = showAlert('Account created! Redirecting...', 'green');
+    setTimeout(() => navigate('/activation'), 4000);
+  });
+}
+
+// 2. LOGIN PAGE
+function renderLogin() {
+  app.innerHTML = `
+  <div class="card rounded-2xl shadow-2xl p-8 w-full max-w-md">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-2">NETLINK AGENCIES</h1>
+    <p class="text-center text-gray-600 mb-6">Log in to your account</p>
+    <div id="alert"></div>
+    <form id="loginForm" class="space-y-4">
+      <input type="text" id="username" placeholder="Enter username" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl">
+      <input type="password" id="password" placeholder="Enter password" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl">
+      <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold text-lg">Log In</button>
+    </form>
+    <div class="flex justify-between mt-4 text-sm">
+      <a href="#" onclick="event.preventDefault(); renderForgot()" class="text-purple-600">Forgot password?</a>
+      <a href="/register" onclick="event.preventDefault(); navigate('/register')" class="text-purple-600">Create account</a>
+    </div>
+  </div>`;
+
+  document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const users = getUsers();
+    const user = users.find(u => u.username === username.value && u.password === password.value);
+    if (!user) {
+      document.getElementById('alert').innerHTML = showAlert('Invalid username or password');
+      return;
+    }
+    saveUser(user);
+    if (!user.active) navigate('/activation');
+    else navigate('/dashboard');
+  });
+}
+
+// 3. FORGOT PASSWORD
+function renderForgot() {
+  app.innerHTML = `
+  <div class="card rounded-2xl shadow-2xl p-8 w-full max-w-md">
+    <h1 class="text-2xl font-bold text-center text-purple-700 mb-4">Reset Password</h1>
+    <div id="alert"></div>
+    <input type="email" id="email" placeholder="Enter your email" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl mb-4">
+    <button onclick="sendReset()" class="w-full bg-purple-600 text-white py-3 rounded-xl font-bold">Send Reset Link</button>
+    <button onclick="renderLogin()" class="w-full mt-2 text-gray-600">Back to Login</button>
+  </div>`;
+}
+
+function sendReset() {
+  document.getElementById('alert').innerHTML = showAlert('If email exists, reset link sent', 'green');
+}
+
+// 4. ACTIVATION PAGE
+function renderActivation() {
+  const user = getUser();
+  if (!user) { navigate('/login'); return; }
+
+  app.innerHTML = `
+  <div class="card rounded-2xl shadow-2xl p-8 w-full max-w-lg">
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-2">Activate Account</h1>
+    <p class="text-center text-gray-600 mb-6">Pay KES 150 to activate and start earning</p>
+    <div id="alert"></div>
+
+    <div class="flex mb-6 bg-gray-100 rounded-xl p-1">
+      <button onclick="showPay('mpesa')" id="btnMpesa" class="flex-1 py-2 rounded-lg font-semibold bg-white text-purple-700 shadow">M-PESA</button>
+      <button onclick="showPay('paypal')" id="btnPaypal" class="flex-1 py-2 rounded-lg font-semibold text-gray-600">PAYPAL</button>
+    </div>
+
+    <div id="mpesaBox" class="bg-green-50 border-2 border-green-200 rounded-xl p-5 mb-4">
+      <h3 class="font-bold text-green-800 mb-3">M-PESA Payment Instructions</h3>
+      <ol class="text-sm text-gray-700 space-y-2 list-decimal list-inside">
+        <li>Go to M-PESA > Lipa na M-PESA > Send Money</li>
+        <li>Enter Number: <b>254706494401</b></li>
+        <li>Enter Amount: <b>150</b></li>
+        <li>Enter PIN and confirm</li>
+        <li>Copy Transaction ID from SMS</li>
+      </ol>
+      <p class="mt-3 text-sm"><b>Name:</b> MARY MPURUNGA</p>
+    </div>
+
+    <div id="paypalBox" class="hidden bg-blue-50 border-2 border-blue-200 rounded-xl p-5 mb-4">
+      <h3 class="font-bold text-blue-800 mb-3">PayPal Payment Instructions</h3>
+      <ol class="text-sm text-gray-700 space-y-2 list-decimal list-inside">
+        <li>Login to PayPal</li>
+        <li>Send & Request > Send</li>
+        <li>Enter email: <b>marympurunga@gmail.com</b></li>
+        <li>Amount: <b>$1.50 USD</b></li>
+        <li>Add note: Your NETLINK username</li>
+      </ol>
+    </div>
+
+    <form id="payForm" class="space-y-4">
+      <select id="method" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl">
+        <option value="">Select Method</option>
+        <option value="M-PESA">M-PESA</option>
+        <option value="PAYPAL">PAYPAL</option>
+      </select>
+      <input type="text" id="txnId" placeholder="Enter Transaction ID" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl">
+      <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-xl font-bold">Submit for Activation</button>
+    </form>
+  </div>`;
+
+  window.showPay = function(type) {
+    if (type === 'mpesa') {
+      mpesaBox.classList.remove('hidden');
+      paypalBox.classList.add('hidden');
+      btnMpesa.classList.add('bg-white', 'text-purple-700', 'shadow');
+      btnPaypal.classList.remove('bg-white', 'text-purple-700', 'shadow');
+      method.value = 'M-PESA';
+    } else {
+      paypalBox.classList.remove('hidden');
+      mpesaBox.classList.add('hidden');
+      btnPaypal.classList.add('bg-white', 'text-purple-700', 'shadow');
+      btnMpesa.classList.remove('bg-white', 'text-purple-700', 'shadow');
+      method.value = 'PAYPAL';
+    }
+  };
+
+  document.getElementById('payForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let pending = JSON.parse(localStorage.getItem('netlink_pending') || '[]');
+    pending.push({
+      username: user.username,
+      method: method.value,
+      txnId: txnId.value,
+      time: new Date().toISOString()
+    });
+    localStorage.setItem('netlink_pending', JSON.stringify(pending));
+    document.getElementById('alert').innerHTML = showAlert('Submitted! Wait for admin approval', 'green');
+  });
+}
+
+// 5. DASHBOARD
+function renderDashboard() {
+  const user = getUser();
+  if (!user ||!user.active) { navigate('/activation'); return; }
+
+  const refLink = `https://netlinkagencies.work.gd/register?ref=${user.username}`;
+
+  app.innerHTML = `
+  <div class="w-full max-w-5xl">
+    <div class="card rounded-2xl shadow-2xl p-6 mb-6">
+      <h1 class="text-3xl font-bold text-purple-700">${getGreeting()}, ${user.username}!</h1>
+      <p class="text-gray-600">Welcome to your dashboard</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+      <div class="card rounded-2xl p-6">
+        <h3 class="text-gray-500 text-sm">Expenses</h3>
+        <p class="text-3xl font-bold text-red-600">KES 150</p>
+        <p class="text-sm text-gray-500">Activation fee</p>
+      </div>
+      <div class="card rounded-2xl p-6">
+        <h3 class="text-gray-500 text-sm">Total Earnings</h3>
+        <p class="text-3xl font-bold text-green-600">KES ${user.earnings}</p>
+      </div>
+    </div>
+
+    <div class="card rounded-2xl p-6 space-y-4">
+      <div class="flex justify-between border-b pb-3">
+        <span class="text-gray-600">Account Balance</span>
+        <span class="font-bold">KES ${user.balance}</span>
+      </div>
+      <div class="flex justify-between border-b pb-3">
+        <span class="text-gray-600">Withdrawn Amount</span>
+        <span class="font-bold">KES ${user.withdrawn}</span>
+      </div>
+      <div class="flex justify-between border-b pb-3">
+        <span class="text-gray-600">Pending Amount</span>
+        <span class="font-bold">KES ${user.pending}</span>
+      </div>
+      <div class="flex justify-between border-b pb-3">
+        <span class="text-gray-600">Weekly Bonus</span>
+        <span class="font-bold text-green-600">KES 200</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-600">Karibu Bonus</span>
+        <span class="font-bold text-green-600">KES 100</span>
+      </div>
+    </div>
+
+    <div class="card rounded-2xl p-6 mt-6">
+      <h3 class="font-bold text-purple-700 mb-3">Your Referral Link</h3>
+      <div class="flex gap-2 flex-wrap">
+        <input type="text" value="${refLink}" readonly class="flex-1 px-4 py-2 border-2 rounded-xl bg-gray-50">
+        <button onclick="navigator.clipboard.writeText('${refLink}'); alert('Copied!')" class="bg-purple-600 text-white px-4 py-2 rounded-xl">Copy</button>
+        <a href="https://wa.me/?text=${encodeURIComponent(refLink)}" target="_blank" class="bg-green-500 text-white px-4 py-2 rounded-xl">WhatsApp</a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(refLink)}" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-xl">Facebook</a>
+        <a href="https://t.me/share/url?url=${encodeURIComponent(refLink)}" target="_blank" class="bg-sky-500 text-white px-4 py-2 rounded-xl">Telegram</a>
+      </div>
+    </div>
+
+    <button onclick="logout()" class="mt-6 w-full bg-red-500 text-white py-3 rounded-xl font-bold">Logout</button>
+  </div>`;
+}
+
+function logout() {
+  localStorage.removeItem('netlink_user');
+  navigate('/login');
+}
+
+// Start app
+render();
+</script>
+</body>
+  </html>
