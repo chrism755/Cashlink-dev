@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NETLINK AGENCIES</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#07071e;color:#fff;min-height:100vh}
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+.page-center{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.form-container{width:100%;max-width:460px}
+.logo{text-align:center;margin-bottom:28px}
+.logo h1{font-size:2em;font-weight:900;letter-spacing:3px;background:linear-gradient(135deg,#00d4ff,#ff6b35,#7b2ff7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo p{color:#888;font-size:.88em;margin-top:4px}
+.card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:24px;margin-bottom:16px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;color:#aaa;font-size:.82em;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:12px 15px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;font-size:.95em;outline:none;transition:border .2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#00d4ff}
+.form-group select option{background:#0d0d35}
+.form-group textarea{resize:vertical}
+.btn{width:100%;padding:13px;background:linear-gradient(135deg,#00d4ff,#7b2ff7);border:none;border-radius:10px;color:#fff;font-size:1em;font-weight:700;cursor:pointer;transition:opacity .2s;letter-spacing:.5px}
+.btn:hover{opacity:.85}
+.btn-green{background:linear-gradient(135deg,#00c853,#00b04f)}
+.btn-orange{background:linear-gradient(135deg,#ff9800,#f57c00)}
+.btn-red{background:linear-gradient(135deg,#e53935,#b71c1c)}
+.btn-whatsapp{background:linear-gradient(135deg,#25d366,#128c7e)}
+.btn-telegram{background:linear-gradient(135deg,#0088cc,#006da0)}
+.btn-facebook{background:linear-gradient(135deg,#1877f2,#0d47a1)}
+.link-text{text-align:center;margin-top:14px;color:#888;font-size:.88em}
+.link-text a{color:#00d4ff;cursor:pointer;text-decoration:none}
+.link-text a:hover{text-decoration:underline}
+.alert{padding:11px 15px;border-radius:9px;margin-bottom:12px;font-size:.88em;font-weight:600}
+.alert.error{background:rgba(229,57,53,.15);color:#ff5252;border:1px solid rgba(229,57,53,.3)}
+.alert.success{background:rgba(0,230,118,.12);color:#00e676;border:1px solid rgba(0,230,118,.25)}
+.alert.info{background:rgba(0,212,255,.1);color:#00d4ff;border:1px solid rgba(0,212,255,.25)}
+.alert.warning{background:rgba(255,152,0,.12);color:#ff9800;border:1px solid rgba(255,152,0,.25)}
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{flex:1;padding:10px;text-align:center;border-radius:9px;cursor:pointer;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);font-size:.88em;color:#aaa;font-weight:600;transition:all .2s}
+.tab.active{background:rgba(0,212,255,.12);color:#00d4ff;border-color:#00d4ff}
+/* STEPS */
+.step{display:flex;gap:13px;margin-bottom:13px;align-items:flex-start}
+.step-num{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#00d4ff,#7b2ff7);display:flex;align-items:center;justify-content:center;font-size:.78em;font-weight:800;flex-shrink:0}
+.step-text h4{font-size:.88em;margin-bottom:2px}
+.step-text p{font-size:.8em;color:#aaa;line-height:1.4}
+/* DASHBOARD */
+.dashboard-wrap{display:flex;min-height:100vh;position:relative}
+.sidebar{width:265px;background:#0a0a28;border-right:1px solid rgba(255,255,255,.07);position:fixed;top:0;left:0;bottom:0;z-index:200;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .3s;overflow-y:auto}
+.sidebar.open{transform:translateX(0)}
+.sidebar-logo{padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.07)}
+.sidebar-logo h2{font-size:1em;background:linear-gradient(135deg,#00d4ff,#7b2ff7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:900;letter-spacing:2px}
+.sidebar-logo p{font-size:.75em;color:#555;margin-top:3px}
+.sidebar-menu{flex:1;padding:8px 0}
+.menu-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;color:#aaa;font-size:.88em;transition:all .2s;border-left:3px solid transparent}
+.menu-item:hover,.menu-item.active-menu{background:rgba(0,212,255,.07);color:#00d4ff;border-left-color:#00d4ff}
+.menu-icon{font-size:1em;width:20px;flex-shrink:0}
+.submenu{padding-left:14px;display:none}
+.submenu.open{display:block}
+.submenu .menu-item{font-size:.82em;padding:8px 18px}
+.main-content{flex:1;padding:16px;transition:margin .3s}
+.main-content.shifted{margin-left:265px}
+.topbar{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:11px 15px;margin-bottom:16px}
+.hamburger{cursor:pointer;font-size:1.4em;line-height:1}
+.topbar-title{font-weight:700;color:#00d4ff;font-size:.95em}
+.topbar-user{font-size:.8em;color:#666}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:199}
+.overlay.active{display:block}
+/* SUB-PAGES */
+.sub-page{display:none}
+.sub-page.active{display:block}
+.sub-page-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.back-btn{cursor:pointer;font-size:1.3em;background:none;border:none;color:#00d4ff;line-height:1}
+.sub-page-header h2{font-size:1.05em;font-weight:700}
+/* STATS */
+.main-boxes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.main-box{border-radius:14px;padding:16px;text-align:center}
+.main-box.expenses{background:linear-gradient(135deg,#c62828,#ff5722)}
+.main-box.earnings{background:linear-gradient(135deg,#1b5e20,#00c853)}
+.main-box .box-lbl{font-size:.75em;opacity:.9;margin-bottom:4px}
+.main-box .box-val{font-size:1.5em;font-weight:800}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:13px}
+.stat-box .slbl{font-size:.72em;color:#888;margin-bottom:3px}
+.stat-box .sval{font-size:1.3em;font-weight:700;color:#00d4ff}
+.stat-box.sg .sval{color:#00e676}
+.stat-box.sr .sval{color:#ff5252}
+.stat-box.so .sval{color:#ff9800}
+.stat-box.sp .sval{color:#b44fff}
+.stat-box.sy .sval{color:#ffd600}
+.stat-box.full{grid-column:span 2}
+/* REFERRAL */
+.ref-section{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:14px;margin-bottom:16px}
+.ref-section h3{color:#00d4ff;font-size:.9em;margin-bottom:10px}
+.ref-box{background:rgba(0,0,0,.35);border-radius:8px;padding:9px 12px;font-size:.78em;color:#aaa;word-break:break-all;margin-bottom:10px;border:1px solid rgba(255,255,255,.05)}
+.share-btns{display:flex;flex-wrap:wrap;gap:7px}
+.sbtn{padding:6px 13px;border-radius:20px;border:none;font-size:.78em;font-weight:700;cursor:pointer;transition:opacity .2s}
+.sbtn:hover{opacity:.8}
+.sbtn.copy{background:#00d4ff;color:#000}
+.sbtn.wa{background:#25d366;color:#fff}
+.sbtn.fb{background:#1877f2;color:#fff}
+.sbtn.tg{background:#0088cc;color:#fff}
+/* WELCOME */
+.welcome-box{text-align:center;padding:18px;background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(123,47,247,.08));border-radius:14px;margin-bottom:16px;border:1px solid rgba(0,212,255,.15)}
+.welcome-box h2{font-size:1.2em;color:#00d4ff}
+.welcome-box p{font-size:.82em;color:#777;margin-top:4px}
+/* INFO ROWS */
+.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.86em}
+.info-row:last-child{border-bottom:none}
+.info-row .ikey{color:#888}
+.info-row .ival{color:#fff;font-weight:600;text-align:right;max-width:60%}
+/* BADGES */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.7em;font-weight:700}
+.badge.active{background:rgba(0,230,118,.15);color:#00e676;border:1px solid #00e676}
+.badge.inactive{background:rgba(255,82,82,.15);color:#ff5252;border:1px solid #ff5252}
+/* USER ROW */
+.user-row{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px;margin-bottom:9px}
+.user-row .uname{font-weight:700;margin-bottom:5px;font-size:.92em}
+.user-row .uinfo{font-size:.78em;color:#888;margin-bottom:8px}
+.action-btns{display:flex;flex-wrap:wrap;gap:5px}
+.abtn{padding:5px 11px;border-radius:6px;border:none;font-size:.76em;font-weight:700;cursor:pointer;transition:opacity .2s}
+.abtn:hover{opacity:.8}
+.abtn.ag{background:#00c853;color:#fff}
+.abtn.ar{background:#e53935;color:#fff}
+.abtn.ab{background:#1e88e5;color:#fff}
+.abtn.ao{background:#ff9800;color:#fff}
+.abtn.aw{background:#25d366;color:#fff}
+/* ADMIN STATS */
+.admin-stat{border-radius:12px;padding:14px;text-align:center;margin-bottom:12px}
+.admin-stat .albl{font-size:.78em;opacity:.85;margin-bottom:3px}
+.admin-stat .aval{font-size:1.9em;font-weight:800}
+.admin-stat.blue{background:linear-gradient(135deg,#0d47a1,#1976d2)}
+.admin-stat.green{background:linear-gradient(135deg,#1b5e20,#388e3c)}
+.admin-stat.red{background:linear-gradient(135deg,#b71c1c,#d32f2f)}
+.admin-stat.purple{background:linear-gradient(135deg,#4a148c,#7b1fa2)}
+.admin-stat.brown{background:linear-gradient(135deg,#3e2723,#6d4c41)}
+/* QUIZ */
+.quiz-opt{width:100%;padding:9px 12px;margin-bottom:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;cursor:pointer;text-align:left;font-size:.86em;transition:all .2s}
+.quiz-opt:hover:not(:disabled){background:rgba(0,212,255,.1);border-color:#00d4ff}
+.quiz-opt:disabled{cursor:default}
+/* VIDEO */
+.video-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:13px;margin-bottom:10px}
+.video-thumb{width:100%;height:130px;background:linear-gradient(135deg,#0d0d35,#1a1a4e);border-radius:8px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-size:2.5em;cursor:pointer;transition:background .2s}
+.video-thumb:hover{background:linear-gradient(135deg,#1a1a4e,#2a1a4e)}
+/* TASK ITEM */
+.task-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center}
+.task-item .ti-info h4{font-size:.88em}
+.task-item .ti-info p{font-size:.76em;color:#888;margin-top:2px}
+.task-item .ti-reward{font-size:.9em;font-weight:700;color:#00e676;text-align:right}
+/* SECTION TITLE */
+.section-title{font-size:.88em;font-weight:700;color:#00d4ff;margin-bottom:12px;padding-bottom:7px;border-bottom:1px solid rgba(0,212,255,.2)}
+/* FOREX */
+.forex-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:13px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.forex-card .fpair{font-weight:700;font-size:.92em}
+.forex-card .fprice{font-size:1.2em;font-weight:800}
+.forex-card .fchg.up{color:#00e676;font-size:.8em}
+.forex-card .fchg.dn{color:#ff5252;font-size:.8em}
+/* COMING SOON */
+.coming-soon{text-align:center;padding:40px 20px;color:#666}
+.coming-soon .csicon{font-size:3em;margin-bottom:12px}
+.coming-soon h3{color:#aaa;margin-bottom:8px;font-size:1em}
+.coming-soon p{font-size:.84em;line-height:1.5}
+/* ACTIVATION SUCCESS */
+.act-success{background:#0a2e1a;border:2px solid #00e676;border-radius:12px;padding:16px;text-align:center;color:#00e676;font-weight:700;display:none;margin-top:12px;font-size:.95em;line-height:1.5}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+/* ADMIN ORANGE */
+.admin-brand{background:linear-gradient(135deg,#ff9800,#f44336);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+/* POST CARD */
+.post-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:14px;margin-bottom:10px}
+.post-card h4{color:#00d4ff;margin-bottom:6px;font-size:.92em}
+.post-card p{font-size:.84em;color:#ccc;line-height:1.5}
+.post-card .pdate{font-size:.73em;color:#555;margin-top:7px}
+/* AI Chat */
+.ai-chat-msg{padding:8px 12px;border-radius:8px;margin-bottom:8px;font-size:.86em;line-height:1.4}
+.ai-chat-msg.user{background:rgba(0,212,255,.1);text-align:right}
+.ai-chat-msg.bot{background:rgba(255,255,255,.04)}
+</style>
+</head>
+<body>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ===================== PAGE: REGISTER ===================== -->
+<div class="page active" id="pg-register">
+<div class="page-center">
+<div class="form-container">
+  <div class="logo">
+    <h1>NETLINK AGENCIES</h1>
+    <p>Create an account and start earning today</p>
+  </div>
+  <div id="reg-alert"></div>
+  <div class="card">
+    <div class="form-group"><label>Username</label><input type="text" id="reg-user" placeholder="Choose a username"></div>
+    <div class="form-group"><label>Email Address</label><input type="email" id="reg-email" placeholder="Enter valid email"></div>
+    <div class="form-group"><label>Phone Number</label><input type="tel" id="reg-phone" placeholder="e.g. 0712345678"></div>
+    <div class="form-group"><label>WhatsApp Number</label><input type="tel" id="reg-wa" placeholder="e.g. 0712345678"></div>
+    <div class="form-group"><label>Country</label>
+      <select id="reg-country">
+        <option value="">-- Select Country --</option>
+        <option>Kenya</option><option>Uganda</option><option>Tanzania</option><option>Rwanda</option>
+        <option>Ethiopia</option><option>Nigeria</option><option>Ghana</option><option>South Africa</option>
+        <option>Egypt</option><option>United States</option><option>United Kingdom</option>
+        <option>India</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Password</label><input type="password" id="reg-pass" placeholder="Create a strong password"></div>
+    <div class="form-group"><label>Confirm Password</label><input type="password" id="reg-conf" placeholder="Repeat your password"></div>
+    <button class="btn" onclick="doRegister()">Create Account</button>
+  </div>
+  <p class="link-text">Already have an account? <a onclick="showPg('pg-login')">Log In Here</a></p>
+  <p class="link-text" style="margin-top:6px"><a onclick="showPg('pg-admin-login')">Admin Login</a></p>
+</div>
+</div>
+</div>
+
+<!-- ===================== PAGE: LOGIN ===================== -->
+<div class="page" id="pg-login">
+<div class="page-center">
+<div class="form-container">
+  <div class="logo">
+    <h1>NETLINK AGENCIES</h1>
+    <p>Welcome back — log in to your account</p>
+  </div>
+  <div id="login-alert"></div>
+  <div class="card">
+    <div class="form-group"><label>Username</label><input type="text" id="login-user" placeholder="Enter username"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="login-pass" placeholder="Enter password"></div>
+    <button class="btn" onclick="doLogin()">Log In</button>
+    <p class="link-text" style="margin-top:12px"><a onclick="showPg('pg-forgot')">Forgot Password?</a></p>
+  </div>
+  <p class="link-text">Don't have an account? <a onclick="showPg('pg-register')">Register Free</a></p>
+  <p class="link-text" style="margin-top:6px"><a onclick="showPg('pg-admin-login')">Admin Login</a></p>
+</div>
+</div>
+</div>
+
+<!-- ===================== PAGE: FORGOT PASSWORD ===================== -->
+<div class="page" id="pg-forgot">
+<div class="page-center">
+<div class="form-container">
+  <div class="logo">
+    <h1>NETLINK AGENCIES</h1>
+    <p>Reset your password</p>
+  </div>
+  <div id="forgot-alert"></div>
+  <div class="card">
+    <p style="color:#888;font-size:.88em;margin-bottom:14px">Enter your registered email address below to receive password reset instructions.</p>
+    <div class="form-group"><label>Email Address</label><input type="email" id="forgot-email" placeholder="Enter your email"></div>
+    <button class="btn" onclick="doForgot()">Send Reset Instructions</button>
+  </div>
+  <p class="link-text"><a onclick="showPg('pg-login')">← Back to Login</a></p>
+</div>
+</div>
+</div>
+
+<!-- ===================== PAGE: ACTIVATION ===================== -->
+<div class="page" id="pg-activation">
+<div style="max-width:500px;margin:0 auto;padding:24px 16px 50px">
+  <div class="logo">
+    <h1>NETLINK AGENCIES</h1>
+    <p>Account Activation Required</p>
+  </div>
+  <div class="alert info">Your account needs to be activated. Pay <strong>KSh 150</strong> using any method below, then submit your transaction ID.</div>
+  <div class="tabs">
+    <div class="tab active" id="tab-mpesa" onclick="pickTab('mpesa')">📱 M-PESA</div>
+    <div class="tab" id="tab-paypal" onclick="pickTab('paypal')">💳 PayPal</div>
+  </div>
+  <!-- M-PESA -->
+  <div id="sec-mpesa" class="card">
+    <h3 style="color:#00e676;margin-bottom:14px">📱 M-PESA Payment Steps</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-text"><h4>Open M-PESA Menu</h4><p>Go to Safaricom M-PESA on your phone.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><h4>Select "Send Money"</h4><p>Choose the Send Money option.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text"><h4>Enter Phone Number</h4><p>Send to: <strong style="color:#00d4ff">+254706494401</strong></p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text"><h4>Enter Amount</h4><p>Amount: <strong style="color:#00e676">KSh 150</strong></p></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-text"><h4>Confirm Name</h4><p>Name must show: <strong style="color:#ffd600">MARY MPURUNGA</strong></p></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-text"><h4>Enter PIN & Confirm</h4><p>Enter your M-PESA PIN and complete the payment.</p></div></div>
+    <div class="step"><div class="step-num">7</div><div class="step-text"><h4>Copy Transaction Code</h4><p>Copy the M-PESA code from the SMS confirmation (e.g. <em style="color:#aaa">QHX3K12890</em>) and enter it below.</p></div></div>
+  </div>
+  <!-- PAYPAL -->
+  <div id="sec-paypal" class="card" style="display:none">
+    <h3 style="color:#00aaff;margin-bottom:14px">💳 PayPal Payment Steps</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-text"><h4>Open PayPal</h4><p>Go to <strong style="color:#00d4ff">paypal.com</strong> or open the PayPal app.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><h4>Click "Send Money"</h4><p>Select Send Money or Pay option.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text"><h4>Enter Email</h4><p>Send to: <strong style="color:#00d4ff">marympurunga@gmail.com</strong></p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text"><h4>Enter Amount</h4><p>Approx. <strong style="color:#00e676">$1.15 USD</strong> (equivalent to KSh 150)</p></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-text"><h4>Add Note</h4><p>In the note field type your <strong>username</strong>.</p></div></div>
+    <div class="step"><div class="step-num">6</div><div class="step-text"><h4>Complete & Copy Transaction ID</h4><p>Finish the payment and copy the PayPal Transaction ID from the confirmation email.</p></div></div>
+  </div>
+  <!-- Submit TXN -->
+  <div class="card">
+    <div id="act-alert"></div>
+    <div class="form-group"><label>Enter Transaction ID</label><input type="text" id="act-txn" placeholder="e.g. QHX3K12890 or PayPal TXN ID"></div>
+    <button class="btn" onclick="doActivation()">Submit for Activation</button>
+  </div>
+  <div class="act-success" id="act-success">
+    Dear User, we have received your request.<br>Wait <strong>1–2 minutes</strong> to get your account activated. ✓
+  </div>
+  <p class="link-text" style="margin-top:16px"><a onclick="doLogout()">← Logout</a></p>
+</div>
+</div>
+
+<!-- ===================== PAGE: DASHBOARD ===================== -->
+<div class="page" id="pg-dashboard">
+<div class="dashboard-wrap">
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <h2>NETLINK AGENCIES</h2>
+    <p id="sb-username">Loading...</p>
+  </div>
+  <div class="sidebar-menu">
+    <div class="menu-item active-menu" onclick="showSub('home')"><span class="menu-icon">🏠</span>Home</div>
+    <div class="menu-item" onclick="showSub('etournaments')"><span class="menu-icon">🏆</span>E-Tournaments</div>
+    <div class="menu-item" onclick="showSub('karibu')"><span class="menu-icon">🎁</span>Karibu Bonus</div>
+    <div class="menu-item" onclick="showSub('pay-clients')"><span class="menu-icon">💸</span>Pay for Clients</div>
+    <div class="menu-item" onclick="showSub('deposit')"><span class="menu-icon">💰</span>Deposit</div>
+    <div class="menu-item" onclick="showSub('mentorship')"><span class="menu-icon">📚</span>Mentorship</div>
+    <div class="menu-item" onclick="showSub('company-ads')"><span class="menu-icon">📣</span>Company Advertisement</div>
+    <div class="menu-item" onclick="showSub('betting')"><span class="menu-icon">⚽</span>Betting Prediction</div>
+    <div class="menu-item" onclick="showSub('cashout')"><span class="menu-icon">🏧</span>Cashout</div>
+    <div class="menu-item" onclick="showSub('articles')"><span class="menu-icon">📰</span>Articles</div>
+    <div class="menu-item" onclick="showSub('view-ads')"><span class="menu-icon">👁</span>View Ads</div>
+    <div class="menu-item" onclick="showSub('tiktok')"><span class="menu-icon">🎵</span>TikTok Videos</div>
+    <div class="menu-item" onclick="showSub('instagram')"><span class="menu-icon">📸</span>Instagram Videos</div>
+    <div class="menu-item" onclick="showSub('youtube')"><span class="menu-icon">▶</span>YouTube Videos</div>
+    <div class="menu-item" onclick="toggleSM('sm-withdraw')"><span class="menu-icon">💳</span>Withdraw Tasks ▾</div>
+    <div class="submenu" id="sm-withdraw">
+      <div class="menu-item" onclick="showSub('wd-videos')"><span class="menu-icon">🎬</span>Withdraw Videos</div>
+      <div class="menu-item" onclick="showSub('wd-surveys')"><span class="menu-icon">📋</span>Withdraw Surveys</div>
+      <div class="menu-item" onclick="showSub('wd-trivia')"><span class="menu-icon">🧠</span>Withdraw Trivia</div>
+      <div class="menu-item" onclick="showSub('wd-number')"><span class="menu-icon">🔢</span>Withdraw Number Game</div>
+    </div>
+    <div class="menu-item" onclick="toggleSM('sm-downlines')"><span class="menu-icon">👥</span>Downlines ▾</div>
+    <div class="submenu" id="sm-downlines">
+      <div class="menu-item" onclick="showSub('dl1')"><span class="menu-icon">1️⃣</span>Level 1</div>
+      <div class="menu-item" onclick="showSub('dl2')"><span class="menu-icon">2️⃣</span>Level 2</div>
+      <div class="menu-item" onclick="showSub('dl3')"><span class="menu-icon">3️⃣</span>Level 3</div>
+    </div>
+    <div class="menu-item" onclick="showSub('wa-adverts')"><span class="menu-icon">📲</span>WhatsApp Adverts</div>
+    <div class="menu-item" onclick="showSub('forex')"><span class="menu-icon">📈</span>Forex Trading</div>
+    <div class="menu-item" onclick="showSub('trivia')"><span class="menu-icon">🧩</span>Trivia Quiz</div>
+    <div class="menu-item" onclick="showSub('survey')"><span class="menu-icon">📊</span>Daily Survey</div>
+    <div class="menu-item" onclick="showSub('math')"><span class="menu-icon">🔢</span>Math Quiz</div>
+    <div class="menu-item" onclick="showSub('numgame')"><span class="menu-icon">🎲</span>Number Game</div>
+    <div class="menu-item" onclick="showSub('community')"><span class="menu-icon">👫</span>Community</div>
+    <div class="menu-item" onclick="showSub('help')"><span class="menu-icon">🆘</span>Get Help</div>
+    <div class="menu-item" onclick="showSub('timetable')"><span class="menu-icon">🗓</span>Time Table</div>
+    <div class="menu-item" onclick="showSub('profile')"><span class="menu-icon">👤</span>Profile</div>
+    <div class="menu-item" style="color:#ff5252;margin-top:8px" onclick="doLogout()"><span class="menu-icon">🚪</span>Logout</div>
+  </div>
+</div>
+
+<!-- Main content -->
+<div class="main-content" id="main-content">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="hamburger" onclick="toggleSidebar()">☰</span>
+      <span class="topbar-title" id="topbar-title">Dashboard</span>
+    </div>
+    <div class="topbar-user" id="topbar-user"></div>
+  </div>
+
+  <!-- HOME -->
+  <div class="sub-page active" id="sub-home">
+    <div class="welcome-box">
+      <h2 id="welcome-txt"></h2>
+      <p>Welcome to NETLINK AGENCIES — Keep earning!</p>
+    </div>
+    <div class="main-boxes">
+      <div class="main-box expenses">
+        <div class="box-lbl">💸 Expenses</div>
+        <div class="box-val" id="bx-expenses">KSh 0</div>
+        <div style="font-size:.72em;opacity:.8;margin-top:3px">Activation Fee</div>
+      </div>
+      <div class="main-box earnings">
+        <div class="box-lbl">💹 Total Earnings</div>
+        <div class="box-val" id="bx-earnings">KSh 0</div>
+        <div style="font-size:.72em;opacity:.8;margin-top:3px">All Tasks</div>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="slbl">💰 Account Balance</div>
+        <div class="sval" id="st-balance">KSh 0</div>
+        <div style="font-size:.7em;color:#555;margin-top:2px">Referrals only</div>
+      </div>
+      <div class="stat-box sg">
+        <div class="slbl">📤 Withdrawn Amount</div>
+        <div class="sval" id="st-withdrawn">KSh 0</div>
+      </div>
+      <div class="stat-box sr">
+        <div class="slbl">⏳ Pending Amount</div>
+        <div class="sval" id="st-pending">KSh 0</div>
+      </div>
+      <div class="stat-box so">
+        <div class="slbl">🎖 Weekly Bonus</div>
+        <div class="sval" id="st-weekly">KSh 0</div>
+        <div style="font-size:.7em;color:#555;margin-top:2px">Invite 50/week</div>
+      </div>
+      <div class="stat-box sp full">
+        <div class="slbl">🌟 Karibu Bonus</div>
+        <div class="sval" id="st-karibu">KSh 0</div>
+        <div style="font-size:.7em;color:#555;margin-top:2px">First 20 referrals = KSh 100</div>
+      </div>
+    </div>
+    <div class="ref-section">
+      <h3>🔗 Your Referral Link</h3>
+      <div class="ref-box" id="ref-link-display">Loading...</div>
+      <div class="share-btns">
+        <button class="sbtn copy" onclick="copyRef()">📋 Copy</button>
+        <button class="sbtn wa" onclick="shareWA()">📱 WhatsApp</button>
+        <button class="sbtn fb" onclick="shareFB()">📘 Facebook</button>
+        <button class="sbtn tg" onclick="shareTG()">✈️ Telegram</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- E-TOURNAMENTS -->
+  <div class="sub-page" id="sub-etournaments">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🏆 E-Tournaments</h2></div>
+    <div class="coming-soon"><div class="csicon">🏆</div><h3>E-Tournaments</h3><p>Online gaming tournaments and competitions will be available here soon. Stay tuned!</p></div>
+  </div>
+
+  <!-- KARIBU BONUS -->
+  <div class="sub-page" id="sub-karibu">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🎁 Karibu Bonus</h2></div>
+    <div class="card">
+      <h3 style="color:#ffd600;margin-bottom:12px">🌟 How to Earn Karibu Bonus</h3>
+      <p style="color:#aaa;font-size:.86em;margin-bottom:14px;line-height:1.5">Invite your first <strong style="color:#fff">20 people</strong> using your referral link and automatically earn <strong style="color:#00e676">KSh 100</strong> Karibu Bonus!</p>
+      <div class="info-row"><span class="ikey">Your Referrals</span><span class="ival" id="karibu-refs">0 / 20</span></div>
+      <div class="info-row"><span class="ikey">Karibu Bonus</span><span class="ival">KSh 100</span></div>
+      <div class="info-row"><span class="ikey">Status</span><span class="ival" id="karibu-status">Not earned yet</span></div>
+      <br>
+      <button class="btn" id="karibu-btn" onclick="collectKaribu()" disabled>Collect KSh 100 Bonus</button>
+    </div>
+  </div>
+
+  <!-- PAY FOR CLIENTS -->
+  <div class="sub-page" id="sub-pay-clients">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>💸 Pay for Clients</h2></div>
+    <div class="coming-soon"><div class="csicon">💸</div><h3>Pay for Clients</h3><p>Pay activation fees on behalf of your clients. This feature is coming soon!</p></div>
+  </div>
+
+  <!-- DEPOSIT -->
+  <div class="sub-page" id="sub-deposit">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>💰 Deposit</h2></div>
+    <div id="dep-alert"></div>
+    <div class="card">
+      <h3 style="color:#00d4ff;margin-bottom:10px">Make a Deposit</h3>
+      <p style="color:#888;font-size:.84em;margin-bottom:14px;line-height:1.5">Send via M-PESA to <strong style="color:#fff">+254706494401 (MARY MPURUNGA)</strong> or PayPal to <strong style="color:#fff">marympurunga@gmail.com</strong>, then submit below.</p>
+      <div class="form-group"><label>Deposit Amount (KSh)</label><input type="number" id="dep-amount" placeholder="Enter amount"></div>
+      <div class="form-group"><label>Transaction ID</label><input type="text" id="dep-txn" placeholder="Enter transaction ID"></div>
+      <button class="btn" onclick="doDeposit()">Submit Deposit</button>
+    </div>
+  </div>
+
+  <!-- MENTORSHIP -->
+  <div class="sub-page" id="sub-mentorship">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>📚 Mentorship</h2></div>
+    <div class="coming-soon"><div class="csicon">📚</div><h3>Mentorship Program</h3><p>Online training sessions and mentorship materials will be available here. Check back soon!</p></div>
+  </div>
+
+  <!-- COMPANY ADS -->
+  <div class="sub-page" id="sub-company-ads">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>📣 Company Advertisement</h2></div>
+    <div id="company-ads-list"><div class="coming-soon"><div class="csicon">📣</div><h3>No Advertisements Yet</h3><p>Company advertisements will appear here.</p></div></div>
+  </div>
+
+  <!-- BETTING -->
+  <div class="sub-page" id="sub-betting">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>⚽ Betting Prediction</h2></div>
+    <div class="coming-soon"><div class="csicon">⚽</div><h3>Betting Predictions</h3><p>Daily football and sports predictions will be posted here. Follow our community for updates!</p></div>
+  </div>
+
+  <!-- CASHOUT -->
+  <div class="sub-page" id="sub-cashout">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🏧 Cashout</h2></div>
+    <div id="cashout-alert"></div>
+    <div class="card">
+      <h3 style="color:#00d4ff;margin-bottom:10px">Withdraw Account Balance</h3>
+      <p style="color:#888;font-size:.84em;margin-bottom:14px">Withdrawals are sent to your M-PESA number. Account Balance is from referrals only.</p>
+      <div class="info-row"><span class="ikey">Available Balance</span><span class="ival" id="co-balance">KSh 0</span></div>
+      <br>
+      <div class="form-group"><label>Amount to Withdraw (KSh)</label><input type="number" id="co-amount" placeholder="Enter amount"></div>
+      <div class="form-group"><label>M-PESA Number</label><input type="tel" id="co-phone" placeholder="e.g. 0712345678"></div>
+      <button class="btn" onclick="doCashout()">Request Withdrawal</button>
+    </div>
+  </div>
+
+  <!-- ARTICLES -->
+  <div class="sub-page" id="sub-articles">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>📰 Articles</h2></div>
+    <div class="coming-soon"><div class="csicon">📰</div><h3>Articles & Tips</h3><p>Educational articles and earning tips will be posted here. Check back soon!</p></div>
+  </div>
+
+  <!-- VIEW ADS -->
+  <div class="sub-page" id="sub-view-ads">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>👁 View Ads</h2></div>
+    <div class="coming-soon"><div class="csicon">👁</div><h3>View Advertisements</h3><p>Paid ads to watch will appear here. Check back soon!</p></div>
+  </div>
+
+  <!-- TIKTOK VIDEOS -->
+  <div class="sub-page" id="sub-tiktok">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🎵 TikTok Videos</h2></div>
+    <div class="alert info">3 videos per day · KSh 15 per video</div>
+    <div id="tiktok-list"></div>
+  </div>
+
+  <!-- INSTAGRAM VIDEOS -->
+  <div class="sub-page" id="sub-instagram">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>📸 Instagram Videos</h2></div>
+    <div class="alert info">3 videos per day · KSh 20 per video</div>
+    <div id="instagram-list"></div>
+  </div>
+
+  <!-- YOUTUBE VIDEOS -->
+  <div class="sub-page" id="sub-youtube">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>▶ YouTube Videos</h2></div>
+    <div class="alert info">3 videos per day · KSh 25 per video</div>
+    <div id="youtube-list"></div>
+  </div>
+
+  <!-- WD VIDEOS -->
+  <div class="sub-page" id="sub-wd-videos">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🎬 Withdraw Video Earnings</h2></div>
+    <div id="wdv-alert"></div>
+    <div class="card">
+      <div class="info-row"><span class="ikey">TikTok Earnings</span><span class="ival" id="wdv-tiktok">KSh 0</span></div>
+      <div class="info-row"><span class="ikey">Instagram Earnings</span><span class="ival" id="wdv-insta">KSh 0</span></div>
+      <div class="info-row"><span class="ikey">YouTube Earnings</span><span class="ival" id="wdv-yt">KSh 0</span></div>
+      <div class="info-row"><span class="ikey" style="color:#fff;font-weight:700">Total</span><span class="ival" style="color:#00e676" id="wdv-total">KSh 0</span></div>
+      <br><button class="btn" onclick="doWdVideos()">Move to Total Earnings</button>
+    </div>
+  </div>
+
+  <!-- WD SURVEYS -->
+  <div class="sub-page" id="sub-wd-surveys">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>📋 Withdraw Survey Earnings</h2></div>
+    <div id="wds-alert"></div>
+    <div class="card">
+      <div class="info-row"><span class="ikey">Survey Earnings</span><span class="ival" id="wds-total">KSh 0</span></div>
+      <br><button class="btn" onclick="doWdSurveys()">Move to Total Earnings</button>
+    </div>
+  </div>
+
+  <!-- WD TRIVIA -->
+  <div class="sub-page" id="sub-wd-trivia">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🧠 Withdraw Trivia Earnings</h2></div>
+    <div id="wdt-alert"></div>
+    <div class="card">
+      <div class="info-row"><span class="ikey">Trivia Earnings</span><span class="ival" id="wdt-total">KSh 0</span></div>
+      <br><button class="btn" onclick="doWdTrivia()">Move to Total Earnings</button>
+    </div>
+  </div>
+
+  <!-- WD NUMBER -->
+  <div class="sub-page" id="sub-wd-number">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🔢 Withdraw Number Game</h2></div>
+    <div id="wdn-alert"></div>
+    <div class="card">
+      <div class="info-row"><span class="ikey">Number Game Earnings</span><span class="ival" id="wdn-total">KSh 0</span></div>
+      <br><button class="btn" onclick="doWdNumber()">Move to Total Earnings</button>
+    </div>
+  </div>
+
+  <!-- DOWNLINE 1 -->
+  <div class="sub-page" id="sub-dl1">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>1️⃣ Level 1 Downlines</h2></div>
+    <div id="dl1-list"><p style="color:#666;text-align:center;padding:30px;font-size:.88em">No Level 1 downlines yet. Share your referral link!</p></div>
+  </div>
+
+  <!-- DOWNLINE 2 -->
+  <div class="sub-page" id="sub-dl2">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>2️⃣ Level 2 Downlines</h2></div>
+    <div id="dl2-list"><p style="color:#666;text-align:center;padding:30px;font-size:.88em">No Level 2 downlines yet.</p></div>
+  </div>
+
+  <!-- DOWNLINE 3 -->
+  <div class="sub-page" id="sub-dl3">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>3️⃣ Level 3 Downlines</h2></div>
+    <div id="dl3-list"><p style="color:#666;text-align:center;padding:30px;font-size:.88em">No Level 3 downlines yet.</p></div>
+  </div>
+
+  <!-- WHATSAPP ADVERTS -->
+  <div class="sub-page" id="sub-wa-adverts">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>📲 WhatsApp Adverts</h2></div>
+    <div class="alert info">Post 1 picture per week to your WhatsApp status. Earn KSh 1 per viewer who sees it.</div>
+    <div class="coming-soon"><div class="csicon">📲</div><h3>No Active Adverts</h3><p>Weekly advert images will appear here. Post to your WhatsApp status, then submit your views count.</p></div>
+  </div>
+
+  <!-- FOREX -->
+  <div class="sub-page" id="sub-forex">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>📈 Forex Trading</h2></div>
+    <div class="alert info">Live market rates (updated on page load)</div>
+    <div class="forex-card"><div><div class="fpair">EUR / USD</div></div><div style="text-align:right"><div class="fprice" style="color:#00e676" id="fx1">1.0847</div><div class="fchg up" id="fx1c">▲ +0.0023 (+0.21%)</div></div></div>
+    <div class="forex-card"><div><div class="fpair">GBP / USD</div></div><div style="text-align:right"><div class="fprice" style="color:#ff5252" id="fx2">1.2634</div><div class="fchg dn" id="fx2c">▼ -0.0041 (-0.32%)</div></div></div>
+    <div class="forex-card"><div><div class="fpair">USD / KES</div></div><div style="text-align:right"><div class="fprice" style="color:#00e676" id="fx3">130.45</div><div class="fchg up" id="fx3c">▲ +0.85 (+0.65%)</div></div></div>
+    <div class="forex-card"><div><div class="fpair">BTC / USD</div></div><div style="text-align:right"><div class="fprice" style="color:#ffd600" id="fx4">67,840</div><div class="fchg up" id="fx4c">▲ +1,250 (+1.87%)</div></div></div>
+    <div class="coming-soon" style="padding:20px 0"><p>Full trading signals and charts coming soon. Follow the Community for live tips!</p></div>
+  </div>
+
+  <!-- TRIVIA QUIZ -->
+  <div class="sub-page" id="sub-trivia">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🧩 Trivia Quiz</h2></div>
+    <div class="alert info">6 quizzes per week · KSh 5 per correct answer</div>
+    <div id="trivia-list"></div>
+  </div>
+
+  <!-- DAILY SURVEY -->
+  <div class="sub-page" id="sub-survey">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>📊 Daily Survey</h2></div>
+    <div class="alert info">Daily survey · KSh 5 per correct answer</div>
+    <div id="survey-list"></div>
+  </div>
+
+  <!-- MATH QUIZ -->
+  <div class="sub-page" id="sub-math">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🔢 Math Quiz</h2></div>
+    <div class="alert info">6 math quizzes per week · KSh 10 per correct answer</div>
+    <div id="math-list"></div>
+  </div>
+
+  <!-- NUMBER GAME -->
+  <div class="sub-page" id="sub-numgame">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🎲 Number Game</h2></div>
+    <div class="alert info">Guess the correct number (1–10) and earn KSh 5!</div>
+    <div class="card">
+      <h3 style="color:#00d4ff;margin-bottom:10px">Pick a number between 1 and 10</h3>
+      <div id="ng-result" style="margin-bottom:12px"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px" id="ng-buttons"></div>
+    </div>
+  </div>
+
+  <!-- COMMUNITY -->
+  <div class="sub-page" id="sub-community">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>👫 Community</h2></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <a id="wa-group-link" href="https://wa.me/254706494401" target="_blank"><button class="btn btn-whatsapp" style="font-size:.82em">📱 WhatsApp Group</button></a>
+      <a id="tg-chan-link" href="https://t.me/Mentorfai" target="_blank"><button class="btn btn-telegram" style="font-size:.82em">✈️ Telegram Channel</button></a>
+    </div>
+    <div class="section-title">📢 Latest Posts</div>
+    <div id="community-list"><p style="color:#666;text-align:center;padding:25px;font-size:.86em">No posts yet. Check back soon!</p></div>
+  </div>
+
+  <!-- GET HELP -->
+  <div class="sub-page" id="sub-help">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🆘 Get Help</h2></div>
+    <div class="card">
+      <h3 style="color:#00d4ff;margin-bottom:14px">Contact Support Team</h3>
+      <p style="color:#888;font-size:.86em;margin-bottom:16px;line-height:1.5">Our support team is ready to help you. Reach out via WhatsApp or Telegram.</p>
+      <div style="margin-bottom:12px">
+        <p style="color:#aaa;font-size:.82em;margin-bottom:7px">📱 WhatsApp Support:</p>
+        <a href="https://wa.me/254706494401" target="_blank"><button class="btn btn-whatsapp">Chat on WhatsApp: +254706494401</button></a>
+      </div>
+      <div>
+        <p style="color:#aaa;font-size:.82em;margin-bottom:7px">✈️ Telegram Support:</p>
+        <a href="https://t.me/Mentorfai" target="_blank"><button class="btn btn-telegram">Telegram: t.me/Mentorfai</button></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMETABLE -->
+  <div class="sub-page" id="sub-timetable">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>🗓 Time Table</h2></div>
+    <div class="card">
+      <div class="section-title">Daily Tasks Schedule</div>
+      <div class="task-item"><div class="ti-info"><h4>🎵 TikTok Videos</h4><p>Morning — 3 videos max per day</p></div><div class="ti-reward">KSh 45/day</div></div>
+      <div class="task-item"><div class="ti-info"><h4>📸 Instagram Videos</h4><p>Morning — 3 videos max per day</p></div><div class="ti-reward">KSh 60/day</div></div>
+      <div class="task-item"><div class="ti-info"><h4>▶ YouTube Videos</h4><p>Afternoon — 3 videos max per day</p></div><div class="ti-reward">KSh 75/day</div></div>
+      <div class="task-item"><div class="ti-info"><h4>📊 Daily Survey</h4><p>Afternoon — once per day</p></div><div class="ti-reward">KSh 5+</div></div>
+      <div class="task-item"><div class="ti-info"><h4>👁 View Ads</h4><p>Evening — available ads</p></div><div class="ti-reward">Varies</div></div>
+      <div class="task-item"><div class="ti-info"><h4>🧩 Trivia Quiz</h4><p>Weekly — 6 quizzes per week</p></div><div class="ti-reward">KSh 5 each</div></div>
+      <div class="task-item"><div class="ti-info"><h4>🔢 Math Quiz</h4><p>Weekly — 6 quizzes per week</p></div><div class="ti-reward">KSh 10 each</div></div>
+      <div class="task-item"><div class="ti-info"><h4>🔗 Referrals</h4><p>Daily — share your referral link</p></div><div class="ti-reward">KSh 50 each</div></div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="sub-page" id="sub-profile">
+    <div class="sub-page-header"><button class="back-btn" onclick="showSub('home')">←</button><h2>👤 My Profile</h2></div>
+    <div class="card"><div class="section-title">Account Information</div><div id="profile-info"></div></div>
+  </div>
+
+</div><!-- /main-content -->
+</div><!-- /dashboard-wrap -->
+</div><!-- /pg-dashboard -->
+
+<!-- ===================== PAGE: ADMIN LOGIN ===================== -->
+<div class="page" id="pg-admin-login">
+<div class="page-center">
+<div class="form-container">
+  <div class="logo">
+    <h1>NETLINK AGENCIES</h1>
+    <p style="color:#ff9800">Admin Panel Access</p>
+  </div>
+  <div id="admin-login-alert"></div>
+  <div class="card">
+    <div class="form-group"><label>Admin Username</label><input type="text" id="al-user" placeholder="Enter admin username"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="al-pass" placeholder="Enter admin password"></div>
+    <button class="btn btn-orange" onclick="doAdminLogin()">Login as Admin</button>
+  </div>
+  <p class="link-text"><a onclick="showPg('pg-login')">← Back to User Login</a></p>
+</div>
+</div>
+</div>
+
+<!-- ===================== PAGE: ADMIN DASHBOARD ===================== -->
+<div class="page" id="pg-admin">
+<div class="dashboard-wrap">
+
+<!-- Admin Sidebar -->
+<div class="sidebar" id="admin-sidebar">
+  <div class="sidebar-logo">
+    <h2 class="admin-brand" style="-webkit-text-fill-color:#ff9800;background:none">ADMIN PANEL</h2>
+    <p>NETLINK AGENCIES</p>
+  </div>
+  <div class="sidebar-menu">
+    <div class="menu-item active-menu" onclick="showAdminSub('dashboard')"><span class="menu-icon">🏠</span>Home</div>
+    <div class="menu-item" onclick="showAdminSub('manage-users')"><span class="menu-icon">👥</span>Manage Users</div>
+    <div class="menu-item" onclick="showAdminSub('activations')"><span class="menu-icon">✅</span>Activation</div>
+    <div class="menu-item" onclick="showAdminSub('withdrawals')"><span class="menu-icon">💸</span>Withdraw</div>
+    <div class="menu-item" onclick="showAdminSub('deposits')"><span class="menu-icon">💰</span>Deposits</div>
+    <div class="menu-item" onclick="showAdminSub('add-admin')"><span class="menu-icon">➕</span>Add Admin Account</div>
+    <div class="menu-item" onclick="showAdminSub('my-agent')"><span class="menu-icon">🤖</span>My Agent (AI)</div>
+    <div class="menu-item" onclick="showAdminSub('set-telegram')"><span class="menu-icon">✈️</span>Add Telegram Link</div>
+    <div class="menu-item" onclick="showAdminSub('set-whatsapp')"><span class="menu-icon">📱</span>Add WhatsApp Link</div>
+    <div class="menu-item" onclick="showAdminSub('post')"><span class="menu-icon">📢</span>Post</div>
+    <div class="menu-item" onclick="showAdminSub('settings')"><span class="menu-icon">⚙️</span>Settings</div>
+    <div class="menu-item" style="color:#ff5252;margin-top:8px" onclick="doAdminLogout()"><span class="menu-icon">🚪</span>Logout</div>
+  </div>
+</div>
+
+<!-- Admin main -->
+<div class="main-content" id="admin-main-content">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="hamburger" onclick="toggleAdminSidebar()">☰</span>
+      <span class="topbar-title" style="color:#ff9800" id="admin-topbar-title">Admin Dashboard</span>
+    </div>
+    <div class="topbar-user" style="color:#ff9800">Admin</div>
+  </div>
+
+  <!-- ADMIN HOME -->
+  <div class="sub-page active" id="asub-dashboard">
+    <div class="admin-stat blue"><div class="albl">👥 Total Users</div><div class="aval" id="a-total">0</div><div style="font-size:.72em;opacity:.8">Active &amp; Inactive</div></div>
+    <div class="admin-stat green"><div class="albl">✅ Active Users</div><div class="aval" id="a-active">0</div></div>
+    <div class="admin-stat red"><div class="albl">💸 Pending Withdrawals</div><div class="aval" id="a-pend-wd">0</div></div>
+    <div class="admin-stat purple"><div class="albl">⏳ Pending Activations</div><div class="aval" id="a-pend-act">0</div></div>
+    <div class="admin-stat brown"><div class="albl">💰 Pending Deposits</div><div class="aval" id="a-pend-dep">0</div></div>
+  </div>
+
+  <!-- MANAGE USERS -->
+  <div class="sub-page" id="asub-manage-users">
+    <div class="sub-page-header"><button class="back-btn" onclick="showAdminSub('dashboard')">←</button><h2>👥 Manage Users</h2></div>
+    <div id="admin-user-list"><p style="color:#666;text-align:center;padding:30px;font-size:.88em">No users yet.</p></div>
+  </div>
+
+  <!-- USER INFO (drill-down) -->
+  <div class="sub-page" id="asub-user-info">
+    <div class="sub-page-header"><button class="back-btn" onclick="showAdminSub('manage-users')">←</button><h2>👤 User Info</h2></div>
+    <div id="admin-user-detail"></div>
+  </div>
+
+  <!-- ACTIVATIONS -->
+  <div class="sub-page" id="asub-activations">
+    <div class="sub-page-header"><button class="back-btn" onclick="showAdminSub('dashboard')">←</button><h2>✅ Pending Activations</h2></div>
+    <div id="act-list"><p style="color:#666;text-align:center;padding:30px;font-size:.88em">No pending activations.</p></div>
+  </div>
+
+  <!-- WITHDRAWALS -->
+  <div class="sub-page" id="asub-withdrawals">
+    <div class="sub-page-header"><button class="back-btn" onclick="showAdminSub('dashboard')">←</button><h2>💸 Pending Withdrawals</h2></div>
+    <div id="wd-list"><p style="color:#666;text-align:center;padding:30px;font-size:.88em">No pending withdrawals.</p></div>
+  </div>
+
+  <!-- DEPOSITS -->
+  <div class="sub-page" id="asub-deposits">
+    <div class="sub-page-header"><button class="back-btn" onclick="showAdminSub('dashboard')">←</button><h2>💰 Pending Deposits</h2></div>
+    <div id="dep-list"><p style="color:#666;text-align:center;padding:30px;font-size:.88em">No pending deposits.</p></div>
+  </div>
+
+  <!-- ADD ADMIN -->
+  <div class="sub-page" id="asub-add-admin">
+    <div class="sub-page-header"><button class="back-btn" onclick="showAdminSub('dashboard')">←</button><h2>➕ Add Admin Account</h2></div>
+    <div id="add-admin-alert"></div>
+    <div class="card">
+      <div class="form-group"><label>Admin Username</label><input type="text" id="na-user" placeholder="Enter username"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="na-pass" placeholder="Enter password"></div>
+      <button class="btn btn-orange" onclick="doAddAdmin()">Add Admin</button>
+    </div>
+    <div class="card" style="margin-top:14px"><div class="section-title">All Admins</div><div id="admin-list-view"></div></div>
+  </div>
+
+  <!-- MY AGENT -->
+  <div class="sub-page" id="asub-my-agent">
+    <div class="sub-page-header"><button class="back-btn" onclick="showAdminSub('dashboard')">←</button><h2>🤖 My Agent (AI Assistant)</h2></div>
+    <div class="alert info">Ask me anything about managing your NETLINK AGENCIES website. I will guide you!</div>
+    <div class="card" style="min-height:200px;max-height:340px;overflow-y:auto" id="ai-msgs">
+      <div class="ai-chat-msg bot">👋 <strong>Agent:</strong> Hello Admin! I'm your AI assistant. Ask me how to manage users, approve payments, post content, or anything about your website.</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <input type="text" id="ai-input" placeholder="Type your question..." style="flex:1;padding:11px;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;outline:none;font-size:.9em">
+      <button class="btn" style="width:auto;padding:11px 16px" onclick="sendAI()">Send</button>
+    </div>
+  </div>
+
+  <!-- SET TELEGRAM -->
+  <div class="sub-page" id="asub-set-telegram">
+    <div class="sub-page-header"><button class="back-btn" onclick="showAdminSub('dashboard')">←</button><h2>✈️ Telegram Channel Link</h2></div>
+    <div id="tg-set-alert"></div>
+    <div class="card">
+      <div class="form-group"><label>Telegram Link</label><input type="text" id="tg-link-in" placeholder="e.g. https://t.me/yourchannel"></div>
+      <button class="btn btn-telegram" onclick="saveTGLink()">Save Telegram Link</button>
+    </div>
+  </div>
+
+  <!-- SET WHATSAPP -->
+  <div class="sub-page" id="asub-set-whatsapp">
+    <div class="sub-page-header"><button class="back-btn" onclick="showAdminSub('dashboard')">←</button><h2>📱 WhatsApp Group Link</h2></div>
+    <div id="wa-set-alert"></div>
+    <div class="card">
+      <div class="form-group"><label>WhatsApp Group Link</label><input type="text" id="wa-link-in" placeholder="e.g. https://chat.whatsapp.com/..."></div>
+      <button class="btn btn-whatsapp" onclick="saveWALink()">Save WhatsApp Link</button>
+    </div>
+  </div>
+
+  <!-- POST -->
+  <div class="sub-page" id="asub-post">
+    <div class="sub-page-header"><button class="back-btn" onclick="showAdminSub('dashboard')">←</button><h2>📢 Post to Community</h2></div>
+    <div id="post-alert"></div>
+    <div class="card">
+      <div class="form-group"><label>Post Title</label><input type="text" id="post-title" placeholder="Enter title"></div>
+      <div class="form-group"><label>Post Content</label><textarea id="post-body" rows="5" placeholder="Write your post here..."></textarea></div>
+      <button class="btn" onclick="doPost()">Publish Post</button>
+    </div>
+    <div style="margin-top:16px"><div class="section-title">Published Posts</div><div id="posts-list"></div></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="sub-page" id="asub-settings">
+    <div class="sub-page-header"><button class="back-btn" onclick="showAdminSub('dashboard')">←</button><h2>⚙️ Settings</h2></div>
+    <div id="settings-alert"></div>
+    <div class="card">
+      <div class="section-title">Change Admin Password</div>
+      <div class="form-group"><label>New Password</label><input type="password" id="s-newpw" placeholder="Enter new password"></div>
+      <div class="form-group"><label>Confirm New Password</label><input type="password" id="s-confpw" placeholder="Confirm new password"></div>
+      <button class="btn btn-orange" onclick="doChangePW()">Update Password</button>
+    </div>
+  </div>
+
+</div><!-- /admin-main-content -->
+</div><!-- /dashboard-wrap -->
+</div><!-- /pg-admin -->
+
+<script>
+// ==================== DATA HELPERS ====================
+const S = {
+  get: k => JSON.parse(localStorage.getItem('nl_'+k) || 'null'),
+  set: (k,v) => localStorage.setItem('nl_'+k, JSON.stringify(v)),
+  def: (k,d) => { const v=S.get(k); return v!==null?v:d; }
+};
+const users = () => S.def('users',[]);
+const setUsers = u => S.set('users',u);
+const cu = () => S.get('cu');
+const setCU = u => S.set('cu',u);
+const acts = () => S.def('acts',[]);
+const setActs = v => S.set('acts',v);
+const wds = () => S.def('wds',[]);
+const setWds = v => S.set('wds',v);
+const deps = () => S.def('deps',[]);
+const setDeps = v => S.set('deps',v);
+const posts = () => S.def('posts',[]);
+const setPosts = v => S.set('posts',v);
+const admins = () => S.def('admins',[{u:'admin',p:'Cashlink2026'}]);
+const setAdmins = v => S.set('admins',v);
+const cfg = () => S.def('cfg',{tg:'https://t.me/Mentorfai',wa:'https://wa.me/254706494401'});
+const setCfg = v => S.set('cfg',v);
+
+function refreshUser(username){
+  const us=users(); const u=us.find(x=>x.u===username);
+  if(u && cu() && cu().u===username) setCU(u);
+  return u;
+}
+function updateUser(user){
+  const us=users(); const i=us.findIndex(x=>x.u===user.u);
+  if(i>-1){us[i]=user;setUsers(us);}
+  if(cu()&&cu().u===user.u) setCU(user);
+}
+
+// ==================== PAGE NAV ====================
+function showPg(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showSub(id){
+  document.querySelectorAll('#pg-dashboard .sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('sub-'+id).classList.add('active');
+  const titles={home:'Dashboard',etournaments:'E-Tournaments',karibu:'Karibu Bonus','pay-clients':'Pay for Clients',
+    deposit:'Deposit',mentorship:'Mentorship','company-ads':'Company Ads',betting:'Betting Prediction',
+    cashout:'Cashout',articles:'Articles','view-ads':'View Ads',tiktok:'TikTok Videos',
+    instagram:'Instagram Videos',youtube:'YouTube Videos','wd-videos':'Withdraw Videos',
+    'wd-surveys':'Withdraw Surveys','wd-trivia':'Withdraw Trivia','wd-number':'Withdraw Number Game',
+    dl1:'Level 1 Downlines',dl2:'Level 2 Downlines',dl3:'Level 3 Downlines',
+    'wa-adverts':'WhatsApp Adverts',forex:'Forex Trading',trivia:'Trivia Quiz',
+    survey:'Daily Survey',math:'Math Quiz',numgame:'Number Game',community:'Community',
+    help:'Get Help',timetable:'Time Table',profile:'Profile'};
+  document.getElementById('topbar-title').textContent = titles[id]||id;
+  closeSidebar();
+  if(id==='home') renderHome();
+  if(id==='profile') renderProfile();
+  if(id==='cashout') renderCashout();
+  if(id==='karibu') renderKaribu();
+  if(id==='tiktok') renderVideos('tiktok',15);
+  if(id==='instagram') renderVideos('instagram',20);
+  if(id==='youtube') renderVideos('youtube',25);
+  if(id==='trivia') renderTrivia();
+  if(id==='survey') renderSurvey();
+  if(id==='math') renderMath();
+  if(id==='numgame') renderNumGame();
+  if(id==='community') renderCommunity();
+  if(id==='company-ads') renderCompanyAds();
+  if(id==='wd-videos') renderWdVideos();
+  if(id==='wd-surveys'){const u=cu();document.getElementById('wds-total').textContent='KSh '+(u?u.surveyEarnings||0:0);}
+  if(id==='wd-trivia'){const u=cu();document.getElementById('wdt-total').textContent='KSh '+(u?u.triviaEarnings||0:0);}
+  if(id==='wd-number'){const u=cu();document.getElementById('wdn-total').textContent='KSh '+(u?u.ngEarnings||0:0);}
+  if(id==='dl1') renderDownlines(1);
+  if(id==='dl2') renderDownlines(2);
+  if(id==='dl3') renderDownlines(3);
+}
+function showAdminSub(id){
+  document.querySelectorAll('#pg-admin .sub-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('asub-'+id).classList.add('active');
+  const titles={dashboard:'Admin Dashboard','manage-users':'Manage Users',activations:'Activations',
+    withdrawals:'Withdrawals',deposits:'Deposits','add-admin':'Add Admin','my-agent':'AI Agent',
+    'set-telegram':'Telegram Link','set-whatsapp':'WhatsApp Link',post:'Post',settings:'Settings','user-info':'User Info'};
+  document.getElementById('admin-topbar-title').textContent=titles[id]||'Admin';
+  closeSidebar();
+  if(id==='dashboard') refreshAdminHome();
+  if(id==='manage-users') renderUserList();
+  if(id==='activations') renderActList();
+  if(id==='withdrawals') renderWdList();
+  if(id==='deposits') renderDepList();
+  if(id==='add-admin') renderAdminList();
+  if(id==='post') renderPostsList();
+}
+
+// ==================== SIDEBAR ====================
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('main-content').classList.toggle('shifted');
+  document.getElementById('overlay').classList.toggle('active');
+}
+function toggleAdminSidebar(){
+  document.getElementById('admin-sidebar').classList.toggle('open');
+  document.getElementById('admin-main-content').classList.toggle('shifted');
+  document.getElementById('overlay').classList.toggle('active');
+}
+function closeSidebar(){
+  document.querySelectorAll('.sidebar').forEach(s=>s.classList.remove('open'));
+  document.querySelectorAll('.main-content').forEach(m=>m.classList.remove('shifted'));
+  document.getElementById('overlay').classList.remove('active');
+}
+function toggleSM(id){document.getElementById(id).classList.toggle('open');}
+
+// ==================== ALERTS ====================
+function alert2(id,msg,type='error'){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.innerHTML=msg?`<div class="alert ${type}">${msg}</div>`:'';
+  if(msg)setTimeout(()=>{if(el)el.innerHTML='';},5000);
+}
+
+// ==================== REGISTER ====================
+function doRegister(){
+  const u=document.getElementById('reg-user').value.trim();
+  const e=document.getElementById('reg-email').value.trim();
+  const ph=document.getElementById('reg-phone').value.trim();
+  const wa=document.getElementById('reg-wa').value.trim();
+  const co=document.getElementById('reg-country').value;
+  const pw=document.getElementById('reg-pass').value;
+  const cf=document.getElementById('reg-conf').value;
+  if(!u||!e||!ph||!wa||!co||!pw||!cf) return alert2('reg-alert','Please fill in all fields.');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return alert2('reg-alert','Please enter a valid email address.');
+  if(pw!==cf) return alert2('reg-alert','Passwords do not match.');
+  if(pw.length<6) return alert2('reg-alert','Password must be at least 6 characters.');
+  const us=users();
+  if(us.find(x=>x.u.toLowerCase()===u.toLowerCase())) return alert2('reg-alert','Username already taken.');
+  if(us.find(x=>x.e.toLowerCase()===e.toLowerCase())) return alert2('reg-alert','Email already registered. Please log in.');
+  const params=new URLSearchParams(window.location.search);
+  const ref=params.get('ref')||'';
+  const nu={u,e,ph,wa,co,pw,active:false,reg:Date.now(),ref,
+    balance:0,earnings:0,withdrawn:0,pendingWd:0,weeklyBonus:0,karibuBonus:0,karibuClaimed:false,
+    referrals:0,tiktokE:0,instaE:0,ytE:0,surveyEarnings:0,triviaEarnings:0,ngEarnings:0,mathEarnings:0,
+    ttWatched:0,igWatched:0,ytWatched:0,lastTT:'',lastIG:'',lastYT:'',lastSurvey:''};
+  us.push(nu);setUsers(us);
+  if(ref){
+    const ru=us.find(x=>x.u===ref);
+    if(ru){
+      ru.referrals=(ru.referrals||0)+1;
+      ru.balance=(ru.balance||0)+50;
+      ru.earnings=(ru.earnings||0)+50;
+      if(ru.referrals===20&&!ru.karibuClaimed){ru.karibuBonus=(ru.karibuBonus||0)+100;}
+      if(ru.referrals%50===0){ru.weeklyBonus=(ru.weeklyBonus||0)+200;ru.earnings+=200;}
+      updateUser(ru);
+    }
+  }
+  setCU(nu);
+  showPg('pg-activation');
+}
+
+// ==================== LOGIN ====================
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const pw=document.getElementById('login-pass').value;
+  if(!u||!pw) return alert2('login-alert','Please fill in all fields.');
+  const us=users();
+  const user=us.find(x=>x.u.toLowerCase()===u.toLowerCase()&&x.pw===pw);
+  if(!user) return alert2('login-alert','Invalid username or password.');
+  setCU(user);
+  if(!user.active) showPg('pg-activation');
+  else loadDashboard(user);
+}
+function doForgot(){
+  const e=document.getElementById('forgot-email').value.trim();
+  if(!e) return alert2('forgot-alert','Please enter your email.');
+  const user=users().find(x=>x.e.toLowerCase()===e.toLowerCase());
+  if(!user) return alert2('forgot-alert','No account found with that email.');
+  alert2('forgot-alert',`Password reset instructions sent to ${e}. Contact support on WhatsApp: +254706494401`,'success');
+}
+function doLogout(){setCU(null);showPg('pg-login');}
+
+// ==================== ACTIVATION ====================
+function pickTab(t){
+  document.getElementById('tab-mpesa').classList.toggle('active',t==='mpesa');
+  document.getElementById('tab-paypal').classList.toggle('active',t==='paypal');
+  document.getElementById('sec-mpesa').style.display=t==='mpesa'?'block':'none';
+  document.getElementById('sec-paypal').style.display=t==='paypal'?'block':'none';
+}
+function doActivation(){
+  const txn=document.getElementById('act-txn').value.trim();
+  if(!txn) return alert2('act-alert','Please enter your transaction ID.');
+  const user=cu();if(!user)return;
+  const ar=acts();
+  if(ar.find(r=>r.txn===txn&&r.status==='pending')) return alert2('act-alert','This Transaction ID was already submitted.');
+  ar.push({uid:user.u,txn,at:Date.now(),status:'pending'});
+  setActs(ar);
+  document.getElementById('act-success').style.display='block';
+  document.getElementById('act-txn').value='';
+  alert2('act-alert','','success');
+}
+
+// ==================== DASHBOARD ====================
+function loadDashboard(user){
+  showPg('pg-dashboard');
+  document.getElementById('sb-username').textContent='👤 '+user.u;
+  document.getElementById('topbar-user').textContent=user.u;
+  const lnk=window.location.origin+window.location.pathname+'?ref='+user.u;
+  document.getElementById('ref-link-display').textContent=lnk;
+  const c=cfg();
+  document.getElementById('wa-group-link').href=c.wa||'https://wa.me/254706494401';
+  document.getElementById('tg-chan-link').href=c.tg||'https://t.me/Mentorfai';
+  showSub('home');
+  buildNumGameBtns();
+}
+function renderHome(){
+  const user=refreshUser(cu()&&cu().u)||cu();
+  if(!user)return;
+  const h=new Date().getHours();
+  const gr=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
+  document.getElementById('welcome-txt').textContent=`${gr}, ${user.u}! 👋`;
+  document.getElementById('bx-expenses').textContent=user.active?'KSh 150':'KSh 0';
+  document.getElementById('bx-earnings').textContent='KSh '+(user.earnings||0);
+  document.getElementById('st-balance').textContent='KSh '+(user.balance||0);
+  document.getElementById('st-withdrawn').textContent='KSh '+(user.withdrawn||0);
+  document.getElementById('st-pending').textContent='KSh '+(user.pendingWd||0);
+  document.getElementById('st-weekly').textContent='KSh '+(user.weeklyBonus||0);
+  document.getElementById('st-karibu').textContent='KSh '+(user.karibuBonus||0);
+}
+function renderProfile(){
+  const user=cu();if(!user)return;
+  document.getElementById('profile-info').innerHTML=`
+    <div class="info-row"><span class="ikey">Username</span><span class="ival">${user.u}</span></div>
+    <div class="info-row"><span class="ikey">Email</span><span class="ival">${user.e}</span></div>
+    <div class="info-row"><span class="ikey">Phone</span><span class="ival">${user.ph}</span></div>
+    <div class="info-row"><span class="ikey">WhatsApp</span><span class="ival">${user.wa}</span></div>
+    <div class="info-row"><span class="ikey">Country</span><span class="ival">${user.co}</span></div>
+    <div class="info-row"><span class="ikey">Status</span><span class="ival"><span class="badge ${user.active?'active':'inactive'}">${user.active?'Active':'Inactive'}</span></span></div>
+    <div class="info-row"><span class="ikey">Referrals</span><span class="ival">${user.referrals||0}</span></div>
+    <div class="info-row"><span class="ikey">Registered</span><span class="ival">${new Date(user.reg).toLocaleDateString()}</span></div>`;
+}
+function renderCashout(){
+  const user=refreshUser(cu()&&cu().u)||cu();if(!user)return;
+  document.getElementById('co-balance').textContent='KSh '+(user.balance||0);
+  if(user.ph)document.getElementById('co-phone').value=user.ph;
+}
+function renderKaribu(){
+  const user=refreshUser(cu()&&cu().u)||cu();if(!user)return;
+  const refs=user.referrals||0;
+  document.getElementById('karibu-refs').textContent=refs+' / 20';
+  if(user.karibuClaimed){document.getElementById('karibu-status').textContent='Already collected ✓';document.getElementById('karibu-btn').disabled=true;}
+  else if(refs>=20){document.getElementById('karibu-status').textContent='Ready to collect! 🎉';document.getElementById('karibu-btn').disabled=false;}
+  else{document.getElementById('karibu-status').textContent=(20-refs)+' more referrals needed';document.getElementById('karibu-btn').disabled=true;}
+}
+function collectKaribu(){
+  const user=refreshUser(cu().u);if(!user||user.karibuClaimed||user.referrals<20)return;
+  user.karibuBonus=(user.karibuBonus||0)+100;
+  user.balance=(user.balance||0)+100;
+  user.earnings=(user.earnings||0)+100;
+  user.karibuClaimed=true;
+  updateUser(user);renderKaribu();
+  alert('🎉 KSh 100 Karibu Bonus collected!');
+}
+
+// ==================== DEPOSIT / CASHOUT ====================
+function doDeposit(){
+  const amt=parseFloat(document.getElementById('dep-amount').value);
+  const txn=document.getElementById('dep-txn').value.trim();
+  if(!amt||amt<=0) return alert2('dep-alert','Enter a valid amount.');
+  if(!txn) return alert2('dep-alert','Enter your transaction ID.');
+  const user=cu();if(!user)return;
+  const dr=deps();
+  dr.push({uid:user.u,amt,txn,at:Date.now(),status:'pending'});
+  setDeps(dr);
+  alert2('dep-alert',`Deposit of KSh ${amt} submitted. Pending admin approval.`,'success');
+  document.getElementById('dep-amount').value='';
+  document.getElementById('dep-txn').value='';
+}
+function doCashout(){
+  const amt=parseFloat(document.getElementById('co-amount').value);
+  const ph=document.getElementById('co-phone').value.trim();
+  if(!amt||amt<=0) return alert2('cashout-alert','Enter a valid amount.');
+  if(!ph) return alert2('cashout-alert','Enter your M-PESA number.');
+  const user=refreshUser(cu().u);if(!user)return;
+  if(amt>(user.balance||0)) return alert2('cashout-alert','Insufficient balance.');
+  user.balance-=amt;
+  user.pendingWd=(user.pendingWd||0)+amt;
+  updateUser(user);
+  const wr=wds();
+  wr.push({uid:user.u,amt,ph,at:Date.now(),status:'pending'});
+  setWds(wr);
+  alert2('cashout-alert',`Withdrawal request of KSh ${amt} submitted. Pending admin approval.`,'success');
+  renderCashout();
+}
+
+// ==================== VIDEOS ====================
+const today=()=>new Date().toISOString().split('T')[0];
+function renderVideos(pl,reward){
+  const user=refreshUser(cu().u);if(!user)return;
+  const lastKey='last'+pl.charAt(0).toUpperCase()+pl.slice(1).replace('tiktok','TT').replace('instagram','IG').replace('youtube','YT');
+  const wKey=pl==='tiktok'?'ttWatched':pl==='instagram'?'igWatched':'ytWatched';
+  const lKey=pl==='tiktok'?'lastTT':pl==='instagram'?'lastIG':'lastYT';
+  if(user[lKey]!==today()){user[wKey]=0;user[lKey]=today();updateUser(user);}
+  const watched=user[wKey]||0;
+  const listId=pl+'-list';
+  let h='';
+  for(let i=1;i<=3;i++){
+    const done=i<=watched;
+    h+=`<div class="video-item">
+      <div class="video-thumb" onclick="${!done?`watchVid('${pl}',${i},${reward})`:''}">
+        ${done?'<span style="color:#00e676;font-size:1.5em">✅</span>':'<span>▶️</span>'}
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><h4 style="font-size:.88em">${pl.charAt(0).toUpperCase()+pl.slice(1)} Video ${i}</h4><p style="font-size:.76em;color:#888">Reward: KSh ${reward}</p></div>
+        <span style="font-size:.86em;font-weight:700;color:${done?'#00e676':'#aaa'}">${done?'Earned ✓':'Watch'}</span>
+      </div>
+    </div>`;
+  }
+  document.getElementById(listId).innerHTML=h;
+}
+function watchVid(pl,num,reward){
+  const user=refreshUser(cu().u);if(!user)return;
+  const wKey=pl==='tiktok'?'ttWatched':pl==='instagram'?'igWatched':'ytWatched';
+  const eKey=pl==='tiktok'?'tiktokE':pl==='instagram'?'instaE':'ytE';
+  if((user[wKey]||0)>=3){alert('You have already watched all 3 videos today!');return;}
+  if((user[wKey]||0)===num-1){
+    user[wKey]=num;
+    user[eKey]=(user[eKey]||0)+reward;
+    user.earnings=(user.earnings||0)+reward;
+    updateUser(user);
+  }
+  renderVideos(pl,reward);
+}
+
+// ==================== WITHDRAW EARNINGS ====================
+function renderWdVideos(){
+  const user=refreshUser(cu().u)||cu();if(!user)return;
+  const t=(user.tiktokE||0)+(user.instaE||0)+(user.ytE||0);
+  document.getElementById('wdv-tiktok').textContent='KSh '+(user.tiktokE||0);
+  document.getElementById('wdv-insta').textContent='KSh '+(user.instaE||0);
+  document.getElementById('wdv-yt').textContent='KSh '+(user.ytE||0);
+  document.getElementById('wdv-total').textContent='KSh '+t;
+}
+function doWdVideos(){
+  const user=refreshUser(cu().u);if(!user)return;
+  const t=(user.tiktokE||0)+(user.instaE||0)+(user.ytE||0);
+  if(!t) return alert2('wdv-alert','No video earnings to withdraw.');
+  user.tiktokE=0;user.instaE=0;user.ytE=0;
+  updateUser(user);renderWdVideos();
+  alert2('wdv-alert',`KSh ${t} moved to Total Earnings.`,'success');
+}
+function doWdSurveys(){
+  const user=refreshUser(cu().u);if(!user)return;
+  const t=user.surveyEarnings||0;
+  if(!t) return alert2('wds-alert','No survey earnings.');
+  user.surveyEarnings=0;updateUser(user);
+  document.getElementById('wds-total').textContent='KSh 0';
+  alert2('wds-alert',`KSh ${t} moved to Total Earnings.`,'success');
+}
+function doWdTrivia(){
+  const user=refreshUser(cu().u);if(!user)return;
+  const t=user.triviaEarnings||0;
+  if(!t) return alert2('wdt-alert','No trivia earnings.');
+  user.triviaEarnings=0;updateUser(user);
+  document.getElementById('wdt-total').textContent='KSh 0';
+  alert2('wdt-alert',`KSh ${t} moved to Total Earnings.`,'success');
+}
+function doWdNumber(){
+  const user=refreshUser(cu().u);if(!user)return;
+  const t=user.ngEarnings||0;
+  if(!t) return alert2('wdn-alert','No number game earnings.');
+  user.ngEarnings=0;updateUser(user);
+  document.getElementById('wdn-total').textContent='KSh 0';
+  alert2('wdn-alert',`KSh ${t} moved to Total Earnings.`,'success');
+}
+
+// ==================== REFERRAL ====================
+function copyRef(){
+  const lnk=document.getElementById('ref-link-display').textContent;
+  navigator.clipboard.writeText(lnk).then(()=>alert('Referral link copied!')).catch(()=>prompt('Copy link:',lnk));
+}
+function shareWA(){
+  const lnk=document.getElementById('ref-link-display').textContent;
+  window.open('https://wa.me/?text='+encodeURIComponent('Join NETLINK AGENCIES and earn money! Register here: '+lnk),'_blank');
+}
+function shareFB(){
+  const lnk=document.getElementById('ref-link-display').textContent;
+  window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(lnk),'_blank');
+}
+function shareTG(){
+  const lnk=document.getElementById('ref-link-display').textContent;
+  window.open('https://t.me/share/url?url='+encodeURIComponent(lnk)+'&text='+encodeURIComponent('Join NETLINK AGENCIES and earn money!'),'_blank');
+}
+
+// ==================== QUIZZES ====================
+const triviaQs=[
+  {q:'What is the capital of Kenya?',o:['Nairobi','Mombasa','Kisumu','Nakuru'],a:0},
+  {q:'How many continents are there on Earth?',o:['5','6','7','8'],a:2},
+  {q:'What is the largest ocean?',o:['Atlantic','Indian','Pacific','Arctic'],a:2},
+  {q:'Which planet is known as the Red Planet?',o:['Venus','Mars','Jupiter','Saturn'],a:1},
+  {q:'How many days are in a leap year?',o:['364','365','366','367'],a:2},
+  {q:'What is the currency of Kenya?',o:['Dollar','Shilling','Franc','Pound'],a:1}
+];
+const surveyQs=[
+  {q:'How often do you use social media daily?',o:['Always','Sometimes','Rarely','Never'],a:0},
+  {q:'Which platform do you use most?',o:['TikTok','Instagram','YouTube','Facebook'],a:0},
+  {q:'How many hours are you online per day?',o:['1-2 hrs','3-4 hrs','5-6 hrs','7+ hrs'],a:1},
+  {q:'Do you prefer mobile or desktop?',o:['Mobile','Desktop','Both equally','Neither'],a:0}
+];
+const mathQs=[
+  {q:'15 × 4 = ?',o:['55','60','65','70'],a:1},
+  {q:'100 ÷ 5 = ?',o:['10','15','20','25'],a:2},
+  {q:'√144 = ?',o:['11','12','13','14'],a:1},
+  {q:'2⁴ = ?',o:['8','12','16','20'],a:2},
+  {q:'25% of 200 = ?',o:['25','40','50','75'],a:2},
+  {q:'7 × 9 = ?',o:['54','56','63','72'],a:2}
+];
+function getWeek(){const d=new Date(),j=new Date(d.getFullYear(),0,1);return d.getFullYear()+'w'+Math.ceil(((d-j)/864e5+j.getDay()+1)/7);}
+function buildQuizHTML(qs,type,period){
+  const user=refreshUser(cu().u)||cu();if(!user)return'';
+  return qs.map((q,i)=>{
+    const key=type+'_'+period+'_'+i;
+    const ans=user[key];
+    const opts=q.o.map((o,oi)=>{
+      let extra='';
+      if(ans!==undefined){
+        if(oi===q.a)extra='background:#0a2e1a;border-color:#00e676;';
+        else if(oi===ans&&ans!==q.a)extra='background:#2e0a0a;border-color:#ff5252;';
+      }
+      return `<button class="quiz-opt" style="${extra}" onclick="answerQ('${type}',${i},${oi},${q.a},'${period}')" ${ans!==undefined?'disabled':''}>${o}</button>`;
+    }).join('');
+    const reward=type==='math'?10:5;
+    return `<div class="card" style="margin-bottom:12px">
+      <p style="font-size:.88em;font-weight:700;margin-bottom:10px">Q${i+1}: ${q.q}</p>
+      ${opts}
+      ${ans!==undefined?`<p style="font-size:.8em;margin-top:4px;color:${ans===q.a?'#00e676':'#ff5252'}">${ans===q.a?'✅ Correct! +KSh '+reward:'❌ Wrong answer'}</p>`:''}
+    </div>`;
+  }).join('');
+}
+function renderTrivia(){document.getElementById('trivia-list').innerHTML=buildQuizHTML(triviaQs,'trivia',getWeek());}
+function renderSurvey(){document.getElementById('survey-list').innerHTML=buildQuizHTML(surveyQs,'survey',today());}
+function renderMath(){document.getElementById('math-list').innerHTML=buildQuizHTML(mathQs,'math',getWeek());}
+function answerQ(type,qi,chosen,correct,period){
+  const user=refreshUser(cu().u);if(!user)return;
+  const key=type+'_'+period+'_'+qi;
+  if(user[key]!==undefined)return;
+  user[key]=chosen;
+  const reward=type==='math'?10:5;
+  if(chosen===correct){
+    const ek=type==='survey'?'surveyEarnings':type==='trivia'?'triviaEarnings':'mathEarnings';
+    user[ek]=(user[ek]||0)+reward;
+    user.earnings=(user.earnings||0)+reward;
+  }
+  updateUser(user);
+  if(type==='trivia')renderTrivia();
+  if(type==='survey')renderSurvey();
+  if(type==='math')renderMath();
+}
+
+// ==================== NUMBER GAME ====================
+let ngSecret=Math.floor(Math.random()*10)+1;
+function buildNumGameBtns(){
+  const c=document.getElementById('ng-buttons');if(!c)return;
+  c.innerHTML='';
+  for(let i=1;i<=10;i++){
+    const b=document.createElement('button');
+    b.className='abtn ab';b.textContent=i;
+    b.style.cssText='font-size:1.1em;padding:10px 16px;border-radius:8px';
+    b.onclick=()=>playNG(i);
+    c.appendChild(b);
+  }
+}
+function playNG(guess){
+  const user=refreshUser(cu().u);if(!user)return;
+  const el=document.getElementById('ng-result');
+  if(guess===ngSecret){
+    user.ngEarnings=(user.ngEarnings||0)+5;
+    user.earnings=(user.earnings||0)+5;
+    updateUser(user);
+    el.innerHTML=`<div class="alert success">🎉 Correct! The number was <strong>${ngSecret}</strong>. You earned KSh 5!</div>`;
+  }else{
+    el.innerHTML=`<div class="alert error">❌ Wrong! The number was <strong>${ngSecret}</strong>. Try again!</div>`;
+  }
+  ngSecret=Math.floor(Math.random()*10)+1;
+}
+
+// ==================== COMMUNITY ====================
+function renderCommunity(){
+  const ps=posts().filter(p=>p.type==='general');
+  const el=document.getElementById('community-list');
+  if(!ps.length){el.innerHTML='<p style="color:#666;text-align:center;padding:25px;font-size:.86em">No posts yet. Check back soon!</p>';return;}
+  el.innerHTML=ps.slice().reverse().map(p=>`
+    <div class="post-card"><h4>${p.title}</h4><p>${p.body}</p><div class="pdate">${new Date(p.at).toLocaleString()}</div></div>`).join('');
+}
+function renderCompanyAds(){
+  const ps=posts().filter(p=>p.type==='ad');
+  const el=document.getElementById('company-ads-list');
+  if(!ps.length){el.innerHTML='<div class="coming-soon"><div class="csicon">📣</div><h3>No Advertisements Yet</h3><p>Company ads will appear here.</p></div>';return;}
+  el.innerHTML=ps.slice().reverse().map(p=>`<div class="post-card"><h4 style="color:#ff9800">${p.title}</h4><p>${p.body}</p></div>`).join('');
+}
+
+// ==================== DOWNLINES ====================
+function renderDownlines(level){
+  const user=cu();if(!user)return;
+  const el=document.getElementById('dl'+level+'-list');
+  const us=users().filter(x=>x.ref===user.u);
+  if(!us.length){el.innerHTML=`<p style="color:#666;text-align:center;padding:30px;font-size:.88em">No Level ${level} downlines yet.</p>`;return;}
+  el.innerHTML=us.map(u=>`
+    <div class="user-row">
+      <div class="uname">${u.u} <span class="badge ${u.active?'active':'inactive'}">${u.active?'Active':'Inactive'}</span></div>
+      <div class="uinfo">${u.co} | Joined ${new Date(u.reg).toLocaleDateString()}</div>
+      <div class="action-btns">
+        <button class="abtn aw" onclick="window.open('https://wa.me/'+encodeURIComponent('${u.wa}'),'_blank')">📱 WhatsApp</button>
+      </div>
+    </div>`).join('');
+}
+
+// ==================== ADMIN LOGIN ====================
+function doAdminLogin(){
+  const u=document.getElementById('al-user').value.trim();
+  const pw=document.getElementById('al-pass').value;
+  const ad=admins().find(a=>a.u===u&&a.p===pw);
+  if(!ad) return alert2('admin-login-alert','Invalid admin credentials.');
+  S.set('admin_in','1');
+  showPg('pg-admin');
+  refreshAdminHome();
+}
+function doAdminLogout(){S.set('admin_in','0');showPg('pg-login');}
+
+// ==================== ADMIN HOME ====================
+function refreshAdminHome(){
+  const us=users();
+  const ar=acts().filter(r=>r.status==='pending');
+  const wr=wds().filter(r=>r.status==='pending');
+  const dr=deps().filter(r=>r.status==='pending');
+  document.getElementById('a-total').textContent=us.length;
+  document.getElementById('a-active').textContent=us.filter(x=>x.active).length;
+  document.getElementById('a-pend-wd').textContent=wr.length;
+  document.getElementById('a-pend-act').textContent=ar.length;
+  document.getElementById('a-pend-dep').textContent=dr.length;
+}
+
+// ==================== MANAGE USERS ====================
+function renderUserList(){
+  const us=users();
+  const el=document.getElementById('admin-user-list');
+  if(!us.length){el.innerHTML='<p style="color:#666;text-align:center;padding:30px;font-size:.88em">No users yet.</p>';return;}
+  el.innerHTML=us.map(u=>`
+    <div class="user-row">
+      <div class="uname">${u.u} <span class="badge ${u.active?'active':'inactive'}">${u.active?'Active':'Inactive'}</span></div>
+      <div class="uinfo">${u.e} | ${u.ph} | ${u.co}</div>
+      <div class="action-btns">
+        <button class="abtn ag" onclick="adminActivate('${u.u}')">Activate</button>
+        <button class="abtn ar" onclick="adminDeactivate('${u.u}')">Deactivate</button>
+        <button class="abtn ab" onclick="viewUserInfo('${u.u}')">Info</button>
+        <button class="abtn aw" onclick="window.open('https://wa.me/'+('${u.wa}'.replace(/\\D/g,'')),'_blank')">WhatsApp</button>
+      </div>
+    </div>`).join('');
+}
+function adminActivate(un){
+  const us=users();const u=us.find(x=>x.u===un);if(!u)return;
+  u.active=true;setUsers(us);renderUserList();refreshAdminHome();
+  alert(un+' activated!');
+}
+function adminDeactivate(un){
+  const us=users();const u=us.find(x=>x.u===un);if(!u)return;
+  u.active=false;setUsers(us);renderUserList();refreshAdminHome();
+  alert(un+' deactivated!');
+}
+function viewUserInfo(un){
+  const u=users().find(x=>x.u===un);if(!u)return;
+  document.getElementById('admin-user-detail').innerHTML=`
+    <div class="card">
+      <div class="section-title">User Details</div>
+      <div class="info-row"><span class="ikey">Username</span><span class="ival">${u.u}</span></div>
+      <div class="info-row"><span class="ikey">Email</span><span class="ival">${u.e}</span></div>
+      <div class="info-row"><span class="ikey">Phone</span><span class="ival">${u.ph}</span></div>
+      <div class="info-row"><span class="ikey">WhatsApp</span><span class="ival">${u.wa}</span></div>
+      <div class="info-row"><span class="ikey">Country</span><span class="ival">${u.co}</span></div>
+      <div class="info-row"><span class="ikey">Status</span><span class="ival"><span class="badge ${u.active?'active':'inactive'}">${u.active?'Active':'Inactive'}</span></span></div>
+      <div class="info-row"><span class="ikey">Balance (Referrals)</span><span class="ival">KSh ${u.balance||0}</span></div>
+      <div class="info-row"><span class="ikey">Total Earnings</span><span class="ival">KSh ${u.earnings||0}</span></div>
+      <div class="info-row"><span class="ikey">Withdrawn</span><span class="ival">KSh ${u.withdrawn||0}</span></div>
+      <div class="info-row"><span class="ikey">Referrals Made</span><span class="ival">${u.referrals||0}</span></div>
+    </div>
+    <div class="card">
+      <div class="section-title">Edit Earnings</div>
+      <div class="form-group"><label>Balance (KSh)</label><input type="number" id="eu-bal" value="${u.balance||0}"></div>
+      <div class="form-group"><label>Total Earnings (KSh)</label><input type="number" id="eu-earn" value="${u.earnings||0}"></div>
+      <button class="btn" onclick="saveUserEdits('${u.u}')">Save Changes</button>
+    </div>
+    <div class="card">
+      <div class="section-title">Reset Password</div>
+      <div class="form-group"><label>New Password</label><input type="password" id="eu-pw" placeholder="Enter new password"></div>
+      <button class="btn btn-red" onclick="resetUserPW('${u.u}')">Reset Password</button>
+    </div>
+    <a href="https://wa.me/${u.wa.replace(/\D/g,'')}" target="_blank" style="display:block;margin-top:8px"><button class="btn btn-whatsapp">📱 WhatsApp ${u.u}</button></a>`;
+  showAdminSub('user-info');
+}
+function saveUserEdits(un){
+  const us=users();const u=us.find(x=>x.u===un);if(!u)return;
+  u.balance=parseFloat(document.getElementById('eu-bal').value)||0;
+  u.earnings=parseFloat(document.getElementById('eu-earn').value)||0;
+  setUsers(us);alert('Earnings updated!');
+}
+function resetUserPW(un){
+  const pw=document.getElementById('eu-pw').value;if(!pw)return alert('Enter a password.');
+  const us=users();const u=us.find(x=>x.u===un);if(!u)return;
+  u.pw=pw;setUsers(us);alert('Password reset!');
+}
+
+// ==================== ACTIVATION REQUESTS ====================
+function renderActList(){
+  const ar=acts().filter(r=>r.status==='pending');
+  const el=document.getElementById('act-list');
+  if(!ar.length){el.innerHTML='<p style="color:#666;text-align:center;padding:30px;font-size:.88em">No pending activations.</p>';return;}
+  const all=acts();
+  el.innerHTML=ar.map(r=>{
+    const idx=all.indexOf(r);
+    return `<div class="user-row">
+      <div class="uname">${r.uid}</div>
+      <div class="uinfo">TXN: <strong>${r.txn}</strong> | ${new Date(r.at).toLocaleString()}</div>
+      <div class="action-btns">
+        <button class="abtn ag" onclick="approveAct(${idx})">Approve</button>
+        <button class="abtn ar" onclick="rejectAct(${idx})">Reject</button>
+      </div>
+    </div>`;}).join('');
+}
+function approveAct(idx){
+  const ar=acts();const r=ar[idx];if(!r)return;
+  r.status='approved';setActs(ar);
+  const us=users();const u=us.find(x=>x.u===r.uid);
+  if(u){u.active=true;setUsers(us);if(cu()&&cu().u===u.u)setCU(u);}
+  renderActList();refreshAdminHome();alert(r.uid+' account activated!');
+}
+function rejectAct(idx){
+  const ar=acts();ar[idx].status='rejected';setActs(ar);
+  renderActList();refreshAdminHome();alert('Activation rejected.');
+}
+
+// ==================== WITHDRAWALS ====================
+function renderWdList(){
+  const wr=wds().filter(r=>r.status==='pending');
+  const el=document.getElementById('wd-list');
+  if(!wr.length){el.innerHTML='<p style="color:#666;text-align:center;padding:30px;font-size:.88em">No pending withdrawals.</p>';return;}
+  const all=wds();
+  el.innerHTML=wr.map(r=>{
+    const idx=all.indexOf(r);
+    return `<div class="user-row">
+      <div class="uname">${r.uid}</div>
+      <div class="uinfo">Amount: <strong>KSh ${r.amt}</strong> | Phone: ${r.ph} | ${new Date(r.at).toLocaleString()}</div>
+      <div class="action-btns">
+        <button class="abtn ag" onclick="approveWd(${idx})">Approve</button>
+        <button class="abtn ar" onclick="rejectWd(${idx})">Reject</button>
+      </div>
+    </div>`;}).join('');
+}
+function approveWd(idx){
+  const all=wds();const r=all[idx];if(!r)return;
+  r.status='approved';setWds(all);
+  const us=users();const u=us.find(x=>x.u===r.uid);
+  if(u){u.pendingWd=Math.max(0,(u.pendingWd||0)-r.amt);u.withdrawn=(u.withdrawn||0)+r.amt;setUsers(us);}
+  renderWdList();refreshAdminHome();alert('Withdrawal of KSh '+r.amt+' approved!');
+}
+function rejectWd(idx){
+  const all=wds();const r=all[idx];if(!r)return;
+  r.status='rejected';setWds(all);
+  const us=users();const u=us.find(x=>x.u===r.uid);
+  if(u){u.pendingWd=Math.max(0,(u.pendingWd||0)-r.amt);u.balance=(u.balance||0)+r.amt;setUsers(us);}
+  renderWdList();refreshAdminHome();alert('Withdrawal rejected. Amount refunded.');
+}
+
+// ==================== DEPOSITS ====================
+function renderDepList(){
+  const dr=deps().filter(r=>r.status==='pending');
+  const el=document.getElementById('dep-list');
+  if(!dr.length){el.innerHTML='<p style="color:#666;text-align:center;padding:30px;font-size:.88em">No pending deposits.</p>';return;}
+  const all=deps();
+  el.innerHTML=dr.map(r=>{
+    const idx=all.indexOf(r);
+    return `<div class="user-row">
+      <div class="uname">${r.uid}</div>
+      <div class="uinfo">Amount: <strong>KSh ${r.amt}</strong> | TXN: ${r.txn} | ${new Date(r.at).toLocaleString()}</div>
+      <div class="action-btns">
+        <button class="abtn ag" onclick="approveDep(${idx})">Approve</button>
+        <button class="abtn ar" onclick="rejectDep(${idx})">Reject</button>
+      </div>
+    </div>`;}).join('');
+}
+function approveDep(idx){
+  const all=deps();all[idx].status='approved';setDeps(all);
+  renderDepList();refreshAdminHome();alert('Deposit approved!');
+}
+function rejectDep(idx){
+  const all=deps();all[idx].status='rejected';setDeps(all);
+  renderDepList();refreshAdminHome();alert('Deposit rejected.');
+}
+
+// ==================== ADD ADMIN ====================
+function doAddAdmin(){
+  const u=document.getElementById('na-user').value.trim();
+  const pw=document.getElementById('na-pass').value;
+  if(!u||!pw) return alert2('add-admin-alert','Fill in all fields.');
+  const ad=admins();
+  if(ad.find(a=>a.u===u)) return alert2('add-admin-alert','Admin username already exists.');
+  ad.push({u,p:pw});setAdmins(ad);
+  alert2('add-admin-alert','Admin account added!','success');
+  renderAdminList();
+}
+function renderAdminList(){
+  const ad=admins();
+  document.getElementById('admin-list-view').innerHTML=ad.map(a=>`
+    <div class="info-row"><span class="ikey">${a.u}</span><span class="ival" style="color:#666">••••••••</span></div>`).join('');
+}
+
+// ==================== LINKS ====================
+function saveTGLink(){
+  const v=document.getElementById('tg-link-in').value.trim();
+  if(!v) return alert2('tg-set-alert','Enter a link.');
+  const c=cfg();c.tg=v;setCfg(c);
+  if(document.getElementById('tg-chan-link'))document.getElementById('tg-chan-link').href=v;
+  alert2('tg-set-alert','Telegram link saved!','success');
+}
+function saveWALink(){
+  const v=document.getElementById('wa-link-in').value.trim();
+  if(!v) return alert2('wa-set-alert','Enter a link.');
+  const c=cfg();c.wa=v;setCfg(c);
+  if(document.getElementById('wa-group-link'))document.getElementById('wa-group-link').href=v;
+  alert2('wa-set-alert','WhatsApp link saved!','success');
+}
+
+// ==================== POST ====================
+function doPost(){
+  const title=document.getElementById('post-title').value.trim();
+  const body=document.getElementById('post-body').value.trim();
+  if(!title||!body) return alert2('post-alert','Fill in all fields.');
+  const ps=posts();
+  ps.push({title,body,at:Date.now(),type:'general'});
+  setPosts(ps);
+  document.getElementById('post-title').value='';
+  document.getElementById('post-body').value='';
+  alert2('post-alert','Post published!','success');
+  renderPostsList();
+}
+function renderPostsList(){
+  const ps=posts();
+  const el=document.getElementById('posts-list');
+  if(!ps.length){el.innerHTML='<p style="color:#666;text-align:center;padding:20px;font-size:.86em">No posts yet.</p>';return;}
+  el.innerHTML=ps.slice().reverse().map((p,i)=>{
+    const idx=ps.length-1-i;
+    return `<div class="user-row">
+      <div class="uname">${p.title}</div>
+      <div class="uinfo">${p.body.substring(0,70)}...</div>
+      <div class="action-btns">
+        <button class="abtn ar" onclick="delPost(${idx})">Delete</button>
+      </div>
+    </div>`;}).join('');
+}
+function delPost(idx){
+  const ps=posts();ps.splice(idx,1);setPosts(ps);renderPostsList();
+}
+
+// ==================== SETTINGS ====================
+function doChangePW(){
+  const np=document.getElementById('s-newpw').value;
+  const cp=document.getElementById('s-confpw').value;
+  if(!np||!cp) return alert2('settings-alert','Fill in all fields.');
+  if(np!==cp) return alert2('settings-alert','Passwords do not match.');
+  const ad=admins();ad[0].p=np;setAdmins(ad);
+  alert2('settings-alert','Password updated!','success');
+}
+
+// ==================== AI AGENT ====================
+const aiKB={
+  'activate':'To activate a user: Go to Admin Panel → Activation → Find the user → Click Approve. The user will be able to log in.',
+  'withdrawal':'To approve a withdrawal: Go to Admin Panel → Withdraw → Find the request → Click Approve. Money is moved from Pending to Withdrawn.',
+  'deposit':'To approve a deposit: Go to Admin Panel → Deposits → Find the request → Click Approve.',
+  'post':'To publish content to users: Go to Admin Panel → Post → Write title and content → Click Publish. Users see it in Community.',
+  'telegram':'To set the Telegram link: Admin Panel → Add Telegram Link → Enter link → Save.',
+  'whatsapp link':'To set the WhatsApp group link: Admin Panel → Add WhatsApp Link → Enter link → Save.',
+  'password':'To reset a user password: Manage Users → Click Info on user → Scroll to Reset Password section.',
+  'edit earning':'To edit user earnings: Manage Users → Click Info → Scroll to Edit Earnings → Update balance/earnings → Save.',
+  'add admin':'To add another admin account: Admin Panel → Add Admin Account → Fill in username and password → Add Admin.',
+  'reject':'When you reject an activation, the user stays inactive. When you reject a withdrawal, the money is refunded to the user balance.',
+  'referral':'Users earn KSh 50 per referral. At 20 referrals they earn Karibu Bonus of KSh 100. At every 50 referrals/week they earn KSh 200 Weekly Bonus.',
+  'video':'Users can watch 3 TikTok (KSh 15 each), 3 Instagram (KSh 20 each), and 3 YouTube (KSh 25 each) videos per day.',
+  'quiz':'Trivia Quiz: 6 per week at KSh 5 each. Math Quiz: 6 per week at KSh 10 each. Daily Survey: per day at KSh 5 each.',
+};
+function sendAI(){
+  const inp=document.getElementById('ai-input');
+  const msg=inp.value.trim();if(!msg)return;
+  const el=document.getElementById('ai-msgs');
+  el.innerHTML+=`<div class="ai-chat-msg user"><strong>You:</strong> ${msg}</div>`;
+  let reply='I can help with: activating users, approving withdrawals/deposits, posting content, setting community links, resetting passwords, editing earnings, and explaining how features work. What do you need?';
+  const ml=msg.toLowerCase();
+  for(const[k,v]of Object.entries(aiKB)){if(ml.includes(k)){reply=v;break;}}
+  setTimeout(()=>{
+    el.innerHTML+=`<div class="ai-chat-msg bot"><strong style="color:#00d4ff">🤖 Agent:</strong> ${reply}</div>`;
+    el.scrollTop=el.scrollHeight;
+  },600);
+  inp.value='';el.scrollTop=el.scrollHeight;
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement.id==='ai-input')sendAI();});
+
+// ==================== INIT ====================
+(function init(){
+  const user=cu();
+  const adminIn=S.get('admin_in');
+  if(adminIn==='1'){showPg('pg-admin');refreshAdminHome();return;}
+  if(user){
+    if(!user.active)showPg('pg-activation');
+    else loadDashboard(user);
+    return;
+  }
+  showPg('pg-register');
+})();
+</script>
+</body>
+</html>
