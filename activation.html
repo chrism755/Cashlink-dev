@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activate Account - NETLINK AGENCIES</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+ .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+</style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+
+<div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+  <h1 class="text-3xl font-bold text-center text-purple-700 mb-2">Account Activation</h1>
+  <p class="text-center text-gray-600 mb-6">Activate your account to access the dashboard</p>
+  
+  <div id="alert"></div>
+  <div id="userInfo" class="bg-purple-50 p-4 rounded-xl mb-4 hidden">
+    <p class="text-sm text-gray-600">Logged in as:</p>
+    <p id="usernameDisplay" class="font-bold text-purple-700"></p>
+  </div>
+  
+  <div class="space-y-4">
+    <div class="bg-yellow-50 border-yellow-200 p-4 rounded-xl">
+      <p class="text-sm text-yellow-800">
+        <strong>Activation Fee:</strong> Ksh 100<br>
+        Send to M-Pesa: 07XX XXX<br>
+        Use your username as reference.
+      </p>
+    </div>
+    
+    <input type="text" id="activationCode" placeholder="Enter M-Pesa transaction code" required 
+      class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
+    
+    <button onclick="activateAccount()" 
+      class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold text-lg transition">
+      Activate Account
+    </button>
+    
+    <button onclick="logout()" 
+      class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold transition">
+      Logout
+    </button>
+  </div>
+  
+  <p class="text-center mt-4 text-xs text-gray-500">
+    For testing, use code: <strong>TEST123</strong>
+  </p>
+</div>
+
+<script>
+// Check if user is logged in
+const currentUser = JSON.parse(localStorage.getItem('netlink_user') || 'null');
+
+if (!currentUser) {
+  window.location.href = '/login.html';
+} else {
+  document.getElementById('userInfo').classList.remove('hidden');
+  document.getElementById('usernameDisplay').textContent = currentUser.username;
+  
+  if (currentUser.active) {
+    window.location.href = '/dashboard.html';
+  }
+}
+
+function activateAccount() {
+  const code = document.getElementById('activationCode').value.trim();
+  const alertBox = document.getElementById('alert');
+  
+  if (!code) {
+    alertBox.innerHTML = '<div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4">Enter activation code</div>';
+    return;
+  }
+  
+  // For testing, accept TEST123. Later you’ll verify real M-Pesa codes
+  if (code === 'TEST123') {
+    // Update user status
+    currentUser.active = true;
+    localStorage.setItem('netlink_user', JSON.stringify(currentUser));
+    
+    // Update in users list
+    let users = JSON.parse(localStorage.getItem('netlink_users') || '[]');
+    users = users.map(u => u.username === currentUser.username ? currentUser : u);
+    localStorage.setItem('netlink_users', JSON.stringify(users));
+    
+    alertBox.innerHTML = '<div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4">Account activated! Redirecting...</div>';
+    
+    setTimeout(() => {
+      window.location.href = '/dashboard.html';
+    }, 1500);
+  } else {
+    alertBox.innerHTML = '<div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4">Invalid code. For testing use: TEST123</div>';
+  }
+}
+
+function logout() {
+  localStorage.removeItem('netlink_user');
+  window.location.href = '/login.html';
+}
+</script>
+
+</body>
+                                 </html>
