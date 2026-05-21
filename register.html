@@ -17,70 +17,98 @@
   
   <div id="alert"></div>
   
-  <form id="registerForm" class="space-y-4">
-    <input type="text" id="username" placeholder="Enter username" required 
+  <div class="space-y-4">
+    <input type="text" id="username" placeholder="Username" required 
       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
     
-    <input type="email" id="email" placeholder="Enter valid Email" required 
+    <input type="email" id="email" placeholder="Email" required 
       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
     
-    <input type="tel" id="phone" placeholder="Enter phone number" required 
+    <input type="tel" id="phone" placeholder="Phone Number" required 
       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
     
-    <input type="tel" id="whatsapp" placeholder="Enter WhatsApp number" required 
+    <input type="tel" id="mpesa" placeholder="M-Pesa Number" required 
       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
-
+    
     <select id="country" required 
       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
-      <option value="">Select country</option>
-      <option>Kenya</option><option>Uganda</option><option>Tanzania</option>
-      <option>Nigeria</option><option>Ghana</option><option>Other</option>
+      <option value="">Select Country</option>
+      <option value="Kenya">Kenya</option>
+      <option value="Uganda">Uganda</option>
+      <option value="Tanzania">Tanzania</option>
     </select>
-
-    <input type="password" id="password" placeholder="Enter password" required 
+    
+    <input type="password" id="password" placeholder="Password" required 
       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
     
-    <input type="password" id="confirmPassword" placeholder="Confirm password" required 
+    <input type="password" id="confirmPassword" placeholder="Confirm Password" required 
       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 outline-none">
-
-    <button type="submit" 
+    
+    <button onclick="register()" 
       class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl font-bold text-lg transition">
-      Create Account
+      Register
     </button>
-  </form>
+  </div>
   
   <p class="text-center mt-4 text-gray-600">
-    Already registered? 
-    <a href="/login" class="text-purple-600 font-semibold">Log in</a>
+    Already have an account? <a href="/login.html" class="text-purple-600 font-semibold">Login</a>
   </p>
 </div>
 
 <script>
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  
+function register() {
+  const username = document.getElementById('username').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const mpesa = document.getElementById('mpesa').value.trim();
+  const country = document.getElementById('country').value;
   const password = document.getElementById('password').value;
   const confirmPassword = document.getElementById('confirmPassword').value;
   const alertBox = document.getElementById('alert');
+  
+  // Validation
+  if (!username || !email || !phone || !mpesa || !country || !password) {
+    alertBox.innerHTML = '<div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4">All fields are required</div>';
+    return;
+  }
   
   if (password !== confirmPassword) {
     alertBox.innerHTML = '<div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4">Passwords do not match</div>';
     return;
   }
   
-  alertBox.innerHTML = '<div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4">Account created! Next step will be activation page.</div>';
+  // Get existing users
+  let users = JSON.parse(localStorage.getItem('netlink_users') || '[]');
   
-  // For now, just show success. Next step we will redirect to /activation
-  console.log({
-    username: username.value,
-    email: email.value,
-    phone: phone.value,
-    whatsapp: whatsapp.value,
-    country: country.value,
-    password: password
-  });
-});
+  // Check if user exists
+  if (users.find(u => u.username === username || u.email === email)) {
+    alertBox.innerHTML = '<div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4">Username or email already exists</div>';
+    return;
+  }
+  
+  // Create new user
+  const newUser = {
+    username,
+    email,
+    phone,
+    mpesa,
+    country,
+    password, // In production, hash this!
+    active: false
+  };
+  
+  users.push(newUser);
+  localStorage.setItem('netlink_users', JSON.stringify(users));
+  localStorage.setItem('netlink_user', JSON.stringify(newUser));
+  
+  // Success
+  alertBox.innerHTML = '<div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4">Account created! Redirecting to activation...</div>';
+  
+  setTimeout(() => {
+    window.location.href = '/activation.html';
+  }, 1500);
+}
 </script>
 
 </body>
-      </html>
+ </html>
