@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>NETLINK AGENCIES</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f3f4f6;color:#111827;min-height:100vh}
+.page{display:none;min-height:100vh}.page.active{display:block}
+
+/* LOGO SVG chain link on dark red */
+.nl-logo{width:90px;height:90px;border-radius:20px;background:linear-gradient(135deg,#7f1d1d,#991b1b);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.3);margin-bottom:14px;flex-shrink:0}
+.nl-logo svg{width:52px;height:52px}
+
+/* AUTH PAGES */
+.auth-page{min-height:100vh;background:linear-gradient(to bottom,#be185d,#db2777,#ec4899,#f97316);display:flex;flex-direction:column;align-items:center;padding:28px 16px 40px}
+.auth-logo{display:flex;flex-direction:column;align-items:center;margin-bottom:20px}
+.auth-logo h1{color:#fff;font-size:22px;font-weight:900;letter-spacing:.5px;text-align:center;text-shadow:0 2px 6px rgba(0,0,0,.2)}
+.auth-logo p{color:rgba(255,255,255,.85);font-size:13px;margin-top:4px;text-align:center}
+.auth-box{background:#fff;border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.2);padding:24px 20px;width:100%;max-width:440px}
+.auth-box h2{font-size:21px;font-weight:800;color:#1f2937;text-align:center;margin-bottom:3px}
+.auth-box .subtitle{font-size:13px;color:#9ca3af;text-align:center;margin-bottom:18px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:5px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:13px 15px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;color:#111827;outline:none;transition:border .2s,box-shadow .2s;font-family:inherit;background:#fff}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#db2777;box-shadow:0 0 0 3px rgba(219,39,119,.1)}
+.form-group input.focused{background:#eff6ff;border-color:#3b82f6}
+.form-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.forgot-link{font-size:12px;color:#db2777;font-weight:600;cursor:pointer;text-decoration:none}
+.btn-primary{width:100%;padding:14px;background:linear-gradient(to right,#db2777,#f97316);border:none;border-radius:13px;color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .2s;font-family:inherit;letter-spacing:.3px;box-shadow:0 4px 14px rgba(219,39,119,.35)}
+.btn-primary:hover{opacity:.9}.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.btn-secondary{width:100%;padding:12px;background:#f3f4f6;border:1.5px solid #e5e7eb;border-radius:12px;color:#374151;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-secondary:hover{background:#e5e7eb}
+.btn-green{background:linear-gradient(to right,#16a34a,#15803d)!important;box-shadow:0 4px 14px rgba(22,163,74,.3)!important}
+.btn-wa{background:linear-gradient(to right,#25d366,#128c7e)!important;box-shadow:0 4px 14px rgba(37,211,102,.3)!important}
+.btn-red{background:linear-gradient(to right,#dc2626,#b91c1c)!important}
+.btn-blue{background:linear-gradient(to right,#2563eb,#1d4ed8)!important}
+.auth-footer{text-align:center;margin-top:16px;font-size:13px;color:#6b7280}
+.auth-footer a{color:#db2777;font-weight:700;cursor:pointer;text-decoration:none}
+.alert{padding:11px 14px;border-radius:11px;margin-bottom:12px;font-size:13px;font-weight:500;line-height:1.5}
+.alert.success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.alert.error{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.alert.info{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe}
+.alert.warning{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
+.alert.green-box{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:14px;padding:18px}
+.alert.green-box h3{font-size:17px;font-weight:700;margin-bottom:8px}
+.alert.green-box p{font-size:13px;opacity:.95;line-height:1.6}
+
+/* LOADING SCREEN */
+.loading-screen{position:fixed;inset:0;background:linear-gradient(to bottom,#be185d,#db2777,#f97316);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;display:none}
+.loading-screen.show{display:flex}
+.loading-spinner{width:56px;height:56px;border:5px solid rgba(255,255,255,.3);border-top:5px solid #fff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{color:#fff;font-size:16px;font-weight:600}
+
+/* TOAST */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.3);display:none;min-width:240px;text-align:center}
+
+/* HEADER */
+.app-header{background:linear-gradient(to right,#be185d,#db2777,#ec4899,#f97316);color:#fff;position:sticky;top:0;z-index:40;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.app-header-inner{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;max-width:640px;margin:0 auto}
+.header-btn{background:none;border:none;color:#fff;cursor:pointer;padding:5px;border-radius:9px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.header-btn:hover{background:rgba(255,255,255,.2)}
+.header-title{font-size:16px;font-weight:800;letter-spacing:.3px}
+.bell-wrap{position:relative}
+.bell-dot{position:absolute;top:0;right:0;width:9px;height:9px;background:#fbbf24;border-radius:50%;border:1.5px solid rgba(255,255,255,.7)}
+
+/* SIDEBAR */
+.sidebar-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;display:none}
+.sidebar-overlay.open{display:block}
+.sidebar{position:fixed;top:0;left:0;height:100%;width:282px;background:#fff;z-index:50;box-shadow:0 0 40px rgba(0,0,0,.2);transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column}
+.sidebar.open{transform:translateX(0)}
+.sidebar-hdr{background:linear-gradient(to right,#be185d,#db2777,#f97316);color:#fff;padding:16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sidebar-hdr-name{font-size:15px;font-weight:800}
+.sidebar-hdr-user{font-size:12px;opacity:.8;margin-top:2px}
+.sidebar-close{background:none;border:none;color:#fff;cursor:pointer;padding:4px;border-radius:8px}
+.sidebar-nav{flex:1;overflow-y:auto;padding:6px 0}
+.si{display:flex;align-items:center;gap:11px;padding:11px 14px;cursor:pointer;color:#374151;text-decoration:none;transition:background .1s}
+.si:hover{background:#fdf2f8}
+.si.active{background:linear-gradient(to right,#fce7f3,#fef3c7);color:#be185d}
+.si.active .sinum{background:#be185d;color:#fff}
+.sinum{width:22px;height:22px;border-radius:50%;background:#f3f4f6;color:#6b7280;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.siicon{font-size:15px;flex-shrink:0;width:20px;text-align:center}
+.silabel{font-size:13px;font-weight:500;flex:1}
+.siarrow{font-size:10px;opacity:.35}
+.sidebar-footer{padding:10px 14px;border-top:1px solid #f3f4f6;flex-shrink:0}
+.logout-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:#dc2626;font-size:13px;font-weight:600;background:none;border:none;width:100%;font-family:inherit;transition:background .15s}
+.logout-btn:hover{background:#fef2f2}
+
+/* MAIN CONTENT */
+.main{max-width:640px;margin:0 auto;padding:14px 14px 40px}
+
+/* DASHBOARD CARDS */
+.stats-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.stat-box{border-radius:15px;padding:16px;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.stat-box .sl{font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;opacity:.85}
+.stat-box .sv{font-size:22px;font-weight:800;margin-top:4px}
+.box-red{background:linear-gradient(135deg,#dc2626,#991b1b)}
+.box-orange{background:linear-gradient(135deg,#ea580c,#c2410c)}
+.big-card{border-radius:17px;padding:20px;color:#fff;margin-bottom:12px;position:relative;overflow:hidden}
+.big-card .bg-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:58px;opacity:.15}
+.big-card .cl{font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:6px}
+.big-card .cv{font-size:34px;font-weight:800}
+.big-card .cbadge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:7px}
+.card-blue{background:linear-gradient(135deg,#1d4ed8,#2563eb,#3b82f6)}
+.card-red2{background:linear-gradient(135deg,#be185d,#dc2626)}
+.card-amber{background:linear-gradient(135deg,#b45309,#d97706,#f59e0b)}
+.card-purple{background:linear-gradient(135deg,#6d28d9,#7c3aed,#8b5cf6)}
+.card-cyan{background:linear-gradient(135deg,#0e7490,#0891b2,#06b6d4)}
+.bonus-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.ref-card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.08);margin-bottom:12px}
+.ref-card h3{font-size:14px;font-weight:700;color:#1f2937;margin-bottom:10px}
+.ref-link-box{background:#f9fafb;border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:12px;color:#6b7280;word-break:break-all;margin-bottom:10px;line-height:1.4}
+.share-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.share-btn{padding:10px 4px;border-radius:11px;border:none;cursor:pointer;font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:inherit;transition:opacity .2s}
+.share-btn:hover{opacity:.85}
+.share-btn .bi{font-size:20px}
+.sb-copy{background:#f3f4f6;color:#374151}
+.sb-wa{background:#25d366;color:#fff}
+.sb-fb{background:#1877f2;color:#fff}
+.sb-tg{background:#0088cc;color:#fff}
+
+/* ACTIVATION */
+.pay-tabs{display:flex;gap:10px;margin-bottom:18px}
+.pay-tab{flex:1;padding:13px;border:2px solid #e5e7eb;border-radius:13px;background:#fff;cursor:pointer;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;font-family:inherit;color:#6b7280}
+.pay-tab.mpesa-active{border-color:#16a34a;background:#f0fdf4;color:#16a34a}
+.pay-tab.paypal-active{border-color:#2563eb;background:#eff6ff;color:#2563eb}
+.pay-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.psnum{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#db2777,#f97316);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.pstext h4{font-size:13px;font-weight:700;margin-bottom:3px;color:#1f2937}
+.pstext p{font-size:12px;color:#6b7280;line-height:1.5}
+.pstext .pval{font-size:15px;font-weight:800;color:#db2777}
+
+/* WHITE CARDS */
+.wcard{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.07);margin-bottom:12px}
+.wcard h3{font-size:15px;font-weight:700;color:#1f2937;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.wcard p{font-size:13px;color:#6b7280;line-height:1.6;margin-bottom:8px}
+.section-title{font-size:16px;font-weight:800;color:#1f2937;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* GREET */
+.greet{padding:6px 0 2px}
+.greet .gname{font-size:17px;font-weight:800;color:#1f2937;display:flex;align-items:center;gap:6px}
+.greet .gsub{font-size:13px;color:#9ca3af;margin-top:2px}
+.verify-badge{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#2563eb;border-radius:50%;color:#fff;font-size:10px;font-weight:900;flex-shrink:0}
+
+/* TABLES */
+.dtable{width:100%;border-collapse:collapse;font-size:13px}
+.dtable th{padding:9px 8px;text-align:left;font-size:11px;text-transform:uppercase;color:#9ca3af;font-weight:700;border-bottom:1.5px solid #f3f4f6}
+.dtable td{padding:10px 8px;border-bottom:1px solid #f9fafb;color:#374151}
+.dtable tr:last-child td{border-bottom:none}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.bg-green{background:#dcfce7;color:#15803d}
+.bg-red{background:#fee2e2;color:#b91c1c}
+.bg-yellow{background:#fef9c3;color:#a16207}
+.bg-blue{background:#dbeafe;color:#1d4ed8}
+.bg-purple{background:#ede9fe;color:#6d28d9}
+
+/* QUIZ */
+.quiz-q{font-size:15px;font-weight:700;color:#1f2937;margin-bottom:16px;line-height:1.5}
+.quiz-opts{display:flex;flex-direction:column;gap:10px}
+.quiz-opt{padding:13px 16px;border:2px solid #e5e7eb;border-radius:13px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;background:#fff;text-align:left;font-family:inherit;color:#374151}
+.quiz-opt:hover{border-color:#db2777;background:#fdf2f8}
+.quiz-opt.correct{border-color:#16a34a;background:#dcfce7;color:#15803d}
+.quiz-opt.wrong{border-color:#dc2626;background:#fee2e2;color:#b91c1c}
+.prog-bar{height:7px;background:#e5e7eb;border-radius:4px;overflow:hidden;margin-bottom:14px}
+.prog-fill{height:100%;background:linear-gradient(to right,#db2777,#f97316);transition:width .3s}
+
+/* VIDEO */
+.vid-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07);margin-bottom:12px}
+.vid-thumb{width:100%;height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:42px;color:#fff}
+.vid-info{padding:13px}
+.vid-info h4{font-size:14px;font-weight:700;color:#1f2937;margin-bottom:3px}
+.vid-info p{font-size:12px;color:#9ca3af}
+.vid-reward{display:inline-block;background:#fce7f3;color:#be185d;font-size:12px;font-weight:700;padding:4px 11px;border-radius:8px;margin-top:6px}
+
+/* CASHOUT */
+.cashout-top{background:linear-gradient(135deg,#db2777,#f97316);border-radius:16px;padding:18px;color:#fff;margin-bottom:16px}
+.cashout-top .ctl{font-size:12px;opacity:.8;margin-bottom:4px}
+.cashout-top .ctv{font-size:30px;font-weight:800}
+.cashout-note{background:linear-gradient(135deg,#1d4ed8,#2563eb);border-radius:14px;padding:16px;color:#fff;margin-top:14px}
+.cashout-note p{font-size:12px;opacity:.9;line-height:1.6;margin:0}
+.cashout-note strong{opacity:1}
+
+/* DOWNLINES */
+.dl-tabs{display:flex;gap:8px;margin-bottom:16px}
+.dl-tab{flex:1;padding:9px;border:2px solid #e5e7eb;border-radius:10px;background:#fff;cursor:pointer;font-size:12px;font-weight:700;text-align:center;font-family:inherit;color:#6b7280;transition:all .2s}
+.dl-tab.active{border-color:#db2777;background:#fce7f3;color:#be185d}
+.dl-row{background:#fff;border-radius:12px;padding:13px;margin-bottom:8px;display:flex;align-items:center;gap:11px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.dl-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#db2777,#f97316);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800;flex-shrink:0}
+.dl-info{flex:1}
+.dl-info h4{font-size:14px;font-weight:700;color:#1f2937}
+.dl-info p{font-size:12px;color:#9ca3af}
+.dl-wa{background:#25d366;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* FOREX */
+.forex-row{background:#fff;border-radius:12px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.forex-row .pair{font-size:14px;font-weight:700}
+.forex-row .sub{font-size:12px;color:#9ca3af}
+.change-up{color:#16a34a;font-weight:700}
+.change-down{color:#dc2626;font-weight:700}
+
+/* SURVEY */
+.survey-opt{padding:13px 15px;border:2px solid #e5e7eb;border-radius:12px;cursor:pointer;font-size:13px;font-weight:500;margin-bottom:8px;background:#fff;display:flex;align-items:center;gap:10px;transition:all .15s}
+.survey-opt:hover{border-color:#db2777;background:#fdf2f8}
+.survey-opt.sel{border-color:#be185d;background:#fce7f3;color:#be185d}
+.rdot{width:18px;height:18px;border-radius:50%;border:2px solid #d1d5db;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.survey-opt.sel .rdot{border-color:#be185d;background:#be185d}
+.rdot-inner{width:7px;height:7px;border-radius:50%;background:#fff}
+
+/* NUMBER GAME */
+.num-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.num-btn{padding:13px 4px;border:2px solid #e5e7eb;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;background:#fff;transition:all .15s;font-family:inherit;color:#374151}
+.num-btn:hover{border-color:#db2777;background:#fdf2f8}
+.num-btn.sel{border-color:#db2777;background:#db2777;color:#fff}
+.num-btn.hit{border-color:#16a34a;background:#16a34a;color:#fff}
+.num-btn.miss{border-color:#dc2626;background:#fee2e2;color:#dc2626}
+
+/* BETTING */
+.match-card{background:#fff;border-radius:14px;padding:15px;margin-bottom:11px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.match-teams{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.team{font-size:14px;font-weight:800;color:#1f2937}
+.vs{background:#f3f4f6;color:#6b7280;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:700}
+.pick-row{display:flex;gap:8px}
+.pick-btn{flex:1;padding:9px;border:2px solid #e5e7eb;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;background:#fff;font-family:inherit;transition:all .15s}
+.pick-btn:hover{border-color:#db2777}
+.pick-btn.picked{border-color:#db2777;background:#db2777;color:#fff}
+
+/* TIMETABLE */
+.tt-row{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid #f3f4f6;gap:13px}
+.tt-row:last-child{border-bottom:none}
+.tt-time{background:linear-gradient(135deg,#db2777,#f97316);color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0}
+
+/* MENTORSHIP */
+.ms-step{background:#fff;border-radius:14px;padding:15px;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.ms-num{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#db2777,#f97316);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;margin-bottom:10px}
+.ms-step h4{font-size:14px;font-weight:700;margin-bottom:5px}
+.ms-step p{font-size:13px;color:#6b7280;line-height:1.5}
+
+/* ARTICLE */
+.art-card{background:#fff;border-radius:14px;overflow:hidden;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.art-thumb{height:115px;display:flex;align-items:center;justify-content:center;font-size:36px;color:#fff}
+.art-body{padding:13px}
+.art-body h4{font-size:14px;font-weight:700;margin-bottom:5px}
+.art-body p{font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:7px}
+.read-btn{display:inline-block;background:#fce7f3;color:#be185d;font-size:12px;font-weight:700;padding:6px 14px;border-radius:8px;cursor:pointer;border:none;font-family:inherit}
+
+/* AD CARD */
+.ad-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07);margin-bottom:12px}
+.ad-banner{height:130px;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;color:#fff}
+.ad-body{padding:13px}
+.ad-body h4{font-size:14px;font-weight:700;margin-bottom:5px}
+.ad-body p{font-size:12px;color:#6b7280;margin-bottom:10px}
+
+/* PROFILE */
+.p-avatar{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#db2777,#f97316);display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px;font-weight:800;margin:0 auto 12px}
+.p-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f3f4f6;font-size:13px}
+.p-row:last-child{border-bottom:none}
+.p-label{color:#9ca3af;font-weight:500}
+.p-val{color:#1f2937;font-weight:700}
+
+/* HELP */
+.help-item{background:#fff;border-radius:12px;padding:14px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06);cursor:pointer}
+.help-item h4{font-size:14px;font-weight:700;color:#1f2937;display:flex;justify-content:space-between;align-items:center}
+.help-item p{font-size:13px;color:#6b7280;line-height:1.5;display:none;margin-top:8px}
+.help-item.open h4{color:#be185d}
+.help-item.open p{display:block}
+
+/* COMMUNITY */
+.comm-msg{background:#fff;border-radius:14px;padding:13px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.msg-hdr{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.msg-av{width:35px;height:35px;border-radius:50%;background:linear-gradient(135deg,#db2777,#f97316);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800;flex-shrink:0}
+.msg-av.admin-av{background:linear-gradient(135deg,#1d4ed8,#7c3aed)}
+.msg-name{font-size:13px;font-weight:700;color:#1f2937}
+.msg-time{font-size:11px;color:#9ca3af}
+.msg-body{font-size:13px;color:#374151;line-height:1.5}
+.msg-input-row{display:flex;gap:10px;margin-top:12px;position:sticky;bottom:0;background:#f3f4f6;padding:10px 0}
+.msg-input-row input{flex:1;padding:12px 14px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:13px;outline:none;font-family:inherit}
+.msg-input-row input:focus{border-color:#db2777}
+.send-btn{padding:12px 16px;background:linear-gradient(to right,#db2777,#f97316);border:none;border-radius:12px;color:#fff;cursor:pointer;font-size:18px}
+
+/* KARIBU */
+.karibu-card{background:linear-gradient(135deg,#6d28d9,#7c3aed);border-radius:14px;padding:16px;color:#fff;margin-bottom:12px}
+.km{background:rgba(255,255,255,.15);border-radius:10px;padding:12px;margin-top:10px;display:flex;align-items:center;gap:10px}
+.km-icon{font-size:24px}
+.km-text h4{font-size:13px;font-weight:700}
+.km-text p{font-size:12px;opacity:.85}
+
+/* TOURNAMENT */
+.tourn-card{background:#fff;border-radius:14px;overflow:hidden;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.tourn-banner{height:90px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;gap:8px}
+.tourn-body{padding:13px}
+.tourn-body h4{font-size:14px;font-weight:700;margin-bottom:5px}
+.tourn-body p{font-size:13px;color:#6b7280;margin-bottom:10px}
+
+/* ADMIN */
+.admin-page{min-height:100vh;background:#0f172a}
+.admin-login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.admin-login-box{background:#1e293b;border-radius:20px;padding:28px;max-width:400px;width:100%}
+.admin-login-box h2{color:#fff;font-size:20px;font-weight:800;text-align:center;margin-bottom:4px}
+.admin-login-box .sub{color:#64748b;font-size:13px;text-align:center;margin-bottom:22px}
+.admin-login-box .form-group label{color:#cbd5e1}
+.admin-login-box .form-group input{background:#334155;border-color:#475569;color:#fff}
+.admin-login-box .form-group input:focus{border-color:#db2777}
+.a-header{background:#1e293b;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #334155}
+.a-header h1{color:#fff;font-size:16px;font-weight:800}
+.a-tabs{display:flex;gap:4px;padding:10px 12px;background:#1e293b;overflow-x:auto;border-bottom:1px solid #334155;scrollbar-width:none}
+.a-tabs::-webkit-scrollbar{display:none}
+.a-tab{padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap;color:#94a3b8;background:none;border:none;font-family:inherit;transition:all .2s}
+.a-tab.active{background:#db2777;color:#fff}
+.a-content{padding:14px;background:#0f172a;min-height:calc(100vh - 115px)}
+.a-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.a-stat{border-radius:12px;padding:14px;color:#fff}
+.a-stat .asl{font-size:11px;margin-bottom:4px;opacity:.8;font-weight:600}
+.a-stat .asv{font-size:22px;font-weight:800}
+.stat-total{background:linear-gradient(135deg,#16a34a,#15803d)}
+.stat-active{background:linear-gradient(135deg,#7c3aed,#6d28d9)}
+.stat-inactive{background:linear-gradient(135deg,#dc2626,#b91c1c)}
+.stat-pending-wd{background:linear-gradient(135deg,#16a34a,#15803d)}
+.stat-pending-act{background:linear-gradient(135deg,#d97706,#b45309)}
+.stat-pending-dep{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
+.stat-paid{background:linear-gradient(135deg,#db2777,#7c3aed,#2563eb)}
+.u-row{background:#1e293b;border-radius:12px;padding:13px;margin-bottom:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.u-info h4{color:#f1f5f9;font-size:14px;font-weight:700}
+.u-info p{color:#94a3b8;font-size:12px;margin-top:2px}
+.a-btn{padding:6px 12px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.a-btn:hover{opacity:.85}
+.btn-act{background:#16a34a;color:#fff}
+.btn-inact{background:#dc2626;color:#fff}
+.btn-info{background:#2563eb;color:#fff}
+.btn-rej{background:#dc2626;color:#fff}
+.btn-approve{background:#16a34a;color:#fff}
+.btn-pay{background:#16a34a;color:#fff}
+.admin-section{background:#1e293b;border-radius:12px;padding:14px;margin-bottom:12px}
+.admin-section h3{color:#f1f5f9;font-size:14px;font-weight:700;margin-bottom:12px}
+.admin-form label{color:#cbd5e1;display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+.admin-form input,.admin-form textarea,.admin-form select{width:100%;padding:11px 13px;background:#334155;border:1px solid #475569;border-radius:10px;color:#f1f5f9;font-size:13px;outline:none;font-family:inherit;margin-bottom:10px}
+.admin-form input:focus,.admin-form textarea:focus{border-color:#db2777}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;display:none}
+.modal-overlay.open{display:flex}
+.modal{background:#1e293b;border-radius:18px;padding:22px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto}
+.modal h3{color:#fff;font-size:16px;font-weight:800;margin-bottom:14px}
+.modal-close{float:right;background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer;line-height:1}
+.post-card{background:#fff;border-radius:14px;padding:14px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.post-card .post-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.post-card h4{font-size:14px;font-weight:700;color:#1f2937}
+.post-card p{font-size:13px;color:#6b7280;line-height:1.5}
+.post-card .post-meta{font-size:11px;color:#d1d5db;margin-top:8px}
+.del-btn{background:#fee2e2;color:#dc2626;border:none;border-radius:7px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;font-family:inherit}
+
+/* WHATSAPP ADVERT */
+.wa-task{background:#fff;border-radius:14px;padding:15px;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.wa-task h4{font-size:14px;font-weight:700;margin-bottom:7px}
+.wa-task p{font-size:13px;color:#6b7280;line-height:1.5;margin-bottom:10px}
+.wa-img{width:100%;height:160px;border-radius:10px;object-fit:cover;background:linear-gradient(135deg,#db2777,#f97316);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:10px}
+.wa-reward{display:inline-block;background:#dcfce7;color:#16a34a;font-size:12px;font-weight:700;padding:4px 12px;border-radius:8px;margin-bottom:10px}
+
+/* WITHDRAW TASKS */
+.wt-item{background:#fff;border-radius:14px;padding:15px;margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.wt-item h4{font-size:14px;font-weight:700;margin-bottom:5px}
+.wt-item p{font-size:13px;color:#6b7280;margin-bottom:10px;line-height:1.5}
+.wt-reward{display:inline-block;background:#fce7f3;color:#be185d;font-size:12px;font-weight:700;padding:4px 12px;border-radius:8px;margin-bottom:10px}
+
+/* DEPOSIT */
+.dep-method{background:#fff;border-radius:13px;padding:15px;margin-bottom:9px;border:2px solid #e5e7eb;cursor:pointer;transition:all .2s}
+.dep-method.selected{border-color:#db2777;background:#fdf2f8}
+.dep-method h4{font-size:14px;font-weight:700;margin-bottom:3px}
+.dep-method p{font-size:12px;color:#6b7280}
+
+/* SCROLL */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:#f9fafb}
+::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loading-screen">
+  <div class="nl-logo" style="width:80px;height:80px;margin-bottom:20px">
+    <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M32 10C29.5 10 27.2 11 25.6 12.7L20.5 17.8C18.9 19.4 18 21.6 18 24C18 26.4 18.9 28.6 20.5 30.2L21.9 31.6L24.7 28.8L23.3 27.4C22.5 26.6 22 25.3 22 24C22 22.7 22.5 21.5 23.3 20.6L28.4 15.5C29.3 14.6 30.6 14 32 14C33.4 14 34.7 14.5 35.5 15.3C37.2 17 37.2 19.8 35.5 21.5L32.8 24.2L35.6 27L38.3 24.3C40 22.6 41 20.4 41 18C41 15.6 40 13.3 38.4 11.7C36.8 11 34.5 10 32 10Z" fill="white"/>
+      <path d="M20 42C22.5 42 24.8 41 26.4 39.3L31.5 34.2C33.1 32.6 34 30.4 34 28C34 25.6 33.1 23.4 31.5 21.8L30.1 20.4L27.3 23.2L28.7 24.6C29.5 25.4 30 26.7 30 28C30 29.3 29.5 30.5 28.7 31.4L23.6 36.5C22.7 37.4 21.4 38 20 38C18.6 38 17.3 37.5 16.5 36.7C14.8 35 14.8 32.2 16.5 30.5L19.2 27.8L16.4 25L13.7 27.7C12 29.4 11 31.6 11 34C11 36.4 12 38.7 13.6 40.3C15.2 41.9 17.5 42 20 42Z" fill="white"/>
+    </svg>
+  </div>
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Creating your account...</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- USER INFO MODAL (Admin) -->
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('user-modal')">✕</button>
+    <h3 id="modal-title">User Information</h3>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ===================== LOGIN ===================== -->
+<div class="page active" id="page-login">
+<div class="auth-page">
+  <div class="auth-logo">
+    <div class="nl-logo">
+      <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 10C29.5 10 27.2 11 25.6 12.7L20.5 17.8C18.9 19.4 18 21.6 18 24C18 26.4 18.9 28.6 20.5 30.2L21.9 31.6L24.7 28.8L23.3 27.4C22.5 26.6 22 25.3 22 24C22 22.7 22.5 21.5 23.3 20.6L28.4 15.5C29.3 14.6 30.6 14 32 14C33.4 14 34.7 14.5 35.5 15.3C37.2 17 37.2 19.8 35.5 21.5L32.8 24.2L35.6 27L38.3 24.3C40 22.6 41 20.4 41 18C41 15.6 40 13.3 38.4 11.7C36.8 11 34.5 10 32 10Z" fill="white"/>
+        <path d="M20 42C22.5 42 24.8 41 26.4 39.3L31.5 34.2C33.1 32.6 34 30.4 34 28C34 25.6 33.1 23.4 31.5 21.8L30.1 20.4L27.3 23.2L28.7 24.6C29.5 25.4 30 26.7 30 28C30 29.3 29.5 30.5 28.7 31.4L23.6 36.5C22.7 37.4 21.4 38 20 38C18.6 38 17.3 37.5 16.5 36.7C14.8 35 14.8 32.2 16.5 30.5L19.2 27.8L16.4 25L13.7 27.7C12 29.4 11 31.6 11 34C11 36.4 12 38.7 13.6 40.3C15.2 41.9 17.5 42 20 42Z" fill="white"/>
+      </svg>
+    </div>
+    <h1>NETLINK AGENCIES</h1>
+    <p>Linking You to Financial Solutions</p>
+  </div>
+  <div class="auth-box">
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Login to your account</p>
+    <div id="login-err" class="alert error" style="display:none"></div>
+    <div class="form-group"><label>Username</label><input type="text" id="li-user" placeholder="Enter username" onfocus="this.classList.add('focused')" onblur="this.classList.remove('focused')"></div>
+    <div class="form-group">
+      <div class="form-label-row"><label>Password</label><a class="forgot-link" onclick="showPage('page-forgot')">Forgot password?</a></div>
+      <input type="password" id="li-pass" placeholder="Enter password" onfocus="this.classList.add('focused')" onblur="this.classList.remove('focused')">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Login</button>
+    <div class="auth-footer">Don't have an account? <a onclick="showPage('page-register')">Create Account</a></div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== REGISTER ===================== -->
+<div class="page" id="page-register">
+<div class="auth-page">
+  <div class="auth-logo">
+    <div class="nl-logo">
+      <svg viewBox="0 0 52 52" fill="none"><path d="M32 10C29.5 10 27.2 11 25.6 12.7L20.5 17.8C18.9 19.4 18 21.6 18 24C18 26.4 18.9 28.6 20.5 30.2L21.9 31.6L24.7 28.8L23.3 27.4C22.5 26.6 22 25.3 22 24C22 22.7 22.5 21.5 23.3 20.6L28.4 15.5C29.3 14.6 30.6 14 32 14C33.4 14 34.7 14.5 35.5 15.3C37.2 17 37.2 19.8 35.5 21.5L32.8 24.2L35.6 27L38.3 24.3C40 22.6 41 20.4 41 18C41 15.6 40 13.3 38.4 11.7C36.8 11 34.5 10 32 10Z" fill="white"/><path d="M20 42C22.5 42 24.8 41 26.4 39.3L31.5 34.2C33.1 32.6 34 30.4 34 28C34 25.6 33.1 23.4 31.5 21.8L30.1 20.4L27.3 23.2L28.7 24.6C29.5 25.4 30 26.7 30 28C30 29.3 29.5 30.5 28.7 31.4L23.6 36.5C22.7 37.4 21.4 38 20 38C18.6 38 17.3 37.5 16.5 36.7C14.8 35 14.8 32.2 16.5 30.5L19.2 27.8L16.4 25L13.7 27.7C12 29.4 11 31.6 11 34C11 36.4 12 38.7 13.6 40.3C15.2 41.9 17.5 42 20 42Z" fill="white"/></svg>
+    </div>
+    <h1>NETLINK AGENCIES</h1>
+    <p>Linking You to Financial Solutions</p>
+  </div>
+  <div id="inviter-bar" style="display:none;width:100%;max-width:440px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:14px;padding:11px 14px;margin-bottom:14px;display:none;align-items:center;gap:10px">
+    <span style="font-size:20px">👤</span>
+    <p style="color:#fff;font-size:13px;font-weight:600">You've been invited by <span id="inviter-name" style="color:#fde68a"></span></p>
+  </div>
+  <div class="auth-box">
+    <h2>Create Account</h2>
+    <p class="subtitle">Fill in your details to get started</p>
+    <div id="reg-err" class="alert error" style="display:none"></div>
+    <div class="form-group"><label>Username</label><input type="text" id="r-user" placeholder="Enter username" onfocus="this.classList.add('focused')" onblur="this.classList.remove('focused')"></div>
+    <div class="form-group"><label>Email Address</label><input type="email" id="r-email" placeholder="Enter email address" onfocus="this.classList.add('focused')" onblur="this.classList.remove('focused')"></div>
+    <div class="form-group"><label>Phone Number</label><input type="tel" id="r-phone" placeholder="e.g. 0712345678" onfocus="this.classList.add('focused')" onblur="this.classList.remove('focused')"></div>
+    <div class="form-group"><label>WhatsApp Number</label><input type="tel" id="r-whatsapp" placeholder="e.g. 0712345678" onfocus="this.classList.add('focused')" onblur="this.classList.remove('focused')"></div>
+    <div class="form-group">
+      <label>Country</label>
+      <select id="r-country">
+        <option value="">Select your country</option>
+        <option>Kenya</option><option>Uganda</option><option>Tanzania</option><option>Rwanda</option>
+        <option>Ethiopia</option><option>Nigeria</option><option>Ghana</option><option>South Africa</option>
+        <option>Zimbabwe</option><option>Zambia</option><option>Malawi</option><option>Mozambique</option>
+        <option>United States</option><option>United Kingdom</option><option>Canada</option>
+        <option>Australia</option><option>India</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Referral Code (optional)</label><input type="text" id="r-ref" placeholder="Enter referral code if any"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="r-pass" placeholder="Create a password" onfocus="this.classList.add('focused')" onblur="this.classList.remove('focused')"></div>
+    <div class="form-group"><label>Confirm Password</label><input type="password" id="r-pass2" placeholder="Confirm your password" onfocus="this.classList.add('focused')" onblur="this.classList.remove('focused')"></div>
+    <button class="btn-primary" onclick="doRegister()">Create Account</button>
+    <div class="auth-footer">Already have an account? <a onclick="showPage('page-login')">Login</a></div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== FORGOT PASSWORD ===================== -->
+<div class="page" id="page-forgot">
+<div class="auth-page" style="justify-content:center">
+  <div class="auth-logo">
+    <div class="nl-logo">
+      <svg viewBox="0 0 52 52" fill="none"><path d="M32 10C29.5 10 27.2 11 25.6 12.7L20.5 17.8C18.9 19.4 18 21.6 18 24C18 26.4 18.9 28.6 20.5 30.2L21.9 31.6L24.7 28.8L23.3 27.4C22.5 26.6 22 25.3 22 24C22 22.7 22.5 21.5 23.3 20.6L28.4 15.5C29.3 14.6 30.6 14 32 14C33.4 14 34.7 14.5 35.5 15.3C37.2 17 37.2 19.8 35.5 21.5L32.8 24.2L35.6 27L38.3 24.3C40 22.6 41 20.4 41 18C41 15.6 40 13.3 38.4 11.7C36.8 11 34.5 10 32 10Z" fill="white"/><path d="M20 42C22.5 42 24.8 41 26.4 39.3L31.5 34.2C33.1 32.6 34 30.4 34 28C34 25.6 33.1 23.4 31.5 21.8L30.1 20.4L27.3 23.2L28.7 24.6C29.5 25.4 30 26.7 30 28C30 29.3 29.5 30.5 28.7 31.4L23.6 36.5C22.7 37.4 21.4 38 20 38C18.6 38 17.3 37.5 16.5 36.7C14.8 35 14.8 32.2 16.5 30.5L19.2 27.8L16.4 25L13.7 27.7C12 29.4 11 31.6 11 34C11 36.4 12 38.7 13.6 40.3C15.2 41.9 17.5 42 20 42Z" fill="white"/></svg>
+    </div>
+    <h1>NETLINK AGENCIES</h1>
+    <p>Linking You to Financial Solutions</p>
+  </div>
+  <div class="auth-box">
+    <h2>Reset Password</h2>
+    <p class="subtitle">Enter your username or email to reset</p>
+    <div id="forgot-msg" style="display:none" class="alert success"></div>
+    <div class="form-group"><label>Username or Email</label><input type="text" id="forgot-inp" placeholder="Enter username or email"></div>
+    <button class="btn-primary" onclick="doForgot()">Send Reset Instructions</button>
+    <div class="auth-footer"><a onclick="showPage('page-login')">← Back to Login</a></div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== ACTIVATION ===================== -->
+<div class="page" id="page-activation">
+<div class="auth-page">
+  <div class="auth-logo">
+    <div class="nl-logo">
+      <svg viewBox="0 0 52 52" fill="none"><path d="M32 10C29.5 10 27.2 11 25.6 12.7L20.5 17.8C18.9 19.4 18 21.6 18 24C18 26.4 18.9 28.6 20.5 30.2L21.9 31.6L24.7 28.8L23.3 27.4C22.5 26.6 22 25.3 22 24C22 22.7 22.5 21.5 23.3 20.6L28.4 15.5C29.3 14.6 30.6 14 32 14C33.4 14 34.7 14.5 35.5 15.3C37.2 17 37.2 19.8 35.5 21.5L32.8 24.2L35.6 27L38.3 24.3C40 22.6 41 20.4 41 18C41 15.6 40 13.3 38.4 11.7C36.8 11 34.5 10 32 10Z" fill="white"/><path d="M20 42C22.5 42 24.8 41 26.4 39.3L31.5 34.2C33.1 32.6 34 30.4 34 28C34 25.6 33.1 23.4 31.5 21.8L30.1 20.4L27.3 23.2L28.7 24.6C29.5 25.4 30 26.7 30 28C30 29.3 29.5 30.5 28.7 31.4L23.6 36.5C22.7 37.4 21.4 38 20 38C18.6 38 17.3 37.5 16.5 36.7C14.8 35 14.8 32.2 16.5 30.5L19.2 27.8L16.4 25L13.7 27.7C12 29.4 11 31.6 11 34C11 36.4 12 38.7 13.6 40.3C15.2 41.9 17.5 42 20 42Z" fill="white"/></svg>
+    </div>
+    <h1>Activate Your Account</h1>
+    <p id="act-fee-line">Pay to get started</p>
+  </div>
+  <div id="act-form-box" style="width:100%;max-width:440px">
+    <div class="auth-box">
+      <h2>Choose Payment Method</h2>
+      <p class="subtitle" id="act-sub">Pay activation fee to unlock your account</p>
+      <div class="pay-tabs">
+        <button class="pay-tab mpesa-active" id="tab-mp" onclick="setPayTab('mpesa')">📱 M-PESA</button>
+        <button class="pay-tab" id="tab-pp" onclick="setPayTab('paypal')">🌐 PayPal</button>
+      </div>
+      <div id="mpesa-box">
+        <div class="pay-step"><div class="psnum">1</div><div class="pstext"><h4>Amount to Pay</h4><p class="pval" id="mp-amount">KES 150</p></div></div>
+        <div class="pay-step"><div class="psnum">2</div><div class="pstext"><h4>Open M-PESA on your phone</h4><p>Go to M-PESA → Send Money or Lipa Na M-PESA</p></div></div>
+        <div class="pay-step"><div class="psnum">3</div><div class="pstext"><h4>Send to this number</h4><p class="pval" id="mp-number">+254706494401</p><p style="font-size:12px;color:#6b7280" id="mp-name">Account Name: MARY MPURUNGA</p></div></div>
+        <div class="pay-step"><div class="psnum">4</div><div class="pstext"><h4>Copy the M-PESA transaction code</h4><p>You'll receive an SMS confirmation with a code like <strong>QGJ4XKL2MN</strong></p></div></div>
+      </div>
+      <div id="paypal-box" style="display:none">
+        <div class="pay-step"><div class="psnum">1</div><div class="pstext"><h4>Amount to Pay</h4><p class="pval" id="pp-amount">$1.50 USD</p></div></div>
+        <div class="pay-step"><div class="psnum">2</div><div class="pstext"><h4>Log in to PayPal</h4><p>Go to paypal.com or open the PayPal app</p></div></div>
+        <div class="pay-step"><div class="psnum">3</div><div class="pstext"><h4>Send to this email</h4><p class="pval" id="pp-email">marympurunga@gmail.com</p></div></div>
+        <div class="pay-step"><div class="psnum">4</div><div class="pstext"><h4>Copy the PayPal Transaction ID</h4><p>Found in your PayPal confirmation email or activity</p></div></div>
+      </div>
+      <div class="form-group" style="margin-top:16px"><label>Transaction ID / Code</label><input type="text" id="act-txn" placeholder="e.g. QGJ4XKL2MN or PayPal-XXXX"></div>
+      <button class="btn-primary" onclick="doActivation()">Submit for Activation</button>
+      <div class="auth-footer"><a onclick="doLogout()">← Logout</a></div>
+    </div>
+  </div>
+  <div id="act-success-box" style="display:none;width:100%;max-width:440px">
+    <div class="alert green-box">
+      <h3>✅ Request Received!</h3>
+      <p id="act-success-msg">We have received your request. Wait 2–5 minutes to get your account activated.</p>
+      <p style="margin-top:10px;font-size:12px;opacity:.8">If your account is not activated within 2–5 minutes, click the button below to message admin on WhatsApp.</p>
+      <button class="btn-primary" style="margin-top:14px;background:linear-gradient(to right,#25d366,#128c7e);box-shadow:none" onclick="window.open('https://wa.me/254706494401?text=Hello, I submitted activation for NETLINK AGENCIES. Please approve my account.','_blank')">💬 Message Admin on WhatsApp</button>
+    </div>
+    <div style="text-align:center;margin-top:16px"><a onclick="checkActivationStatus()" style="color:#fff;font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline">🔄 Check Activation Status</a></div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== APP (DASHBOARD) ===================== -->
+<div class="page" id="page-app">
+  <header class="app-header">
+    <div class="app-header-inner">
+      <button class="header-btn" onclick="openSidebar()" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <span class="header-title" id="hdr-title">NETLINK AGENCIES</span>
+      <div class="bell-wrap">
+        <button class="header-btn" aria-label="Notifications">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <span class="bell-dot"></span>
+      </div>
+    </div>
+  </header>
+  <div class="sidebar-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-hdr">
+      <div><div class="sidebar-hdr-name">NETLINK AGENCIES</div><div class="sidebar-hdr-user" id="sb-uname">@user</div></div>
+      <button class="sidebar-close" onclick="closeSidebar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="si" onclick="go('dashboard')"><span class="sinum">1</span><span class="siicon">🏠</span><span class="silabel">Home</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('tournaments')"><span class="sinum">2</span><span class="siicon">🏆</span><span class="silabel">E-Tournaments</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('karibu')"><span class="sinum">3</span><span class="siicon">🎁</span><span class="silabel">Karibu Bonus</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('pay-clients')"><span class="sinum">4</span><span class="siicon">💳</span><span class="silabel">Pay for Clients</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('deposit')"><span class="sinum">5</span><span class="siicon">💰</span><span class="silabel">Deposit</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('mentorship')"><span class="sinum">6</span><span class="siicon">📚</span><span class="silabel">Mentorship</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('company-ads')"><span class="sinum">7</span><span class="siicon">📣</span><span class="silabel">Company Advertisement</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('betting')"><span class="sinum">8</span><span class="siicon">📈</span><span class="silabel">Betting Prediction</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('cashout')"><span class="sinum">9</span><span class="siicon">🏧</span><span class="silabel">Cashout</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('articles')"><span class="sinum">10</span><span class="siicon">📰</span><span class="silabel">Articles</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('view-ads')"><span class="sinum">11</span><span class="siicon">👁️</span><span class="silabel">View Ads</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('tiktok')"><span class="sinum">12</span><span class="siicon">▶️</span><span class="silabel">TikTok Videos</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('instagram')"><span class="sinum">13</span><span class="siicon">📸</span><span class="silabel">Instagram Videos</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('youtube')"><span class="sinum">14</span><span class="siicon">🎬</span><span class="silabel">YouTube Videos</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('withdraw-tasks')"><span class="sinum">15</span><span class="siicon">📋</span><span class="silabel">Withdraw Tasks</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('downlines')"><span class="sinum">16</span><span class="siicon">👥</span><span class="silabel">Downlines</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('whatsapp')"><span class="sinum">17</span><span class="siicon">💬</span><span class="silabel">WhatsApp Adverts</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('forex')"><span class="sinum">18</span><span class="siicon">📊</span><span class="silabel">Forex Trading</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('trivia')"><span class="sinum">19</span><span class="siicon">🧠</span><span class="silabel">Trivia Quiz</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('survey')"><span class="sinum">20</span><span class="siicon">📝</span><span class="silabel">Daily Survey</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('math')"><span class="sinum">21</span><span class="siicon">🔢</span><span class="silabel">Math Quiz</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('number-game')"><span class="sinum">22</span><span class="siicon">🎯</span><span class="silabel">Number Game</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('community')"><span class="sinum">23</span><span class="siicon">🌐</span><span class="silabel">Community</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('help')"><span class="sinum">24</span><span class="siicon">❓</span><span class="silabel">Get Help</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('timetable')"><span class="sinum">25</span><span class="siicon">📅</span><span class="silabel">Time Table</span><span class="siarrow">›</span></a>
+      <a class="si" onclick="go('profile')"><span class="sinum">26</span><span class="siicon">👤</span><span class="silabel">Profile</span><span class="siarrow">›</span></a>
+    </nav>
+    <div class="sidebar-footer"><button class="logout-btn" onclick="doLogout()"><span style="font-size:18px">🚪</span> Logout</button></div>
+  </aside>
+
+  <!-- DASHBOARD -->
+  <div id="s-dashboard" class="main">
+    <div class="greet">
+      <p class="gname" id="greet-txt">🌞 Good morning User, @user <span class="verify-badge">✓</span></p>
+      <p class="gsub">Welcome to NETLINK AGENCIES</p>
+    </div>
+    <div class="stats-2" style="margin-top:14px">
+      <div class="stat-box box-red"><div class="sl">EXPENSES</div><div class="sv" id="d-expenses">KES 150</div></div>
+      <div class="stat-box box-orange"><div class="sl">TOTAL EARNINGS</div><div class="sv" id="d-earnings">KES 0</div></div>
+    </div>
+    <div class="big-card card-blue">
+      <div class="bg-icon">🛒</div>
+      <div class="cl">ACCOUNT BALANCE</div>
+      <div class="cv" id="d-balance">KES 0</div>
+      <span class="cbadge" style="background:rgba(74,222,128,.25);color:#bbf7d0">69% Higher</span>
+    </div>
+    <div class="big-card card-red2">
+      <div class="bg-icon">⬆️</div>
+      <div class="cl">WITHDRAWN AMOUNT</div>
+      <div class="cv" id="d-withdrawn">KES 0</div>
+      <span class="cbadge" style="background:rgba(251,113,133,.25);color:#fecdd3">25% Increased</span>
+    </div>
+    <div class="big-card card-amber">
+      <div class="bg-icon">⏳</div>
+      <div class="cl">PENDING AMOUNT</div>
+      <div class="cv" id="d-pending">KES 0</div>
+      <span class="cbadge" style="background:rgba(253,230,138,.25);color:#fef08a">15% Increased</span>
+    </div>
+    <div class="bonus-grid">
+      <div class="big-card card-purple" style="margin-bottom:0;padding:15px"><div class="cl">WEEKLY BONUS</div><div style="font-size:22px;font-weight:800" id="d-weekly">KES 0</div></div>
+      <div class="big-card card-cyan" style="margin-bottom:0;padding:15px"><div class="cl">KARIBU BONUS</div><div style="font-size:22px;font-weight:800" id="d-karibu">KES 0</div></div>
+    </div>
+    <div style="margin-top:12px"></div>
+    <div class="ref-card">
+      <h3>🔗 Your Referral Link</h3>
+      <div class="ref-link-box" id="ref-link-box">Loading...</div>
+      <div class="share-row">
+        <button class="share-btn sb-copy" onclick="copyRef()"><span class="bi">📋</span>Copy</button>
+        <button class="share-btn sb-wa" onclick="shareRef('wa')"><span class="bi">💬</span>WhatsApp</button>
+        <button class="share-btn sb-fb" onclick="shareRef('fb')"><span class="bi">📘</span>Facebook</button>
+        <button class="share-btn sb-tg" onclick="shareRef('tg')"><span class="bi">✈️</span>Telegram</button>
+      </div>
+    </div>
+    <div class="wcard">
+      <h3>📊 Referral Levels</h3>
+      <div class="stats-2" style="margin-bottom:8px">
+        <div class="stat-box" style="background:linear-gradient(135deg,#0891b2,#0e7490)"><div class="sl">LEVEL 1</div><div class="sv" id="d-l1">0</div><div style="font-size:11px;opacity:.8">KSh 80 each</div></div>
+        <div class="stat-box" style="background:linear-gradient(135deg,#16a34a,#15803d)"><div class="sl">LEVEL 2</div><div class="sv" id="d-l2">0</div><div style="font-size:11px;opacity:.8">KSh 20 each</div></div>
+      </div>
+      <div class="stat-box" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);padding:13px;border-radius:13px"><div class="sl">LEVEL 3</div><div style="font-size:20px;font-weight:800;color:#fff" id="d-l3">0</div><div style="font-size:11px;color:rgba(255,255,255,.8)">KSh 10 each</div></div>
+    </div>
+  </div>
+
+  <!-- TOURNAMENTS -->
+  <div id="s-tournaments" class="main" style="display:none">
+    <div class="section-title">🏆 E-Tournaments</div>
+    <div class="tourn-card"><div class="tourn-banner" style="background:linear-gradient(135deg,#6d28d9,#5b21b6)">🏆 Quiz Masters</div><div class="tourn-body"><h4>Weekly Trivia Tournament</h4><p>Compete with 500+ members in our weekly trivia contest. Top 10 winners share KES 10,000!</p><div style="display:flex;align-items:center;justify-content:space-between"><span class="badge bg-green">Active</span><span style="font-size:13px;color:#be185d;font-weight:700">Prize: KES 10,000</span></div><button class="btn-primary" style="margin-top:10px" onclick="go('trivia')">Join Tournament</button></div></div>
+    <div class="tourn-card"><div class="tourn-banner" style="background:linear-gradient(135deg,#0891b2,#0e7490)">🔢 Math Wizards</div><div class="tourn-body"><h4>Weekly Math Challenge</h4><p>Solve 10 math problems fastest and win KES 2,000 weekly prize!</p><div style="display:flex;align-items:center;justify-content:space-between"><span class="badge bg-green">Active</span><span style="font-size:13px;color:#be185d;font-weight:700">Prize: KES 2,000</span></div><button class="btn-primary" style="margin-top:10px" onclick="go('math')">Join Tournament</button></div></div>
+    <div class="tourn-card"><div class="tourn-banner" style="background:linear-gradient(135deg,#dc2626,#b91c1c)">🎯 Lucky Numbers</div><div class="tourn-body"><h4>Number Prediction Jackpot</h4><p>Pick 3 lucky numbers and win big! Weekly jackpot KES 5,000.</p><div style="display:flex;align-items:center;justify-content:space-between"><span class="badge bg-yellow">Upcoming</span><span style="font-size:13px;color:#be185d;font-weight:700">Prize: KES 5,000</span></div><button class="btn-primary" style="margin-top:10px" onclick="go('number-game')">Play Now</button></div></div>
+  </div>
+
+  <!-- KARIBU BONUS -->
+  <div id="s-karibu" class="main" style="display:none">
+    <div class="section-title">🎁 Karibu Bonus</div>
+    <div class="karibu-card"><h3 style="color:#fff;font-size:16px;font-weight:800;margin-bottom:8px">🌟 Welcome Bonus Program</h3><p style="color:rgba(255,255,255,.9);font-size:13px;line-height:1.6">Earn your Karibu Bonus when you successfully refer your first 20 active members!</p>
+      <div class="km"><div class="km-icon">🎁</div><div class="km-text"><h4>First 20 Referrals → KES 100</h4><p>One-time Karibu Bonus unlocked!</p></div></div>
+      <div class="km"><div class="km-icon">💎</div><div class="km-text"><h4>50 Referrals/week → KES 200</h4><p>Weekly bonus paid every Friday</p></div></div>
+    </div>
+    <div class="wcard">
+      <h3>📊 Your Progress</h3>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:13px;color:#6b7280">Active Referrals</span><span style="font-size:13px;font-weight:700" id="kb-refs">0 / 20</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="kb-prog" style="width:0%"></div></div>
+      <p style="font-size:12px;color:#9ca3af;text-align:center">Refer 20 active members to unlock KES 100</p>
+    </div>
+    <div class="wcard">
+      <h3>💰 Collect Karibu Bonus</h3>
+      <div id="kb-collect-box">
+        <p>You need 20 active referrals to collect your Karibu Bonus of KES 100.</p>
+        <button class="btn-primary" id="kb-collect-btn" disabled onclick="collectKaribu()" style="margin-top:10px;opacity:.5">Collect KES 100 Karibu Bonus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAY FOR CLIENTS -->
+  <div id="s-pay-clients" class="main" style="display:none">
+    <div class="section-title">💳 Pay for Clients</div>
+    <div class="wcard"><h3>💡 How It Works</h3><p>Earn KES 50 commission by paying the KES 150 activation fee on behalf of a new member. You activate their account AND earn money!</p></div>
+    <div class="wcard"><h3>📋 Pending Client Requests</h3><div class="empty-state" style="text-align:center;padding:30px;color:#9ca3af"><div style="font-size:40px;margin-bottom:8px">👤</div><p>No pending clients at the moment</p></div></div>
+    <div class="wcard admin-form">
+      <h3>➕ Add a Client</h3>
+      <div class="form-group"><label>Client Name/Username</label><input type="text" id="pc-name" placeholder="Client's username"></div>
+      <div class="form-group"><label>Client Phone</label><input type="tel" id="pc-phone" placeholder="Client's phone number"></div>
+      <button class="btn-primary" onclick="payForClient()">Pay KES 150 for Client</button>
+    </div>
+  </div>
+
+  <!-- DEPOSIT -->
+  <div id="s-deposit" class="main" style="display:none">
+    <div class="section-title">💰 Deposit</div>
+    <div class="wcard">
+      <h3>💳 Select Payment Method</h3>
+      <div class="dep-method selected" onclick="selDep(this)"><h4>📱 M-PESA</h4><p>Send to +254706494401 (MARY MPURUNGA)</p></div>
+      <div class="dep-method" onclick="selDep(this)"><h4>🌐 PayPal</h4><p>Send to marympurunga@gmail.com</p></div>
+    </div>
+    <div class="wcard admin-form">
+      <h3>💵 Deposit Details</h3>
+      <div class="form-group"><label>Amount (KES)</label><input type="number" id="dep-amt" placeholder="Enter amount e.g. 500" oninput="calcDepUSD()"></div>
+      <div id="dep-usd-info" style="display:none;margin-bottom:12px" class="alert info"></div>
+      <div class="form-group"><label>Transaction Reference / Code</label><input type="text" id="dep-ref" placeholder="M-PESA code or PayPal transaction ID"></div>
+      <button class="btn-primary" onclick="doDeposit()">Submit Deposit</button>
+    </div>
+    <div class="wcard"><h3>📋 Deposit History</h3><div id="dep-history"><div style="text-align:center;padding:20px;color:#9ca3af"><div style="font-size:36px;margin-bottom:8px">📋</div><p>No deposits yet</p></div></div></div>
+  </div>
+
+  <!-- MENTORSHIP -->
+  <div id="s-mentorship" class="main" style="display:none">
+    <div class="section-title">📚 Mentorship</div>
+    <div class="wcard"><h3>🌟 NETLINK Mentorship Program</h3><p>Step-by-step guidance to maximize your earnings. Learn from top earners and build a sustainable income stream.</p></div>
+    <div class="ms-step"><div class="ms-num">1</div><h4>Activate Your Account</h4><p>Pay KES 150 activation fee to unlock all earning features and start your money-making journey.</p></div>
+    <div class="ms-step"><div class="ms-num">2</div><h4>Build Your Level 1 Referrals</h4><p>Share your link on WhatsApp, Facebook, and TikTok. Earn KSh 80 for each Level 1 referral who activates.</p></div>
+    <div class="ms-step"><div class="ms-num">3</div><h4>Grow Your Downline Network</h4><p>Your Level 1 refs bring their own refs (Level 2: KSh 20 each). Their refs become your Level 3 (KSh 10 each). More levels = more passive income!</p></div>
+    <div class="ms-step"><div class="ms-num">4</div><h4>Complete Daily Tasks</h4><p>Watch TikTok (KSh 15/video), Instagram (KSh 20/video), YouTube (KSh 25/video). Do surveys, quizzes, and view ads every day.</p></div>
+    <div class="ms-step"><div class="ms-num">5</div><h4>Hit Bonus Milestones</h4><p>Karibu Bonus: KES 100 at 20 referrals. Weekly Bonus: KES 200 when you invite 50 people in a week.</p></div>
+    <div class="ms-step"><div class="ms-num">6</div><h4>Withdraw Your Earnings</h4><p>Minimum KES 150 to withdraw. Directly to your M-PESA number or PayPal. Processed within 24 hours.</p></div>
+  </div>
+
+  <!-- COMPANY ADS -->
+  <div id="s-company-ads" class="main" style="display:none">
+    <div class="section-title">📣 Company Advertisement</div>
+    <div class="ad-card"><div class="ad-banner" style="background:linear-gradient(135deg,#be185d,#f97316)">🔗 NETLINK AGENCIES</div><div class="ad-body"><h4>Earn Money From Home Daily</h4><p>Join thousands of Kenyans earning KES 500–5,000+ daily with NETLINK AGENCIES. No experience needed!</p><button class="btn-primary" onclick="shareAd(this,'NETLINK Ad 1')">Share This Ad (+KES 5)</button></div></div>
+    <div class="ad-card"><div class="ad-banner" style="background:linear-gradient(135deg,#6d28d9,#0891b2)">💼 Work From Home</div><div class="ad-body"><h4>Build Your Digital Business</h4><p>Become your own boss. Earn from referrals, videos, surveys, and daily tasks with no limit!</p><button class="btn-primary" onclick="shareAd(this,'NETLINK Ad 2')">Share This Ad (+KES 5)</button></div></div>
+    <div class="ad-card"><div class="ad-banner" style="background:linear-gradient(135deg,#0891b2,#16a34a)">📱 Instant M-PESA</div><div class="ad-body"><h4>Fast & Reliable Payments</h4><p>Cashout anytime directly to M-PESA or PayPal. Minimum withdrawal just KES 150!</p><button class="btn-primary" onclick="shareAd(this,'NETLINK Ad 3')">Share This Ad (+KES 5)</button></div></div>
+  </div>
+
+  <!-- BETTING -->
+  <div id="s-betting" class="main" style="display:none">
+    <div class="section-title">📈 Betting Prediction</div>
+    <div class="alert warning" style="margin-bottom:12px">⚠️ These are expert predictions for informational purposes only. Bet responsibly!</div>
+    <div class="match-card"><h4 style="font-size:13px;color:#6b7280;margin-bottom:10px">🏟️ Premier League — Today 20:45 EAT</h4><div class="match-teams"><span class="team">Arsenal</span><span class="vs">VS</span><span class="team">Chelsea</span></div><div class="pick-row"><button class="pick-btn" onclick="pickMatch(this)">Arsenal Win</button><button class="pick-btn" onclick="pickMatch(this)">Draw</button><button class="pick-btn" onclick="pickMatch(this)">Chelsea Win</button></div></div>
+    <div class="match-card"><h4 style="font-size:13px;color:#6b7280;margin-bottom:10px">🏟️ Premier League — Tomorrow 18:00 EAT</h4><div class="match-teams"><span class="team">Man City</span><span class="vs">VS</span><span class="team">Liverpool</span></div><div class="pick-row"><button class="pick-btn" onclick="pickMatch(this)">Man City Win</button><button class="pick-btn" onclick="pickMatch(this)">Draw</button><button class="pick-btn" onclick="pickMatch(this)">Liverpool Win</button></div></div>
+    <div class="match-card"><h4 style="font-size:13px;color:#6b7280;margin-bottom:10px">🏟️ KPL — Saturday 15:00 EAT</h4><div class="match-teams"><span class="team">Gor Mahia</span><span class="vs">VS</span><span class="team">AFC Leopards</span></div><div class="pick-row"><button class="pick-btn" onclick="pickMatch(this)">Gor Mahia</button><button class="pick-btn" onclick="pickMatch(this)">Draw</button><button class="pick-btn" onclick="pickMatch(this)">AFC Win</button></div></div>
+  </div>
+
+  <!-- CASHOUT -->
+  <div id="s-cashout" class="main" style="display:none">
+    <div class="section-title">🏧 Cashout</div>
+    <div class="cashout-top"><div class="ctl">AVAILABLE ACCOUNT BALANCE</div><div class="ctv" id="co-balance">KES 0</div></div>
+    <div class="wcard admin-form">
+      <h3>📤 Withdraw Funds</h3>
+      <div class="form-group">
+        <label>Withdrawal Method</label>
+        <select id="co-method" onchange="onCoMethodChange()">
+          <option value="mpesa">M-PESA</option>
+          <option value="paypal">PayPal</option>
+        </select>
+      </div>
+      <div id="co-phone-row" class="form-group">
+        <label>M-PESA Number (Permanent — your registered number)</label>
+        <input type="text" id="co-phone-display" readonly style="background:#f3f4f6;cursor:not-allowed">
+      </div>
+      <div id="co-paypal-row" class="form-group" style="display:none">
+        <label>PayPal Email</label>
+        <input type="email" id="co-paypal-email" placeholder="Enter your PayPal email">
+      </div>
+      <div class="form-group">
+        <label>Amount (KES)</label>
+        <input type="number" id="co-amount" placeholder="Min: KES 150" oninput="calcCashout()">
+      </div>
+      <div id="co-fee-info" style="display:none" class="alert info"></div>
+      <div id="co-usd-info" style="display:none" class="alert info"></div>
+      <button class="btn-primary" onclick="doCashout()">Request Withdrawal</button>
+      <div class="cashout-note">
+        <p><strong>Note!</strong> Minimum of withdrawing is KES 150 on your account balance. Your withdrawn amount will be disbursed to <strong id="co-note-phone">your registered number</strong>. If this is not the number to receive payment, click <a onclick="window.open('https://wa.me/254706494401?text=Hello, I want to verify my withdrawal details for NETLINK AGENCIES','_blank')" style="color:#93c5fd;font-weight:700;cursor:pointer;text-decoration:underline">Verify Me</a> and send a message before withdrawing. Happy networking with NETLINK AGENCIES 🔗</p>
+      </div>
+    </div>
+    <div class="wcard"><h3>📋 Withdrawal History</h3><div id="co-history"><div style="text-align:center;padding:20px;color:#9ca3af"><div style="font-size:36px;margin-bottom:8px">📋</div><p>No withdrawals yet</p></div></div></div>
+  </div>
+
+  <!-- ARTICLES -->
+  <div id="s-articles" class="main" style="display:none">
+    <div class="section-title">📰 Articles</div>
+    <div class="art-card"><div class="art-thumb" style="background:linear-gradient(135deg,#be185d,#f97316)">💡</div><div class="art-body"><h4>How to Maximize Earnings with NETLINK</h4><p>Top 10 strategies our highest earners use to make KES 5,000+ per month consistently.</p><button class="read-btn" onclick="showToast('Opening article...')">Read Article</button></div></div>
+    <div class="art-card"><div class="art-thumb" style="background:linear-gradient(135deg,#6d28d9,#0891b2)">📱</div><div class="art-body"><h4>WhatsApp Marketing Guide for NETLINK</h4><p>Step-by-step guide to using WhatsApp groups and broadcasts to grow your referral network.</p><button class="read-btn" onclick="showToast('Opening article...')">Read Article</button></div></div>
+    <div class="art-card"><div class="art-thumb" style="background:linear-gradient(135deg,#16a34a,#0891b2)">💰</div><div class="art-body"><h4>Understanding the 3-Level Referral System</h4><p>Detailed breakdown of Level 1 (KSh 80), Level 2 (KSh 20), Level 3 (KSh 10) and how to maximize your downline earnings.</p><button class="read-btn" onclick="showToast('Opening article...')">Read Article</button></div></div>
+  </div>
+
+  <!-- VIEW ADS -->
+  <div id="s-view-ads" class="main" style="display:none">
+    <div class="section-title">👁️ View Ads</div>
+    <div class="alert info" style="margin-bottom:12px">👁️ Watch ads to earn KES 5 each. New ads refresh daily!</div>
+    <div class="ad-card"><div class="ad-banner" style="background:linear-gradient(135deg,#be185d,#f97316)">🛍️ JUMIA SALE</div><div class="ad-body"><h4>Jumia Flash Sale — Up to 70% Off</h4><p>Electronics, fashion, home appliances and more at massive discounts!</p><button class="btn-primary" onclick="watchAd(this)">Watch Ad (+KES 5)</button></div></div>
+    <div class="ad-card"><div class="ad-banner" style="background:linear-gradient(135deg,#6d28d9,#0891b2)">📱 SAFARICOM</div><div class="ad-body"><h4>New Data Bundles Available</h4><p>Get unlimited WhatsApp + Facebook for just KES 20/day or KES 99/week.</p><button class="btn-primary" onclick="watchAd(this)">Watch Ad (+KES 5)</button></div></div>
+    <div class="ad-card"><div class="ad-banner" style="background:linear-gradient(135deg,#0891b2,#16a34a)">🏦 EQUITY BANK</div><div class="ad-body"><h4>Open Account — Zero Fees</h4><p>Instant mobile loans up to KES 100,000. Apply in 2 minutes via Equity app.</p><button class="btn-primary" onclick="watchAd(this)">Watch Ad (+KES 5)</button></div></div>
+  </div>
+
+  <!-- TIKTOK VIDEOS -->
+  <div id="s-tiktok" class="main" style="display:none">
+    <div class="section-title">▶️ TikTok Videos</div>
+    <div class="alert info" style="margin-bottom:12px">📱 Watch 3 TikTok videos per day — earn <strong>KSh 15</strong> per video!</div>
+    <div id="tiktok-list"></div>
+  </div>
+
+  <!-- INSTAGRAM VIDEOS -->
+  <div id="s-instagram" class="main" style="display:none">
+    <div class="section-title">📸 Instagram Videos</div>
+    <div class="alert info" style="margin-bottom:12px">📸 Watch 3 Instagram reels per day — earn <strong>KSh 20</strong> per video!</div>
+    <div id="instagram-list"></div>
+  </div>
+
+  <!-- YOUTUBE VIDEOS -->
+  <div id="s-youtube" class="main" style="display:none">
+    <div class="section-title">🎬 YouTube Videos</div>
+    <div class="alert info" style="margin-bottom:12px">🎬 Watch 3 YouTube videos per day — earn <strong>KSh 25</strong> per video!</div>
+    <div id="youtube-list"></div>
+  </div>
+
+  <!-- WITHDRAW TASKS -->
+  <div id="s-withdraw-tasks" class="main" style="display:none">
+    <div class="section-title">📋 Withdraw Tasks</div>
+    <div class="alert info" style="margin-bottom:12px">Complete tasks to unlock your withdrawal slot and earn extra KES!</div>
+    <div class="wcard" style="padding-bottom:8px"><h3 style="margin-bottom:8px">📂 Task Categories</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="share-btn sb-copy" style="border-radius:8px;padding:8px 12px;font-size:12px" onclick="go('tiktok')">▶️ Videos</button>
+        <button class="share-btn sb-copy" style="border-radius:8px;padding:8px 12px;font-size:12px" onclick="go('survey')">📝 Surveys</button>
+        <button class="share-btn sb-copy" style="border-radius:8px;padding:8px 12px;font-size:12px" onclick="go('trivia')">🧠 Trivia</button>
+        <button class="share-btn sb-copy" style="border-radius:8px;padding:8px 12px;font-size:12px" onclick="go('number-game')">🎯 Number Game</button>
+        <button class="share-btn sb-copy" style="border-radius:8px;padding:8px 12px;font-size:12px" onclick="go('math')">🔢 Math Quiz</button>
+      </div>
+    </div>
+    <div class="wt-item"><h4>📱 Task 1: Share Referral in 3 WhatsApp Groups</h4><p>Share your referral link in at least 3 WhatsApp groups and screenshot as proof.</p><div class="wt-reward">Reward: KES 20</div><br><button class="btn-primary" onclick="completeTask(this,'Task 1: WhatsApp Groups')">Submit Proof</button></div>
+    <div class="wt-item"><h4>📸 Task 2: Post on Facebook Timeline</h4><p>Post the NETLINK Agencies promo content on your Facebook timeline and screenshot.</p><div class="wt-reward">Reward: KES 20</div><br><button class="btn-primary" onclick="completeTask(this,'Task 2: Facebook Post')">Submit Proof</button></div>
+    <div class="wt-item"><h4>🎬 Task 3: Watch 5 Videos (Any Platform)</h4><p>Watch any 5 videos from TikTok, Instagram, or YouTube sections today.</p><div class="wt-reward">Reward: KES 15</div><br><button class="btn-primary" onclick="completeTask(this,'Task 3: Watch Videos')">Mark Complete</button></div>
+    <div class="wt-item"><h4>📝 Task 4: Complete Daily Survey</h4><p>Answer today's survey questions to unlock this task reward.</p><div class="wt-reward">Reward: KES 10</div><br><button class="btn-primary" onclick="go('survey')">Go to Survey</button></div>
+    <div class="wt-item"><h4>🧠 Task 5: Complete Trivia Quiz</h4><p>Answer all 6 trivia questions to complete this task.</p><div class="wt-reward">Reward: KES 10</div><br><button class="btn-primary" onclick="go('trivia')">Go to Quiz</button></div>
+    <div class="wt-item"><h4>🎯 Task 6: Play Number Game</h4><p>Complete one round of the number game to unlock.</p><div class="wt-reward">Reward: KES 5</div><br><button class="btn-primary" onclick="go('number-game')">Play Now</button></div>
+  </div>
+
+  <!-- DOWNLINES -->
+  <div id="s-downlines" class="main" style="display:none">
+    <div class="section-title">👥 Downlines</div>
+    <div class="stats-2">
+      <div class="stat-box box-red"><div class="sl">TOTAL</div><div class="sv" id="dl-total">0</div></div>
+      <div class="stat-box" style="background:linear-gradient(135deg,#16a34a,#15803d)"><div class="sl">ACTIVE</div><div class="sv" id="dl-active">0</div></div>
+    </div>
+    <div class="dl-tabs">
+      <button class="dl-tab active" onclick="showDL(this,1)">Level 1 (KSh 80)</button>
+      <button class="dl-tab" onclick="showDL(this,2)">Level 2 (KSh 20)</button>
+      <button class="dl-tab" onclick="showDL(this,3)">Level 3 (KSh 10)</button>
+    </div>
+    <div id="dl-list"></div>
+  </div>
+
+  <!-- WHATSAPP ADVERTS -->
+  <div id="s-whatsapp" class="main" style="display:none">
+    <div class="section-title">💬 WhatsApp Adverts</div>
+    <div class="alert info" style="margin-bottom:12px">📢 Get 1 picture per week to post on your WhatsApp Status. Earn KSh 1 per viewer!</div>
+    <div class="wa-task">
+      <h4>📢 This Week's Ad — Post on WhatsApp Status</h4>
+      <div class="wa-img" style="display:flex;align-items:center;justify-content:center">🔗<br><span style="font-size:14px;font-weight:700;color:#fff;margin-top:8px">NETLINK AGENCIES</span></div>
+      <div class="wa-reward">KSh 1 per viewer (submit views count below)</div>
+      <p>Post the image above to your WhatsApp Status and note how many people viewed it. Submit your views count to earn KSh per viewer!</p>
+      <div class="form-group"><label>Number of Views</label><input type="number" id="wa-views" placeholder="Enter number of people who viewed"></div>
+      <button class="btn-primary btn-wa" onclick="submitWAViews()">💬 Submit Views & Earn</button>
+    </div>
+    <div class="wa-task">
+      <h4>📝 Ad Text to Copy &amp; Share</h4>
+      <p style="background:#f9fafb;padding:12px;border-radius:10px;font-size:13px;border:1px solid #e5e7eb">🔥 <strong>NETLINK AGENCIES</strong> 🔥<br><br>💰 Earn KSh 80 per Level 1 referral<br>💰 KSh 20 per Level 2 referral<br>💰 KSh 10 per Level 3 referral<br>🎁 KES 100 Karibu Bonus at 20 refs<br>📱 Instant M-PESA payments<br><br>Join now: netlinkagencies.work.gd</p>
+      <button class="btn-primary btn-wa" style="margin-top:10px" onclick="showToast('✅ Ad text copied! Paste in WhatsApp groups')">Copy Ad Text</button>
+    </div>
+  </div>
+
+  <!-- FOREX -->
+  <div id="s-forex" class="main" style="display:none">
+    <div class="section-title">📊 Forex Trading</div>
+    <div class="alert info" style="margin-bottom:12px">Live rates updated every 5 minutes</div>
+    <div class="forex-row"><div><div class="pair">USD/KES</div><div class="sub">US Dollar / Kenya Shilling</div></div><div style="text-align:right"><div class="change-up" style="font-size:16px;font-weight:800">129.45</div><div class="change-up" style="font-size:12px">+0.23 (+0.18%)</div></div></div>
+    <div class="forex-row"><div><div class="pair">EUR/KES</div><div class="sub">Euro / Kenya Shilling</div></div><div style="text-align:right"><div class="change-down" style="font-size:16px;font-weight:800">140.12</div><div class="change-down" style="font-size:12px">-0.45 (-0.32%)</div></div></div>
+    <div class="forex-row"><div><div class="pair">GBP/KES</div><div class="sub">British Pound / Kenya Shilling</div></div><div style="text-align:right"><div class="change-up" style="font-size:16px;font-weight:800">164.78</div><div class="change-up" style="font-size:12px">+0.67 (+0.41%)</div></div></div>
+    <div class="forex-row"><div><div class="pair">USD/UGX</div><div class="sub">US Dollar / Uganda Shilling</div></div><div style="text-align:right"><div class="change-up" style="font-size:16px;font-weight:800">3,742</div><div class="change-up" style="font-size:12px">+12.3 (+0.33%)</div></div></div>
+    <div class="forex-row"><div><div class="pair">USD/TZS</div><div class="sub">US Dollar / Tanzania Shilling</div></div><div style="text-align:right"><div class="change-down" style="font-size:16px;font-weight:800">2,584</div><div class="change-down" style="font-size:12px">-8.5 (-0.33%)</div></div></div>
+    <div class="wcard" style="margin-top:12px"><h3>📈 Expert Signals</h3><p><strong style="color:#16a34a">🟢 BUY:</strong> USD/KES — Strong uptrend. Target: 131.00</p><p style="margin-top:8px"><strong style="color:#dc2626">🔴 SELL:</strong> EUR/KES — Bearish pattern. Target: 138.50</p><p style="margin-top:8px;font-size:12px;color:#9ca3af">⚠️ Educational signals only. Trade at your own risk.</p></div>
+  </div>
+
+  <!-- TRIVIA QUIZ -->
+  <div id="s-trivia" class="main" style="display:none">
+    <div class="section-title">🧠 Trivia Quiz</div>
+    <div class="alert info" style="margin-bottom:12px">6 questions per week • KSh 5 per correct answer</div>
+    <div class="wcard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:13px;color:#6b7280" id="tq-prog-txt">Question 1 of 6</span>
+        <span style="font-size:13px;font-weight:700;color:#be185d" id="tq-score-txt">Score: KSh 0</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="tq-prog" style="width:16.7%"></div></div>
+      <p class="quiz-q" id="tq-question">Loading...</p>
+      <div class="quiz-opts" id="tq-opts"></div>
+      <div id="tq-result" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- DAILY SURVEY -->
+  <div id="s-survey" class="main" style="display:none">
+    <div class="section-title">📝 Daily Survey</div>
+    <div class="alert info" style="margin-bottom:12px">Answer surveys honestly — earn <strong>KSh 5 per correct answer</strong>!</div>
+    <div id="survey-box" class="wcard">
+      <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+        <span style="font-size:13px;color:#6b7280" id="sv-prog-txt">Question 1 of 4</span>
+        <span style="font-size:13px;font-weight:700;color:#be185d" id="sv-score-txt">Earned: KSh 0</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="sv-prog" style="width:25%"></div></div>
+      <p style="font-size:14px;font-weight:700;color:#1f2937;margin-bottom:12px" id="sv-question">Loading...</p>
+      <div id="sv-opts"></div>
+      <button class="btn-primary" style="margin-top:14px" id="sv-next-btn" onclick="nextSurvey()">Next →</button>
+    </div>
+    <div id="survey-done" style="display:none" class="wcard">
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:48px;margin-bottom:12px">🎉</div>
+        <h3 style="font-size:18px;font-weight:800;margin-bottom:8px;color:#1f2937">Survey Complete!</h3>
+        <p id="sv-final-msg" style="font-size:14px;color:#6b7280">You earned KSh 0 today.</p>
+        <p style="font-size:12px;color:#9ca3af;margin-top:6px">Come back tomorrow for a new survey!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATH QUIZ -->
+  <div id="s-math" class="main" style="display:none">
+    <div class="section-title">🔢 Math Quiz</div>
+    <div class="alert info" style="margin-bottom:12px">6 questions per week • KSh 10 per correct answer</div>
+    <div class="wcard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:13px;color:#6b7280" id="mq-prog-txt">Question 1 of 6</span>
+        <span style="font-size:13px;font-weight:700;color:#be185d" id="mq-score-txt">Score: KSh 0</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="mq-prog" style="width:16.7%"></div></div>
+      <p class="quiz-q" id="mq-question">Loading...</p>
+      <div class="quiz-opts" id="mq-opts"></div>
+      <div id="mq-result" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- NUMBER GAME -->
+  <div id="s-number-game" class="main" style="display:none">
+    <div class="section-title">🎯 Number Game</div>
+    <div class="wcard">
+      <h3>Pick 3 Lucky Numbers (1–25)</h3>
+      <p style="font-size:13px;color:#6b7280;margin-bottom:14px">Match all 3 and win KES 50! 2 matches = KES 15, 1 match = KES 5.</p>
+      <div class="num-grid" id="num-grid"></div>
+      <p style="font-size:13px;font-weight:600;margin-bottom:12px;color:#374151">Selected: <span id="sel-nums" style="color:#be185d">None</span></p>
+      <button class="btn-primary" id="play-btn" onclick="playNumGame()" disabled>Pick 3 Numbers to Play</button>
+      <div id="num-result" style="display:none;margin-top:14px"></div>
+    </div>
+  </div>
+
+  <!-- COMMUNITY -->
+  <div id="s-community" class="main" style="display:none">
+    <div class="section-title">🌐 Community</div>
+    <div class="wcard" style="margin-bottom:10px">
+      <h3>📢 Join Our Groups</h3>
+      <div style="display:flex;gap:10px">
+        <button class="btn-primary btn-wa" id="wa-group-btn" onclick="openLink(getData('wa_group','https://wa.me/254706494401'))">💬 WhatsApp Group</button>
+        <button class="btn-primary btn-blue" id="tg-channel-btn" onclick="openLink(getData('tg_channel','https://t.me/Mentorfai'))">✈️ Telegram Channel</button>
+      </div>
+    </div>
+    <div id="community-feed" style="margin-bottom:4px"></div>
+    <div class="msg-input-row">
+      <input type="text" id="comm-inp" placeholder="Write a message..." onkeypress="if(event.key==='Enter')sendCommMsg()">
+      <button class="send-btn" onclick="sendCommMsg()">➤</button>
+    </div>
+  </div>
+
+  <!-- HELP -->
+  <div id="s-help" class="main" style="display:none">
+    <div class="section-title">❓ Get Help</div>
+    <div class="wcard" style="margin-bottom:14px">
+      <h3>📞 Contact Support</h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn-primary btn-wa" onclick="window.open('https://wa.me/254706494401?text=Hi, I need help with NETLINK AGENCIES','_blank')">💬 WhatsApp Support</button>
+        <button class="btn-primary btn-blue" onclick="window.open('https://t.me/Mentorfai','_blank')">✈️ Telegram Support</button>
+      </div>
+    </div>
+    <div class="help-item" onclick="toggleHelp(this)"><h4>How do I activate my account? <span>+</span></h4><p>Pay the activation fee of KES 150 via M-PESA to +254706494401 (MARY MPURUNGA) or PayPal to marympurunga@gmail.com. Then enter your transaction ID on the activation page and wait 2–5 minutes for admin approval.</p></div>
+    <div class="help-item" onclick="toggleHelp(this)"><h4>How does the referral system work? <span>+</span></h4><p>Level 1 referrals (people you personally invite): KSh 80 each. Level 2 (their referrals): KSh 20 each. Level 3 (Level 2's referrals): KSh 10 each. All referral earnings go to your Account Balance.</p></div>
+    <div class="help-item" onclick="toggleHelp(this)"><h4>What is the minimum cashout? <span>+</span></h4><p>The minimum withdrawal is KES 150. Transaction fees apply: KES 15 (150–350), KES 30 (350–700), KES 50 (700–1,500), KES 70 (1,500–3,000), KES 150 (3,000–10,000). Processed within 24 hours.</p></div>
+    <div class="help-item" onclick="toggleHelp(this)"><h4>What is the Karibu Bonus? <span>+</span></h4><p>The Karibu Bonus is KES 100 awarded when you successfully refer your first 20 active members. It's a one-time welcome bonus you can collect from the Karibu Bonus section.</p></div>
+    <div class="help-item" onclick="toggleHelp(this)"><h4>How much do I earn from videos? <span>+</span></h4><p>TikTok videos: KSh 15 each (3 per day). Instagram reels: KSh 20 each (3 per day). YouTube videos: KSh 25 each (3 per day). Max daily video earnings: KSh 180/day from videos alone!</p></div>
+    <div class="help-item" onclick="toggleHelp(this)"><h4>What is the Weekly Bonus? <span>+</span></h4><p>If you invite 50 new members within a single week, you receive a KES 200 Weekly Bonus. This resets every Monday.</p></div>
+    <div class="help-item" onclick="toggleHelp(this)"><h4>Can I join from outside Kenya? <span>+</span></h4><p>Yes! Members from Tanzania, Uganda, Rwanda, Nigeria, Ghana and other countries are welcome. International members pay via PayPal ($4 USD activation).</p></div>
+  </div>
+
+  <!-- TIMETABLE -->
+  <div id="s-timetable" class="main" style="display:none">
+    <div class="section-title">📅 Time Table</div>
+    <div class="wcard">
+      <h3>📅 Daily Activity Schedule</h3>
+      <div class="tt-row"><span class="tt-time">6:00 AM</span><div><strong style="font-size:13px">Morning Check-in</strong><div style="font-size:12px;color:#9ca3af">Log in, check notifications</div></div></div>
+      <div class="tt-row"><span class="tt-time">7:00 AM</span><div><strong style="font-size:13px">Daily Survey</strong><div style="font-size:12px;color:#9ca3af">Complete survey — earn KSh 5/correct answer</div></div></div>
+      <div class="tt-row"><span class="tt-time">8:00 AM</span><div><strong style="font-size:13px">TikTok Videos</strong><div style="font-size:12px;color:#9ca3af">Watch 3 videos — earn KSh 15 each = KSh 45</div></div></div>
+      <div class="tt-row"><span class="tt-time">9:00 AM</span><div><strong style="font-size:13px">Instagram Videos</strong><div style="font-size:12px;color:#9ca3af">Watch 3 reels — earn KSh 20 each = KSh 60</div></div></div>
+      <div class="tt-row"><span class="tt-time">10:00 AM</span><div><strong style="font-size:13px">YouTube Videos</strong><div style="font-size:12px;color:#9ca3af">Watch 3 videos — earn KSh 25 each = KSh 75</div></div></div>
+      <div class="tt-row"><span class="tt-time">11:00 AM</span><div><strong style="font-size:13px">View Ads</strong><div style="font-size:12px;color:#9ca3af">Watch 3 ads — earn KSh 5 each = KSh 15</div></div></div>
+      <div class="tt-row"><span class="tt-time">12:00 PM</span><div><strong style="font-size:13px">WhatsApp Marketing</strong><div style="font-size:12px;color:#9ca3af">Share referral links in WhatsApp groups</div></div></div>
+      <div class="tt-row"><span class="tt-time">2:00 PM</span><div><strong style="font-size:13px">Trivia Quiz</strong><div style="font-size:12px;color:#9ca3af">6 questions/week — KSh 5 per correct</div></div></div>
+      <div class="tt-row"><span class="tt-time">3:00 PM</span><div><strong style="font-size:13px">Math Quiz</strong><div style="font-size:12px;color:#9ca3af">6 questions/week — KSh 10 per correct</div></div></div>
+      <div class="tt-row"><span class="tt-time">4:00 PM</span><div><strong style="font-size:13px">Number Game</strong><div style="font-size:12px;color:#9ca3af">Pick 3 numbers — win KES 5–50</div></div></div>
+      <div class="tt-row"><span class="tt-time">5:00 PM</span><div><strong style="font-size:13px">Withdraw Tasks</strong><div style="font-size:12px;color:#9ca3af">Complete daily tasks for bonus earnings</div></div></div>
+      <div class="tt-row"><span class="tt-time">6:00 PM</span><div><strong style="font-size:13px">Betting Predictions</strong><div style="font-size:12px;color:#9ca3af">Check evening match tips</div></div></div>
+      <div class="tt-row"><span class="tt-time">8:00 PM</span><div><strong style="font-size:13px">Community Chat</strong><div style="font-size:12px;color:#9ca3af">Network with other members</div></div></div>
+      <div class="tt-row"><span class="tt-time">10:00 PM</span><div><strong style="font-size:13px">Cashout Check</strong><div style="font-size:12px;color:#9ca3af">Review balance & request withdrawal if eligible</div></div></div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="s-profile" class="main" style="display:none">
+    <div class="section-title">👤 Profile</div>
+    <div class="wcard">
+      <div class="p-avatar" id="p-avatar">U</div>
+      <div style="text-align:center;margin-bottom:14px"><h3 id="p-name" style="font-size:18px;font-weight:800">@user</h3><span class="badge bg-green" id="p-status">Active</span></div>
+      <div class="p-row"><span class="p-label">Username</span><span class="p-val" id="p-user">-</span></div>
+      <div class="p-row"><span class="p-label">Email</span><span class="p-val" id="p-email">-</span></div>
+      <div class="p-row"><span class="p-label">Phone</span><span class="p-val" id="p-phone">-</span></div>
+      <div class="p-row"><span class="p-label">WhatsApp</span><span class="p-val" id="p-wa">-</span></div>
+      <div class="p-row"><span class="p-label">Country</span><span class="p-val" id="p-country">-</span></div>
+      <div class="p-row"><span class="p-label">Member Since</span><span class="p-val" id="p-joined">-</span></div>
+      <div class="p-row"><span class="p-label">Referral Code</span><span class="p-val" id="p-refcode">-</span></div>
+    </div>
+    <div class="wcard admin-form">
+      <h3>🔒 Change Password</h3>
+      <div class="form-group"><label>Current Password</label><input type="password" id="pw-cur" placeholder="Current password"></div>
+      <div class="form-group"><label>New Password</label><input type="password" id="pw-new" placeholder="New password (min 6 chars)"></div>
+      <div class="form-group"><label>Confirm New Password</label><input type="password" id="pw-con" placeholder="Confirm new password"></div>
+      <button class="btn-primary" onclick="changePwd()">Update Password</button>
+    </div>
+    <button class="btn-primary btn-red" style="margin-top:4px" onclick="doLogout()">🚪 Logout</button>
+  </div>
+</div>
+
+<!-- ===================== ADMIN LOGIN ===================== -->
+<div class="page" id="page-admin-login">
+<div class="admin-page">
+  <div class="admin-login-wrap">
+    <div class="admin-login-box">
+      <div style="text-align:center;font-size:42px;margin-bottom:16px">🔐</div>
+      <h2>Admin Panel</h2>
+      <p class="sub">NETLINK AGENCIES Administration</p>
+      <div id="adm-login-err" class="alert error" style="display:none"></div>
+      <div class="form-group"><label>Admin Username</label><input type="text" id="adm-user" placeholder="Username"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="adm-pass" placeholder="Password"></div>
+      <button class="btn-primary" onclick="doAdminLogin()">Login to Admin</button>
+      <div class="auth-footer" style="margin-top:14px;color:#64748b"><a onclick="showPage('page-login')" style="color:#94a3b8">← Back to User Login</a></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== ADMIN PANEL ===================== -->
+<div class="page" id="page-admin">
+<div class="admin-page">
+  <div class="a-header">
+    <h1>🔐 NETLINK AGENCIES — Admin Panel</h1>
+    <button class="a-btn btn-rej" onclick="doAdminLogout()">Logout</button>
+  </div>
+  <div class="a-tabs">
+    <button class="a-tab active" onclick="aTab(this,'a-home')">🏠 Home</button>
+    <button class="a-tab" onclick="aTab(this,'a-users')">👥 Users</button>
+    <button class="a-tab" onclick="aTab(this,'a-activations')">✅ Activations</button>
+    <button class="a-tab" onclick="aTab(this,'a-withdrawals')">💸 Withdrawals</button>
+    <button class="a-tab" onclick="aTab(this,'a-deposits')">💰 Deposits</button>
+    <button class="a-tab" onclick="aTab(this,'a-admins')">🔑 Admins</button>
+    <button class="a-tab" onclick="aTab(this,'a-ai')">🤖 AI Agent</button>
+    <button class="a-tab" onclick="aTab(this,'a-links')">🔗 Links</button>
+    <button class="a-tab" onclick="aTab(this,'a-posts')">📢 Posts</button>
+    <button class="a-tab" onclick="aTab(this,'a-settings')">⚙️ Settings</button>
+  </div>
+
+  <!-- HOME -->
+  <div id="a-home" class="a-content">
+    <div class="a-stat-grid">
+      <div class="a-stat stat-total"><div class="asl">TOTAL USERS</div><div class="asv" id="as-total">0</div></div>
+      <div class="a-stat stat-active"><div class="asl">ACTIVE USERS</div><div class="asv" id="as-active">0</div></div>
+      <div class="a-stat stat-inactive"><div class="asl">INACTIVE USERS</div><div class="asv" id="as-inactive">0</div></div>
+      <div class="a-stat stat-pending-wd"><div class="asl">PENDING WITHDRAW</div><div class="asv" id="as-pwd">0</div></div>
+      <div class="a-stat stat-pending-act"><div class="asl">PENDING ACTIVATION</div><div class="asv" id="as-pact">0</div></div>
+      <div class="a-stat stat-pending-dep"><div class="asl">PENDING DEPOSITS</div><div class="asv" id="as-pdep">0</div></div>
+      <div class="a-stat stat-paid" style="grid-column:span 2"><div class="asl">TOTAL PAID OUT</div><div class="asv" id="as-paid">KES 0</div></div>
+    </div>
+    <div class="admin-section">
+      <h3>📊 Quick Overview</h3>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #334155"><span style="color:#94a3b8;font-size:13px">Today's Registrations</span><span style="color:#f1f5f9;font-weight:700" id="as-today">0</span></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #334155"><span style="color:#94a3b8;font-size:13px">Total Referrals</span><span style="color:#34d399;font-weight:700" id="as-refs">0</span></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0"><span style="color:#94a3b8;font-size:13px">Total Earnings Across Platform</span><span style="color:#fbbf24;font-weight:700" id="as-totalearns">KES 0</span></div>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <div id="a-users" class="a-content" style="display:none">
+    <div style="display:flex;gap:10px;margin-bottom:12px">
+      <input type="text" id="a-search" placeholder="Search by username or email..." style="flex:1;padding:10px 13px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:13px;outline:none">
+      <button class="a-btn btn-approve" style="padding:10px 14px" onclick="renderAUsers()">Search</button>
+    </div>
+    <div id="a-users-list"></div>
+  </div>
+
+  <!-- ACTIVATIONS -->
+  <div id="a-activations" class="a-content" style="display:none">
+    <h3 style="color:#f1f5f9;margin-bottom:12px;font-size:15px">⏳ Pending Activation Requests</h3>
+    <div id="a-act-list"></div>
+  </div>
+
+  <!-- WITHDRAWALS -->
+  <div id="a-withdrawals" class="a-content" style="display:none">
+    <h3 style="color:#f1f5f9;margin-bottom:12px;font-size:15px">💸 Withdrawal Requests</h3>
+    <div id="a-wd-list"></div>
+  </div>
+
+  <!-- DEPOSITS -->
+  <div id="a-deposits" class="a-content" style="display:none">
+    <h3 style="color:#f1f5f9;margin-bottom:12px;font-size:15px">💰 Pending Deposits</h3>
+    <div id="a-dep-list"></div>
+  </div>
+
+  <!-- ADD ADMIN -->
+  <div id="a-admins" class="a-content" style="display:none">
+    <div class="admin-section admin-form">
+      <h3>➕ Add New Admin Account</h3>
+      <div class="form-group"><label>New Admin Username</label><input type="text" id="new-adm-user" placeholder="e.g. admin2"></div>
+      <div class="form-group"><label>New Admin Password</label><input type="password" id="new-adm-pass" placeholder="Strong password"></div>
+      <button class="btn-primary" onclick="addAdmin()">Add Admin Account</button>
+    </div>
+    <div class="admin-section">
+      <h3>👮 Existing Admin Accounts</h3>
+      <div id="admins-list"></div>
+    </div>
+    <div class="admin-section admin-form" style="margin-top:12px">
+      <h3>🔑 Change Admin Password</h3>
+      <div class="form-group"><label>New Password</label><input type="password" id="adm-new-pwd" placeholder="New password"></div>
+      <button class="btn-primary" onclick="changeAdminPwd()">Update Password</button>
+    </div>
+  </div>
+
+  <!-- AI AGENT -->
+  <div id="a-ai" class="a-content" style="display:none">
+    <div class="admin-section">
+      <h3>🤖 AI Website Assistant</h3>
+      <p style="color:#94a3b8;font-size:13px;margin-bottom:14px;line-height:1.6">Use this AI assistant to get help editing and improving your NETLINK AGENCIES website. Describe what you want to change and get guidance.</p>
+      <div id="ai-chat" style="background:#0f172a;border-radius:10px;padding:12px;min-height:200px;max-height:300px;overflow-y:auto;margin-bottom:12px">
+        <div style="background:#1e293b;border-radius:10px;padding:12px;margin-bottom:8px"><p style="color:#94a3b8;font-size:12px;margin-bottom:4px">🤖 AI Assistant</p><p style="color:#f1f5f9;font-size:13px;line-height:1.5">Hello! I'm your NETLINK AGENCIES website assistant. I can help you with:<br>• Changing payment details (M-PESA/PayPal)<br>• Updating referral commissions<br>• Editing activation fees<br>• Adding new features<br>• Fixing any issues<br><br>What would you like to change?</p></div>
+        <div id="ai-messages"></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <input type="text" id="ai-input" placeholder="Describe what you want to change..." style="flex:1;padding:11px 13px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#f1f5f9;font-size:13px;outline:none" onkeypress="if(event.key==='Enter')sendAI()">
+        <button class="btn-primary" style="width:auto;padding:11px 18px" onclick="sendAI()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LINKS -->
+  <div id="a-links" class="a-content" style="display:none">
+    <div class="admin-section admin-form">
+      <h3>💬 WhatsApp Group Link</h3>
+      <div class="form-group"><label>WhatsApp Group URL</label><input type="text" id="wa-link-input" placeholder="https://chat.whatsapp.com/..."></div>
+      <button class="btn-primary btn-wa" onclick="saveLink('wa')">Save WhatsApp Link</button>
+    </div>
+    <div class="admin-section admin-form" style="margin-top:12px">
+      <h3>✈️ Telegram Channel Link</h3>
+      <div class="form-group"><label>Telegram Channel URL</label><input type="text" id="tg-link-input" placeholder="https://t.me/..."></div>
+      <button class="btn-primary btn-blue" onclick="saveLink('tg')">Save Telegram Link</button>
+    </div>
+    <div class="admin-section" style="margin-top:12px">
+      <h3>📋 Current Links</h3>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #334155"><span style="color:#94a3b8;font-size:13px">WhatsApp Group</span><span style="color:#34d399;font-size:12px" id="wa-link-display">Not set</span></div>
+      <div style="display:flex;justify-content:space-between;padding:9px 0"><span style="color:#94a3b8;font-size:13px">Telegram Channel</span><span style="color:#34d399;font-size:12px" id="tg-link-display">Not set</span></div>
+    </div>
+  </div>
+
+  <!-- POSTS -->
+  <div id="a-posts" class="a-content" style="display:none">
+    <div class="admin-section admin-form">
+      <h3>📢 Create Community Post</h3>
+      <div class="form-group"><label>Post Title</label><input type="text" id="post-title" placeholder="Post title..."></div>
+      <div class="form-group"><label>Post Content</label><textarea id="post-content" rows="4" placeholder="Write your post..."></textarea></div>
+      <button class="btn-primary" onclick="createPost()">📢 Post to Community</button>
+    </div>
+    <div class="admin-section" style="margin-top:12px">
+      <h3>📋 My Posts</h3>
+      <div id="admin-posts-list"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="a-settings" class="a-content" style="display:none">
+    <div class="admin-section admin-form">
+      <h3>💳 Payment Settings</h3>
+      <div class="form-group"><label>M-PESA Number</label><input type="text" id="s-mpesa-num" value="+254706494401"></div>
+      <div class="form-group"><label>Account Name</label><input type="text" id="s-mpesa-name" value="MARY MPURUNGA"></div>
+      <div class="form-group"><label>PayPal Email</label><input type="text" id="s-paypal-email" value="marympurunga@gmail.com"></div>
+      <button class="btn-primary" onclick="saveSettings()">Save Payment Settings</button>
+    </div>
+    <div class="admin-section admin-form" style="margin-top:12px">
+      <h3>💰 Fee Settings</h3>
+      <div class="form-group"><label>Activation Fee (KES)</label><input type="number" id="s-act-fee" value="150"></div>
+      <div class="form-group"><label>Level 1 Referral (KES)</label><input type="number" id="s-l1" value="80"></div>
+      <div class="form-group"><label>Level 2 Referral (KES)</label><input type="number" id="s-l2" value="20"></div>
+      <div class="form-group"><label>Level 3 Referral (KES)</label><input type="number" id="s-l3" value="10"></div>
+      <div class="form-group"><label>Min. Withdrawal (KES)</label><input type="number" id="s-min-wd" value="150"></div>
+      <button class="btn-primary" onclick="saveSettings()">Save Fee Settings</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ========== STORAGE ==========
+const S = k => { try { return JSON.parse(localStorage.getItem('nl_'+k)) } catch(e) { return null } };
+const W = (k,v) => localStorage.setItem('nl_'+k, JSON.stringify(v));
+function getUsers(){return S('users')||{}}
+function setUsers(u){W('users',u)}
+function getSession(){return S('session')}
+function setSession(s){W('session',s)}
+function getCommunity(){return S('community')||[]}
+function setCommunity(m){W('community',m)}
+function getWithdrawals(){return S('withdrawals')||[]}
+function setWithdrawals(w){W('withdrawals',w)}
+function getActReqs(){return S('act_reqs')||[]}
+function setActReqs(a){W('act_reqs',a)}
+function getDeposits(){return S('deposits')||[]}
+function setDeposits(d){W('deposits',d)}
+function getPosts(){return S('posts')||[]}
+function setPosts(p){W('posts',p)}
+function getAdmins(){return S('admins')||[]}
+function setAdmins(a){W('admins',a)}
+function getSetts(){return S('setts')||{mpesa_num:'+254706494401',mpesa_name:'MARY MPURUNGA',paypal:'marympurunga@gmail.com',act_fee:150,l1:80,l2:20,l3:10,min_wd:150}}
+function getData(k,def){const v=S(k);return v!==null?v:def}
+function openLink(url){window.open(url,'_blank')}
+
+// ========== TOAST ==========
+function showToast(msg,dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',dur)}
+
+// ========== PAGE ROUTING ==========
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
+
+// ========== SECTIONS ==========
+let curSec='dashboard';
+function go(sec){
+  closeSidebar();
+  document.querySelectorAll('[id^="s-"]').forEach(s=>s.style.display='none');
+  const el=document.getElementById('s-'+sec);
+  if(el)el.style.display='block';
+  curSec=sec;
+  document.getElementById('hdr-title').textContent=secLabel(sec);
+  document.querySelectorAll('.si').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.si').forEach(i=>{const fn=i.getAttribute('onclick')||'';if(fn.includes("'"+sec+"'"))i.classList.add('active')});
+  if(sec==='dashboard')updateDash();
+  if(sec==='cashout')updateCashout();
+  if(sec==='karibu')updateKaribu();
+  if(sec==='downlines')renderDL(1);
+  if(sec==='community')renderComm();
+  if(sec==='trivia')initTrivia();
+  if(sec==='math')initMath();
+  if(sec==='number-game')initNumGame();
+  if(sec==='survey')initSurvey();
+  if(sec==='tiktok')renderVideos('tiktok');
+  if(sec==='instagram')renderVideos('instagram');
+  if(sec==='youtube')renderVideos('youtube');
+  if(sec==='profile')updateProfile();
+}
+function secLabel(s){const m={dashboard:'NETLINK AGENCIES',tournaments:'E-Tournaments',karibu:'Karibu Bonus','pay-clients':'Pay for Clients',deposit:'Deposit',mentorship:'Mentorship','company-ads':'Company Advertisement',betting:'Betting Prediction',cashout:'Cashout',articles:'Articles','view-ads':'View Ads',tiktok:'TikTok Videos',instagram:'Instagram Videos',youtube:'YouTube Videos','withdraw-tasks':'Withdraw Tasks',downlines:'Downlines',whatsapp:'WhatsApp Adverts',forex:'Forex Trading',trivia:'Trivia Quiz',survey:'Daily Survey',math:'Math Quiz','number-game':'Number Game',community:'Community',help:'Get Help',timetable:'Time Table',profile:'Profile'};return m[s]||'NETLINK AGENCIES'}
+
+// ========== SIDEBAR ==========
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sb-overlay').classList.add('open')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('open')}
+
+// ========== REGISTER ==========
+function doRegister(){
+  const u=document.getElementById('r-user').value.trim();
+  const e=document.getElementById('r-email').value.trim();
+  const ph=document.getElementById('r-phone').value.trim();
+  const wa=document.getElementById('r-whatsapp').value.trim();
+  const c=document.getElementById('r-country').value;
+  const ref=document.getElementById('r-ref').value.trim();
+  const pw=document.getElementById('r-pass').value;
+  const pw2=document.getElementById('r-pass2').value;
+  const err=document.getElementById('reg-err');
+  err.style.display='none';
+  if(!u||!e||!ph||!wa||!c||!pw){err.textContent='Please fill in all required fields.';err.style.display='block';return}
+  if(pw!==pw2){err.textContent='Passwords do not match.';err.style.display='block';return}
+  if(pw.length<6){err.textContent='Password must be at least 6 characters.';err.style.display='block';return}
+  const users=getUsers();
+  if(users[u.toLowerCase()]){err.textContent='Username already taken.';err.style.display='block';return}
+  const setts=getSetts();
+  const refCode=u.toUpperCase().slice(0,4)+(Math.floor(Math.random()*9000)+1000);
+  const newUser={username:u,email:e,phone:ph,whatsapp:wa,country:c,password:pw,refCode,referredBy:ref||null,isActive:false,balance:0,earnings:0,withdrawn:0,pending:0,weeklyBonus:0,karibuBonus:0,karibuCollected:false,l1refs:[],l2refs:[],l3refs:[],joined:new Date().toLocaleDateString('en-GB'),activationStatus:'pending',activationTxn:null};
+  // Track in referrer's downline
+  if(ref){
+    const refUser=Object.values(users).find(usr=>usr.username.toLowerCase()===ref.toLowerCase()||usr.refCode===ref);
+    if(refUser){
+      refUser.l1refs=refUser.l1refs||[];
+      refUser.l1refs.push(u.toLowerCase());
+      users[refUser.username.toLowerCase()]=refUser;
+      // Track level 2 in refUser's referrer
+      if(refUser.referredBy){
+        const l2User=Object.values(users).find(usr=>usr.username.toLowerCase()===refUser.referredBy.toLowerCase()||usr.refCode===refUser.referredBy);
+        if(l2User){
+          l2User.l2refs=l2User.l2refs||[];
+          l2User.l2refs.push(u.toLowerCase());
+          users[l2User.username.toLowerCase()]=l2User;
+          // Track level 3
+          if(l2User.referredBy){
+            const l3User=Object.values(users).find(usr=>usr.username.toLowerCase()===l2User.referredBy.toLowerCase()||usr.refCode===l2User.referredBy);
+            if(l3User){
+              l3User.l3refs=l3User.l3refs||[];
+              l3User.l3refs.push(u.toLowerCase());
+              users[l3User.username.toLowerCase()]=l3User;
+            }
+          }
+        }
+      }
+    }
+  }
+  users[u.toLowerCase()]=newUser;
+  setUsers(users);
+  setSession({username:u,isAdmin:false});
+  // Show loading for 3 seconds
+  const ls=document.getElementById('loading-screen');ls.classList.add('show');
+  setTimeout(()=>{ls.classList.remove('show');showPage('page-activation');loadActPage()},3000);
+}
+
+// ========== LOGIN ==========
+function doLogin(){
+  const u=document.getElementById('li-user').value.trim().toLowerCase();
+  const pw=document.getElementById('li-pass').value;
+  const err=document.getElementById('login-err');
+  err.style.display='none';
+  if(!u||!pw){err.textContent='Please enter username and password.';err.style.display='block';return}
+  const admPwd=getData('admin_pwd','Netlink2026');
+  const admins=getAdmins();
+  const extraAdmin=admins.find(a=>a.username.toLowerCase()===u&&a.password===pw);
+  if((u==='admin'&&pw===admPwd)||extraAdmin){setSession({username:u,isAdmin:true});showPage('page-admin');renderAdminHome();return}
+  const users=getUsers();const user=users[u];
+  if(!user||user.password!==pw){err.textContent='Invalid username or password.';err.style.display='block';return}
+  setSession({username:user.username,isAdmin:false});
+  if(!user.isActive){showPage('page-activation');loadActPage();return}
+  enterApp();
+}
+
+// ========== FORGOT ==========
+function doForgot(){
+  const v=document.getElementById('forgot-inp').value.trim();
+  const msg=document.getElementById('forgot-msg');
+  if(!v){return}
+  msg.textContent='Reset instructions have been sent to the email associated with "'+v+'". Please check your inbox and spam folder.';
+  msg.style.display='block';
+}
+
+// ========== ACTIVATION ==========
+let payTab='mpesa';
+function setPayTab(tab){
+  payTab=tab;
+  document.getElementById('mpesa-box').style.display=tab==='mpesa'?'block':'none';
+  document.getElementById('paypal-box').style.display=tab==='paypal'?'block':'none';
+  document.getElementById('tab-mp').className='pay-tab'+(tab==='mpesa'?' mpesa-active':'');
+  document.getElementById('tab-pp').className='pay-tab'+(tab==='paypal'?' paypal-active':'');
+}
+function loadActPage(){
+  const sess=getSession();if(!sess)return;
+  const user=getUsers()[sess.username.toLowerCase()];if(!user)return;
+  const setts=getSetts();
+  const feeMap={Kenya:{display:'KES '+setts.act_fee,paypal:'$'+(setts.act_fee/129).toFixed(2)+' USD'},Tanzania:{display:'TZS 7,000',paypal:'$4 USD'},Nigeria:{display:'NGN 3,700',paypal:'$4 USD'}};
+  const fee=feeMap[user.country]||{display:'$4 USD',paypal:'$4 USD'};
+  document.getElementById('act-fee-line').textContent='Pay '+fee.display+' to get started';
+  document.getElementById('act-sub').innerHTML='Activation fee: <strong style="color:#db2777">'+fee.display+'</strong>';
+  document.getElementById('mp-amount').textContent='KES '+setts.act_fee;
+  document.getElementById('mp-number').textContent=setts.mpesa_num;
+  document.getElementById('mp-name').textContent='Account Name: '+setts.mpesa_name;
+  document.getElementById('pp-email').textContent=setts.paypal;
+  document.getElementById('pp-amount').textContent=fee.paypal;
+  if(user.country!=='Kenya')setPayTab('paypal');
+  if(user.activationTxn){
+    document.getElementById('act-form-box').style.display='none';
+    document.getElementById('act-success-box').style.display='block';
+    document.getElementById('act-success-msg').textContent='Dear '+user.username+', we have received your request. Wait 2–5 minutes to get your account activated.';
+  }
+}
+function doActivation(){
+  const txn=document.getElementById('act-txn').value.trim();
+  if(!txn){showToast('Please enter your Transaction ID');return}
+  const sess=getSession();if(!sess)return;
+  const users=getUsers();const user=users[sess.username.toLowerCase()];if(!user)return;
+  user.activationTxn=txn;user.activationMethod=payTab;
+  setUsers(users);
+  const reqs=getActReqs();
+  reqs.unshift({username:user.username,txn,method:payTab,date:new Date().toLocaleString(),status:'pending',country:user.country});
+  setActReqs(reqs);
+  document.getElementById('act-form-box').style.display='none';
+  document.getElementById('act-success-box').style.display='block';
+  document.getElementById('act-success-msg').textContent='Dear '+user.username+', we have received your request. Wait 2–5 minutes to get your account activated.';
+}
+function checkActivationStatus(){
+  const sess=getSession();if(!sess)return;
+  const user=getUsers()[sess.username.toLowerCase()];
+  if(user&&user.isActive){enterApp()}
+  else{showToast('Account not yet activated. Please wait or message admin.')}
+}
+
+// ========== ENTER APP ==========
+function enterApp(){
+  const sess=getSession();if(!sess)return;
+  const user=getUsers()[sess.username.toLowerCase()];if(!user)return;
+  document.getElementById('sb-uname').textContent='@'+user.username;
+  showPage('page-app');go('dashboard');
+}
+
+// ========== DASHBOARD ==========
+function updateDash(){
+  const sess=getSession();if(!sess)return;
+  const user=getUsers()[sess.username.toLowerCase()];if(!user)return;
+  const h=new Date().getHours();
+  const g=h<12?'🌞 Good morning':(h<17?'☀️ Good afternoon':'🌙 Good evening');
+  document.getElementById('greet-txt').innerHTML=g+' User, @'+user.username+' <span class="verify-badge">✓</span>';
+  const setts=getSetts();
+  document.getElementById('d-expenses').textContent='KES '+setts.act_fee.toLocaleString();
+  document.getElementById('d-earnings').textContent='KES '+(user.earnings||0).toLocaleString();
+  document.getElementById('d-balance').textContent='KES '+(user.balance||0).toLocaleString();
+  document.getElementById('d-withdrawn').textContent='KES '+(user.withdrawn||0).toLocaleString();
+  document.getElementById('d-pending').textContent='KES '+(user.pending||0).toLocaleString();
+  document.getElementById('d-weekly').textContent='KES '+(user.weeklyBonus||0).toLocaleString();
+  document.getElementById('d-karibu').textContent='KES '+(user.karibuBonus||0).toLocaleString();
+  document.getElementById('d-l1').textContent=(user.l1refs||[]).length;
+  document.getElementById('d-l2').textContent=(user.l2refs||[]).length;
+  document.getElementById('d-l3').textContent=(user.l3refs||[]).length;
+  const base=window.location.origin+window.location.pathname;
+  const rl=base+'#register?ref='+user.username;
+  document.getElementById('ref-link-box').textContent=rl;
+}
+
+// ========== REFERRAL SHARING ==========
+function getRL(){return document.getElementById('ref-link-box').textContent}
+function copyRef(){navigator.clipboard.writeText(getRL()).then(()=>showToast('✅ Referral link copied!')).catch(()=>showToast('Copy: '+getRL()))}
+function shareRef(type){
+  const l=getRL();
+  const msg='Join NETLINK AGENCIES and earn money daily! Level 1: KSh 80, Level 2: KSh 20, Level 3: KSh 10. My link: '+l;
+  if(type==='wa')window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+  if(type==='fb')window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(l),'_blank');
+  if(type==='tg')window.open('https://t.me/share/url?url='+encodeURIComponent(l)+'&text='+encodeURIComponent(msg),'_blank');
+}
+
+// ========== LOGOUT ==========
+function doLogout(){setSession(null);showPage('page-login')}
+
+// ========== KARIBU ==========
+function updateKaribu(){
+  const sess=getSession();if(!sess)return;
+  const user=getUsers()[sess.username.toLowerCase()];if(!user)return;
+  const users=getUsers();
+  const l1refs=user.l1refs||[];
+  const activeL1=l1refs.filter(r=>users[r]&&users[r].isActive).length;
+  const pct=Math.min(100,Math.round(activeL1/20*100));
+  document.getElementById('kb-refs').textContent=activeL1+' / 20';
+  document.getElementById('kb-prog').style.width=pct+'%';
+  const btn=document.getElementById('kb-collect-btn');
+  if(activeL1>=20&&!user.karibuCollected){btn.disabled=false;btn.style.opacity='1'}
+  else if(user.karibuCollected){btn.textContent='✅ Karibu Bonus Collected!';btn.disabled=true}
+}
+function collectKaribu(){
+  const sess=getSession();if(!sess)return;
+  const users=getUsers();const user=users[sess.username.toLowerCase()];
+  user.karibuBonus=(user.karibuBonus||0)+100;user.karibuCollected=true;
+  setUsers(users);updateKaribu();updateDash();showToast('🎉 KES 100 Karibu Bonus collected!');
+}
+
+// ========== DOWNLINES ==========
+let dlLevel=1;
+function showDL(btn,lvl){document.querySelectorAll('.dl-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');dlLevel=lvl;renderDL(lvl)}
+function renderDL(lvl){
+  const sess=getSession();if(!sess)return;
+  const users=getUsers();const user=users[sess.username.toLowerCase()];if(!user)return;
+  const refs=(lvl===1?user.l1refs:lvl===2?user.l2refs:user.l3refs)||[];
+  const total=(user.l1refs||[]).length+(user.l2refs||[]).length+(user.l3refs||[]).length;
+  const activeL1=(user.l1refs||[]).filter(r=>users[r]&&users[r].isActive).length;
+  document.getElementById('dl-total').textContent=total;
+  document.getElementById('dl-active').textContent=activeL1;
+  const list=document.getElementById('dl-list');
+  if(!refs.length){list.innerHTML='<div style="text-align:center;padding:30px;color:#9ca3af"><div style="font-size:40px;margin-bottom:8px">👥</div><p>No Level '+lvl+' downlines yet</p></div>';return}
+  list.innerHTML=refs.map(r=>{
+    const u=users[r];if(!u)return'';
+    return`<div class="dl-row"><div class="dl-av">${u.username[0].toUpperCase()}</div><div class="dl-info"><h4>@${u.username}</h4><p>${u.country} • ${u.isActive?'<span style="color:#16a34a;font-weight:700">Active</span>':'<span style="color:#dc2626">Inactive</span>'}</p></div><button class="dl-wa" onclick="window.open('https://wa.me/${u.whatsapp.replace(/\D/g,'')}','_blank')">💬 WhatsApp</button></div>`;
+  }).join('');
+}
+
+// ========== CASHOUT ==========
+const USD_RATE=129;
+function txFee(amt){if(amt<=350)return 15;if(amt<=700)return 30;if(amt<=1500)return 50;if(amt<=3000)return 70;return 150}
+function updateCashout(){
+  const sess=getSession();if(!sess)return;
+  const user=getUsers()[sess.username.toLowerCase()];if(!user)return;
+  document.getElementById('co-balance').textContent='KES '+(user.balance||0).toLocaleString();
+  document.getElementById('co-phone-display').value=user.phone;
+  document.getElementById('co-note-phone').textContent=user.phone;
+}
+function onCoMethodChange(){
+  const m=document.getElementById('co-method').value;
+  document.getElementById('co-phone-row').style.display=m==='mpesa'?'block':'none';
+  document.getElementById('co-paypal-row').style.display=m==='paypal'?'block':'none';
+  calcCashout();
+}
+function calcCashout(){
+  const amt=parseInt(document.getElementById('co-amount').value)||0;
+  const m=document.getElementById('co-method').value;
+  const fee=txFee(amt);
+  const net=amt-fee;
+  const feeEl=document.getElementById('co-fee-info');
+  const usdEl=document.getElementById('co-usd-info');
+  if(amt>=150){
+    feeEl.textContent='Transaction fee: KES '+fee+' | You will receive: KES '+net.toLocaleString();
+    feeEl.style.display='block';
+  }else{feeEl.style.display='none'}
+  if(m==='paypal'&&net>0){
+    const usd=(net/USD_RATE).toFixed(2);
+    usdEl.textContent='PayPal receipt: $'+usd+' USD (Rate: 1 USD = KES '+USD_RATE+')';
+    usdEl.style.display='block';
+  }else{usdEl.style.display='none'}
+}
+function doCashout(){
+  const sess=getSession();if(!sess)return;
+  const users=getUsers();const user=users[sess.username.toLowerCase()];if(!user)return;
+  const m=document.getElementById('co-method').value;
+  const amt=parseInt(document.getElementById('co-amount').value)||0;
+  const setts=getSetts();
+  if(amt<setts.min_wd){showToast('Minimum withdrawal is KES '+setts.min_wd);return}
+  if(amt>(user.balance||0)){showToast('Insufficient balance. Available: KES '+(user.balance||0));return}
+  let toNum=user.phone;
+  if(m==='paypal'){
+    const pp=document.getElementById('co-paypal-email').value.trim();
+    if(!pp){showToast('Please enter your PayPal email');return}
+    toNum=pp;
+  }
+  const fee=txFee(amt);const net=amt-fee;
+  user.pending=(user.pending||0)+amt;user.balance=(user.balance||0)-amt;
+  setUsers(users);
+  const wds=getWithdrawals();
+  wds.unshift({username:user.username,method:m.toUpperCase(),to:toNum,amount:amt,fee,net,date:new Date().toLocaleString(),status:'pending'});
+  setWithdrawals(wds);
+  updateCashout();updateDash();
+  document.getElementById('co-amount').value='';document.getElementById('co-paypal-email').value='';
+  calcCashout();
+  showToast('✅ Your withdrawal request of KES '+amt.toLocaleString()+' has been submitted! Wait verification and timely disbursement into your account.','5000');
+  const hist=document.getElementById('co-history');
+  hist.innerHTML='<div class="u-row" style="background:#f9fafb"><div class="u-info"><h4 style="color:#1f2937">KES '+amt.toLocaleString()+' via '+m.toUpperCase()+'</h4><p style="color:#6b7280">To: '+toNum+' • '+new Date().toLocaleString()+'</p><p style="color:#6b7280;font-size:11px">Fee: KES '+fee+' | Net: KES '+net.toLocaleString()+'</p></div><span class="badge bg-yellow">Pending</span></div>'+hist.innerHTML;
+}
+
+// ========== DEPOSIT ==========
+function selDep(el){document.querySelectorAll('.dep-method').forEach(d=>d.classList.remove('selected'));el.classList.add('selected')}
+function calcDepUSD(){
+  const amt=parseInt(document.getElementById('dep-amt').value)||0;
+  const el=document.getElementById('dep-usd-info');
+  if(amt>0){el.textContent='≈ $'+(amt/USD_RATE).toFixed(2)+' USD';el.style.display='block'}else el.style.display='none';
+}
+function doDeposit(){
+  const amt=parseInt(document.getElementById('dep-amt').value)||0;
+  const ref=document.getElementById('dep-ref').value.trim();
+  if(!amt||!ref){showToast('Please fill in all fields');return}
+  if(amt<100){showToast('Minimum deposit is KES 100');return}
+  const sess=getSession();if(!sess)return;
+  const deps=getDeposits();
+  deps.unshift({username:sess.username,amount:amt,ref,date:new Date().toLocaleString(),status:'pending'});
+  setDeposits(deps);
+  document.getElementById('dep-amt').value='';document.getElementById('dep-ref').value='';
+  document.getElementById('dep-usd-info').style.display='none';
+  const hist=document.getElementById('dep-history');
+  hist.innerHTML='<div class="dl-row"><div style="flex:1"><h4 style="font-size:14px;font-weight:700">KES '+amt.toLocaleString()+' Deposit</h4><p style="font-size:12px;color:#9ca3af">Ref: '+ref+' • '+new Date().toLocaleString()+'</p></div><span class="badge bg-yellow">Pending</span></div>'+hist.innerHTML;
+  showToast('✅ Deposit of KES '+amt.toLocaleString()+' submitted! Admin will verify shortly.');
+}
+
+// ========== PAY FOR CLIENTS ==========
+function payForClient(){
+  const n=document.getElementById('pc-name').value.trim();
+  const ph=document.getElementById('pc-phone').value.trim();
+  if(!n||!ph){showToast('Please enter client name and phone');return}
+  document.getElementById('pc-name').value='';document.getElementById('pc-phone').value='';
+  showToast('✅ Payment initiated for '+n+'. Commission will be credited upon activation.');
+}
+
+// ========== VIDEOS ==========
+const videoData={
+  tiktok:{color:'#000',icon:'▶️',reward:15,daily:3,
+    videos:['How I Earned KES 3,000 in One Week','Top 5 Earning Tips for Beginners','NETLINK Agencies Success Story']},
+  instagram:{color:'linear-gradient(135deg,#833ab4,#fd1d1d,#f77737)',icon:'📸',reward:20,daily:3,
+    videos:['Daily Hustle with NETLINK Agencies','Withdraw Success - KES 5,000 M-PESA','Building My Downline Network']},
+  youtube:{color:'#ff0000',icon:'🎬',reward:25,daily:3,
+    videos:['NETLINK AGENCIES Full Explanation (Swahili)','How to Register & Activate Account','My First KES 10,000 Withdrawal']},
+};
+function renderVideos(type){
+  const d=videoData[type];
+  const todayKey=type+'_watched_'+new Date().toDateString();
+  let watched=getData(todayKey,[]);
+  const list=document.getElementById(type+'-list');
+  list.innerHTML=d.videos.map((title,i)=>{
+    const done=watched.includes(i);
+    return`<div class="vid-card"><div class="vid-thumb" style="background:${d.color}">${d.icon}<span style="font-size:13px;font-weight:700">${type.charAt(0).toUpperCase()+type.slice(1)} Video</span></div><div class="vid-info"><h4>${title}</h4><p>@netlink_agencies</p><span class="vid-reward">+KSh ${d.reward}</span><br><button id="${type}-btn-${i}" class="btn-primary" style="margin-top:10px;${done?'background:#6b7280':'opacity:1'}" ${done?'disabled':''} onclick="watchVid('${type}',${i},this)">${done?'✅ Watched':'Watch & Earn KSh '+d.reward}</button></div></div>`;
+  }).join('');
+}
+function watchVid(type,idx,btn){
+  const todayKey=type+'_watched_'+new Date().toDateString();
+  let watched=getData(todayKey,[]);
+  const d=videoData[type];
+  if(watched.length>=d.daily&&!watched.includes(idx)){showToast('You have watched all 3 '+type.charAt(0).toUpperCase()+type.slice(1)+' videos for today! Come back tomorrow.');return}
+  if(watched.includes(idx))return;
+  watched.push(idx);W(todayKey,watched);
+  btn.textContent='✅ Watched!';btn.disabled=true;btn.style.background='#16a34a';
+  const sess=getSession();if(!sess)return;
+  const users=getUsers();const user=users[sess.username.toLowerCase()];
+  if(user){user.earnings=(user.earnings||0)+d.reward;setUsers(users)}
+  showToast('✅ +KSh '+d.reward+' added to Total Earnings!');
+}
+
+// ========== WATCH AD ==========
+function watchAd(btn){
+  btn.textContent='✅ Ad Watched!';btn.disabled=true;btn.style.background='#16a34a';
+  const sess=getSession();if(!sess)return;
+  const users=getUsers();const user=users[sess.username.toLowerCase()];
+  if(user){user.earnings=(user.earnings||0)+5;setUsers(users)}
+  showToast('✅ +KES 5 added to Total Earnings!');
+}
+function shareAd(btn,name){btn.textContent='✅ Shared!';btn.disabled=true;btn.style.background='#16a34a';
+  const sess=getSession();if(!sess)return;
+  const users=getUsers();const user=users[sess.username.toLowerCase()];
+  if(user){user.earnings=(user.earnings||0)+5;setUsers(users)}
+  showToast('✅ Ad shared! +KES 5 added to Total Earnings.');
+}
+
+// ========== WHATSAPP ADVERTS ==========
+function submitWAViews(){
+  const v=parseInt(document.getElementById('wa-views').value)||0;
+  if(v<1){showToast('Please enter number of views');return}
+  const sess=getSession();if(!sess)return;
+  const users=getUsers();const user=users[sess.username.toLowerCase()];
+  if(user){user.earnings=(user.earnings||0)+v;setUsers(users)}
+  document.getElementById('wa-views').value='';
+  showToast('✅ +KSh '+v+' added to Total Earnings ('+v+' views × KSh 1)!');
+}
+
+// ========== WITHDRAW TASKS ==========
+function completeTask(btn,name){
+  btn.textContent='✅ Submitted!';btn.disabled=true;btn.style.background='#16a34a';
+  showToast('✅ '+name+' submitted! Admin will verify and credit your account.');
+}
+
+// ========== BETTING ==========
+function pickMatch(btn){btn.closest('.pick-row').querySelectorAll('.pick-btn').forEach(b=>b.classList.remove('picked'));btn.classList.add('picked');showToast('✅ Prediction saved: '+btn.textContent)}
+
+// ========== TRIVIA QUIZ ==========
+const triviaQs=[
+  {q:'What is the capital city of Kenya?',opts:['Mombasa','Kisumu','Nairobi','Nakuru'],ans:2},
+  {q:'Which currency is used in Kenya?',opts:['Shilling','Dollar','Pound','Franc'],ans:0},
+  {q:'What does M-PESA stand for?',opts:['Mobile Personal Exchange Service Africa','Mobile Payment East Africa','Mobile Phone Enterprise Service Africa','Mobile Pesa Exchange Africa'],ans:0},
+  {q:'Which company launched M-PESA in Kenya?',opts:['Airtel','Telkom','Safaricom','Equity Bank'],ans:2},
+  {q:'What is the largest lake in Africa?',opts:['Lake Tanganyika','Lake Victoria','Lake Malawi','Lake Turkana'],ans:1},
+  {q:'Which country has the largest population in Africa?',opts:['Kenya','South Africa','Egypt','Nigeria'],ans:3},
+];
+let tqIdx=0,tqScore=0;
+function initTrivia(){tqIdx=0;tqScore=0;renderTQ()}
+function renderTQ(){
+  if(tqIdx>=triviaQs.length){endTrivia();return}
+  const q=triviaQs[tqIdx];
+  document.getElementById('tq-prog-txt').textContent='Question '+(tqIdx+1)+' of '+triviaQs.length;
+  document.getElementById('tq-score-txt').textContent='Score: KSh '+tqScore;
+  document.getElementById('tq-prog').style.width=((tqIdx+1)/triviaQs.length*100)+'%';
+  document.getElementById('tq-question').textContent=q.q;
+  document.getElementById('tq-result').style.display='none';
+  document.getElementById('tq-opts').innerHTML=q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerTQ(${i},${q.ans},this)">${o}</button>`).join('');
+}
+function answerTQ(chosen,correct,btn){
+  document.querySelectorAll('#tq-opts .quiz-opt').forEach(b=>b.disabled=true);
+  if(chosen===correct){btn.classList.add('correct');tqScore+=5;showToast('✅ Correct! +KSh 5')}
+  else{btn.classList.add('wrong');document.querySelectorAll('#tq-opts .quiz-opt')[correct].classList.add('correct');showToast('❌ Wrong answer!')}
+  tqIdx++;setTimeout(renderTQ,1300);
+}
+function endTrivia(){
+  document.getElementById('tq-opts').innerHTML='';
+  document.getElementById('tq-result').style.display='block';
+  const sess=getSession();if(sess){const users=getUsers();const u=users[sess.username.toLowerCase()];if(u){u.earnings=(u.earnings||0)+tqScore;setUsers(users)}}
+  document.getElementById('tq-result').innerHTML=`<div style="text-align:center;padding:16px"><div style="font-size:40px;margin-bottom:8px">🏆</div><h3 style="font-size:17px;font-weight:800;margin-bottom:6px">Quiz Complete!</h3><p style="color:#6b7280">Score: ${tqScore/5} / ${triviaQs.length} correct<br>Earned: <strong style="color:#be185d">KSh ${tqScore}</strong> added to Total Earnings</p><button class="btn-primary" style="margin-top:12px" onclick="initTrivia()">Play Again</button></div>`;
+}
+
+// ========== MATH QUIZ ==========
+const mathQs=[
+  {q:'What is 15 × 8?',opts:['112','120','115','118'],ans:1},
+  {q:'What is 144 ÷ 12?',opts:['10','11','12','13'],ans:2},
+  {q:'What is 25% of 400?',opts:['50','75','100','125'],ans:2},
+  {q:'Solve: 7² + 3²',opts:['49','58','68','61'],ans:1},
+  {q:'If you earn KSh 80 per referral and refer 15 people, how much?',opts:['KSh 1,050','KSh 1,100','KSh 1,200','KSh 1,250'],ans:2},
+  {q:'What is 30% of 1500?',opts:['350','400','450','500'],ans:2},
+];
+let mqIdx=0,mqScore=0;
+function initMath(){mqIdx=0;mqScore=0;renderMQ()}
+function renderMQ(){
+  if(mqIdx>=mathQs.length){endMath();return}
+  const q=mathQs[mqIdx];
+  document.getElementById('mq-prog-txt').textContent='Question '+(mqIdx+1)+' of '+mathQs.length;
+  document.getElementById('mq-score-txt').textContent='Score: KSh '+mqScore;
+  document.getElementById('mq-prog').style.width=((mqIdx+1)/mathQs.length*100)+'%';
+  document.getElementById('mq-question').textContent=q.q;
+  document.getElementById('mq-result').style.display='none';
+  document.getElementById('mq-opts').innerHTML=q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerMQ(${i},${q.ans},this)">${o}</button>`).join('');
+}
+function answerMQ(chosen,correct,btn){
+  document.querySelectorAll('#mq-opts .quiz-opt').forEach(b=>b.disabled=true);
+  if(chosen===correct){btn.classList.add('correct');mqScore+=10;showToast('✅ Correct! +KSh 10')}
+  else{btn.classList.add('wrong');document.querySelectorAll('#mq-opts .quiz-opt')[correct].classList.add('correct');showToast('❌ Wrong answer!')}
+  mqIdx++;setTimeout(renderMQ,1300);
+}
+function endMath(){
+  document.getElementById('mq-opts').innerHTML='';document.getElementById('mq-result').style.display='block';
+  const sess=getSession();if(sess){const users=getUsers();const u=users[sess.username.toLowerCase()];if(u){u.earnings=(u.earnings||0)+mqScore;setUsers(users)}}
+  document.getElementById('mq-result').innerHTML=`<div style="text-align:center;padding:16px"><div style="font-size:40px;margin-bottom:8px">🔢</div><h3 style="font-size:17px;font-weight:800;margin-bottom:6px">Quiz Complete!</h3><p style="color:#6b7280">Score: ${mqScore/10} / ${mathQs.length} correct<br>Earned: <strong style="color:#be185d">KSh ${mqScore}</strong> added to Total Earnings</p><button class="btn-primary" style="margin-top:12px" onclick="initMath()">Play Again</button></div>`;
+}
+
+// ========== DAILY SURVEY ==========
+const surveyQs=[
+  {q:'How satisfied are you with NETLINK Agencies?',opts:['Very Satisfied ✅','Satisfied 😊','Neutral 😐','Not Satisfied 😞'],ans:0},
+  {q:'How did you hear about NETLINK Agencies?',opts:['WhatsApp 💬','Facebook 📘','Friend/Family 👥','TikTok ▶️'],ans:0},
+  {q:'Which earning feature do you love most?',opts:['Referrals 👥','Videos 🎬','Quizzes 🧠','Daily Tasks 📋'],ans:0},
+  {q:'Would you recommend NETLINK to friends?',opts:['Definitely Yes 🙌','Probably Yes 👍','Not Sure 🤔','No 😐'],ans:0},
+];
+let svIdx=0,svScore=0,svAns=null;
+function initSurvey(){
+  const doneKey='survey_done_'+new Date().toDateString();
+  if(getData(doneKey,false)){document.getElementById('survey-box').style.display='none';document.getElementById('survey-done').style.display='block';document.getElementById('sv-final-msg').textContent='You already completed today\'s survey. Come back tomorrow!';return}
+  svIdx=0;svScore=0;svAns=null;
+  document.getElementById('survey-box').style.display='block';document.getElementById('survey-done').style.display='none';
+  renderSV();
+}
+function renderSV(){
+  if(svIdx>=surveyQs.length){endSurvey();return}
+  const q=surveyQs[svIdx];
+  svAns=null;
+  document.getElementById('sv-prog-txt').textContent='Question '+(svIdx+1)+' of '+surveyQs.length;
+  document.getElementById('sv-score-txt').textContent='Earned: KSh '+svScore;
+  document.getElementById('sv-prog').style.width=((svIdx+1)/surveyQs.length*100)+'%';
+  document.getElementById('sv-question').textContent=(svIdx+1)+'. '+q.q;
+  document.getElementById('sv-opts').innerHTML=q.opts.map((o,i)=>`<div class="survey-opt" onclick="selSV(this,${i})"><div class="rdot"><div class="rdot-inner"></div></div>${o}</div>`).join('');
+  document.getElementById('sv-next-btn').textContent=svIdx===surveyQs.length-1?'Submit Survey ✓':'Next Question →';
+}
+function selSV(el,i){document.querySelectorAll('.survey-opt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');svAns=i}
+function nextSurvey(){
+  if(svAns===null){showToast('Please select an answer');return}
+  svScore+=5;svIdx++;renderSV();
+}
+function endSurvey(){
+  W('survey_done_'+new Date().toDateString(),true);
+  const sess=getSession();if(sess){const users=getUsers();const u=users[sess.username.toLowerCase()];if(u){u.earnings=(u.earnings||0)+svScore;setUsers(users)}}
+  document.getElementById('survey-box').style.display='none';document.getElementById('survey-done').style.display='block';
+  document.getElementById('sv-final-msg').textContent='🎉 You earned KSh '+svScore+' today! Added to Total Earnings.';
+  showToast('✅ Survey complete! +KSh '+svScore);
+}
+
+// ========== NUMBER GAME ==========
+let selNums=new Set();
+function initNumGame(){
+  selNums=new Set();
+  const grid=document.getElementById('num-grid');grid.innerHTML='';
+  for(let i=1;i<=25;i++){const b=document.createElement('button');b.className='num-btn';b.textContent=i;b.onclick=()=>selNum(i,b);grid.appendChild(b)}
+  document.getElementById('sel-nums').textContent='None';
+  document.getElementById('play-btn').textContent='Pick 3 Numbers to Play';document.getElementById('play-btn').disabled=true;
+  document.getElementById('num-result').style.display='none';
+}
+function selNum(n,btn){
+  if(btn.disabled)return;
+  if(selNums.has(n)){selNums.delete(n);btn.classList.remove('sel')}
+  else if(selNums.size<3){selNums.add(n);btn.classList.add('sel')}
+  document.getElementById('sel-nums').textContent=selNums.size?[...selNums].join(', '):'None';
+  const pb=document.getElementById('play-btn');pb.disabled=selNums.size!==3;
+  pb.textContent=selNums.size===3?'🎯 Play Now!':'Pick '+(3-selNums.size)+' more number'+(3-selNums.size>1?'s':'');
+}
+function playNumGame(){
+  const winning=new Set();while(winning.size<3)winning.add(Math.ceil(Math.random()*25));
+  document.querySelectorAll('.num-btn').forEach(btn=>{const n=parseInt(btn.textContent);btn.disabled=true;if(winning.has(n)&&selNums.has(n))btn.classList.add('hit');else if(winning.has(n))btn.classList.add('hit');else if(selNums.has(n))btn.classList.add('miss')});
+  const hits=[...selNums].filter(n=>winning.has(n)).length;
+  let reward=0,msg='';
+  if(hits===3){reward=50;msg='🎉 JACKPOT! All 3 correct! +KES 50'}
+  else if(hits===2){reward=15;msg='🎊 2 correct! +KES 15'}
+  else if(hits===1){reward=5;msg='👍 1 correct! +KES 5'}
+  else{msg='❌ No matches. Winning: '+[...winning].join(', ')}
+  if(reward){const sess=getSession();if(sess){const users=getUsers();const u=users[sess.username.toLowerCase()];if(u){u.earnings=(u.earnings||0)+reward;setUsers(users)}}}
+  const res=document.getElementById('num-result');res.style.display='block';
+  res.innerHTML=`<div class="${reward?'alert success':'alert error'}">${msg}<br><button style="background:none;border:none;color:inherit;font-weight:700;cursor:pointer;margin-top:8px;text-decoration:underline;font-family:inherit" onclick="initNumGame()">Play Again</button></div>`;
+  document.getElementById('play-btn').style.display='none';
+}
+
+// ========== COMMUNITY ==========
+function renderComm(){
+  const msgs=getCommunity();const posts=getPosts();
+  const feed=document.getElementById('community-feed');
+  const all=[...posts.map(p=>({...p,isPost:true})),...msgs].sort((a,b)=>0);
+  if(!all.length){feed.innerHTML='<div style="text-align:center;padding:30px;color:#9ca3af"><div style="font-size:36px;margin-bottom:8px">💬</div><p>No messages yet. Be the first!</p></div>';return}
+  feed.innerHTML=all.slice().reverse().slice(0,50).map(m=>{
+    if(m.isPost)return`<div class="comm-msg"><div class="msg-hdr"><div class="msg-av admin-av">📢</div><div><div class="msg-name">NETLINK ADMIN</div><div class="msg-time">${m.date||''}</div></div></div><div class="msg-body"><strong>${m.title}</strong><br>${m.content}</div></div>`;
+    return`<div class="comm-msg"><div class="msg-hdr"><div class="msg-av">${m.user[0].toUpperCase()}</div><div><div class="msg-name">@${m.user}</div><div class="msg-time">${m.time||''}</div></div></div><div class="msg-body">${m.text}</div></div>`;
+  }).join('');
+}
+function sendCommMsg(){
+  const inp=document.getElementById('comm-inp');const txt=inp.value.trim();if(!txt)return;
+  const sess=getSession();if(!sess)return;
+  const msgs=getCommunity();msgs.push({user:sess.username,text:txt,time:new Date().toLocaleTimeString()});
+  if(msgs.length>200)msgs.splice(0,msgs.length-200);
+  setCommunity(msgs);inp.value='';renderComm();
+}
+
+// ========== HELP ==========
+function toggleHelp(el){el.classList.toggle('open')}
+
+// ========== PROFILE ==========
+function updateProfile(){
+  const sess=getSession();if(!sess)return;
+  const user=getUsers()[sess.username.toLowerCase()];if(!user)return;
+  document.getElementById('p-avatar').textContent=user.username[0].toUpperCase();
+  document.getElementById('p-name').textContent='@'+user.username;
+  document.getElementById('p-status').textContent=user.isActive?'Active Member':'Pending Activation';
+  document.getElementById('p-status').className='badge '+(user.isActive?'bg-green':'bg-yellow');
+  document.getElementById('p-user').textContent=user.username;
+  document.getElementById('p-email').textContent=user.email;
+  document.getElementById('p-phone').textContent=user.phone;
+  document.getElementById('p-wa').textContent=user.whatsapp;
+  document.getElementById('p-country').textContent=user.country;
+  document.getElementById('p-joined').textContent=user.joined;
+  document.getElementById('p-refcode').textContent=user.refCode;
+}
+function changePwd(){
+  const cur=document.getElementById('pw-cur').value;
+  const nw=document.getElementById('pw-new').value;
+  const con=document.getElementById('pw-con').value;
+  const sess=getSession();if(!sess)return;
+  const users=getUsers();const user=users[sess.username.toLowerCase()];
+  if(!user||user.password!==cur){showToast('Current password is incorrect');return}
+  if(nw.length<6){showToast('New password must be at least 6 characters');return}
+  if(nw!==con){showToast('Passwords do not match');return}
+  user.password=nw;setUsers(users);
+  document.getElementById('pw-cur').value='';document.getElementById('pw-new').value='';document.getElementById('pw-con').value='';
+  showToast('✅ Password updated successfully!');
+}
+
+// ========== ADMIN ==========
+function doAdminLogin(){
+  const u=document.getElementById('adm-user').value.trim().toLowerCase();
+  const p=document.getElementById('adm-pass').value;
+  const err=document.getElementById('adm-login-err');err.style.display='none';
+  const admPwd=getData('admin_pwd','Netlink2026');
+  const admins=getAdmins();
+  const extra=admins.find(a=>a.username.toLowerCase()===u&&a.password===p);
+  if((u==='admin'&&p===admPwd)||extra){setSession({username:u,isAdmin:true});showPage('page-admin');renderAdminHome()}
+  else{err.textContent='Invalid admin credentials.';err.style.display='block'}
+}
+function doAdminLogout(){setSession(null);showPage('page-login')}
+function aTab(btn,sec){
+  document.querySelectorAll('.a-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');
+  document.querySelectorAll('.a-content').forEach(s=>s.style.display='none');
+  document.getElementById(sec).style.display='block';
+  if(sec==='a-users')renderAUsers();
+  if(sec==='a-activations')renderAActivations();
+  if(sec==='a-withdrawals')renderAWithdrawals();
+  if(sec==='a-deposits')renderADeposits();
+  if(sec==='a-admins')renderAdminsList();
+  if(sec==='a-links')renderLinks();
+  if(sec==='a-posts')renderAdminPosts();
+}
+function renderAdminHome(){
+  const users=getUsers();const uArr=Object.values(users).filter(u=>u.username!=='admin');
+  const active=uArr.filter(u=>u.isActive);const inactive=uArr.filter(u=>!u.isActive);
+  const acts=getActReqs().filter(r=>r.status==='pending');
+  const wds=getWithdrawals().filter(w=>w.status==='pending');
+  const deps=getDeposits().filter(d=>d.status==='pending');
+  const paid=getWithdrawals().filter(w=>w.status==='paid').reduce((s,w)=>s+(w.amount||0),0);
+  const today=new Date().toLocaleDateString('en-GB');
+  const todayReg=uArr.filter(u=>u.joined===today);
+  const totalRefs=uArr.reduce((s,u)=>s+(u.l1refs||[]).length+(u.l2refs||[]).length+(u.l3refs||[]).length,0);
+  const totalEarns=uArr.reduce((s,u)=>s+(u.earnings||0)+(u.balance||0),0);
+  document.getElementById('as-total').textContent=uArr.length;
+  document.getElementById('as-active').textContent=active.length;
+  document.getElementById('as-inactive').textContent=inactive.length;
+  document.getElementById('as-pwd').textContent=wds.length;
+  document.getElementById('as-pact').textContent=acts.length;
+  document.getElementById('as-pdep').textContent=deps.length;
+  document.getElementById('as-paid').textContent='KES '+paid.toLocaleString();
+  document.getElementById('as-today').textContent=todayReg.length;
+  document.getElementById('as-refs').textContent=totalRefs;
+  document.getElementById('as-totalearns').textContent='KES '+totalEarns.toLocaleString();
+}
+function renderAUsers(filter=''){
+  filter=document.getElementById('a-search').value.toLowerCase();
+  const users=getUsers();const uArr=Object.values(users).filter(u=>u.username!=='admin');
+  const filtered=filter?uArr.filter(u=>u.username.toLowerCase().includes(filter)||u.email.toLowerCase().includes(filter)):uArr;
+  const list=document.getElementById('a-users-list');
+  if(!filtered.length){list.innerHTML='<div style="color:#64748b;text-align:center;padding:20px">No users found</div>';return}
+  list.innerHTML=filtered.map(u=>`
+    <div class="u-row">
+      <div class="u-info" style="flex:1">
+        <h4>@${u.username} ${u.isActive?'<span style="color:#34d399;font-size:11px">●Active</span>':'<span style="color:#f87171;font-size:11px">●Inactive</span>'}</h4>
+        <p>${u.email} • ${u.country} • Joined: ${u.joined}</p>
+        <p style="font-size:11px">Balance: KES ${(u.balance||0).toLocaleString()} | Earnings: KES ${(u.earnings||0).toLocaleString()} | L1: ${(u.l1refs||[]).length} L2: ${(u.l2refs||[]).length} L3: ${(u.l3refs||[]).length}</p>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end">
+        ${!u.isActive?`<button class="a-btn btn-act" onclick="adminActivateUser('${u.username}',this)">Activate</button>`:'<button class="a-btn btn-inact" onclick="adminDeactivate(\''+u.username+'\')">Deactivate</button>'}
+        <button class="a-btn btn-info" onclick="showUserInfo('${u.username}')">Info</button>
+        <button class="a-btn" style="background:#475569;color:#fff" onclick="adminDeleteUser('${u.username}')">Delete</button>
+      </div>
+    </div>`).join('');
+}
+function adminActivateUser(username,btn){
+  const users=getUsers();const user=users[username.toLowerCase()];if(!user)return;
+  user.isActive=true;
+  const setts=getSetts();
+  // Credit L1 referrer
+  if(user.referredBy){
+    const refUser=Object.values(users).find(u=>u.username.toLowerCase()===user.referredBy.toLowerCase()||u.refCode===user.referredBy);
+    if(refUser){refUser.balance=(refUser.balance||0)+setts.l1;setUsers(users)}
+    // Credit L2
+    if(refUser&&refUser.referredBy){
+      const l2User=Object.values(users).find(u=>u.username.toLowerCase()===refUser.referredBy.toLowerCase()||u.refCode===refUser.referredBy);
+      if(l2User){l2User.balance=(l2User.balance||0)+setts.l2;setUsers(users)}
+      // Credit L3
+      if(l2User&&l2User.referredBy){
+        const l3User=Object.values(users).find(u=>u.username.toLowerCase()===l2User.referredBy.toLowerCase()||u.refCode===l2User.referredBy);
+        if(l3User){l3User.balance=(l3User.balance||0)+setts.l3;setUsers(users)}
+      }
+    }
+  }
+  setUsers(users);
+  const reqs=getActReqs();const req=reqs.find(r=>r.username.toLowerCase()===username.toLowerCase()&&r.status==='pending');
+  if(req)req.status='approved';setActReqs(reqs);
+  if(btn){btn.textContent='✓ Active';btn.className='a-btn';btn.style.background='#16a34a';btn.disabled=true}
+  renderAdminHome();showToast('✅ @'+username+' activated! Referral commissions credited.');
+}
+function adminDeactivate(username){
+  const users=getUsers();const user=users[username.toLowerCase()];if(!user)return;
+  user.isActive=false;setUsers(users);renderAUsers();showToast('User @'+username+' deactivated.');
+}
+function showUserInfo(username){
+  const users=getUsers();const user=users[username.toLowerCase()];if(!user)return;
+  document.getElementById('modal-title').textContent='User Info: @'+user.username;
+  document.getElementById('modal-body').innerHTML=`
+    <div style="color:#94a3b8;font-size:13px;margin-bottom:4px">Email</div><div style="color:#f1f5f9;font-weight:600;margin-bottom:10px">${user.email}</div>
+    <div style="color:#94a3b8;font-size:13px;margin-bottom:4px">Phone</div><div style="color:#f1f5f9;font-weight:600;margin-bottom:10px">${user.phone}</div>
+    <div style="color:#94a3b8;font-size:13px;margin-bottom:4px">WhatsApp</div><div style="color:#f1f5f9;font-weight:600;margin-bottom:4px">${user.whatsapp}</div>
+    <button class="a-btn btn-act" style="margin-bottom:14px" onclick="window.open('https://wa.me/${user.whatsapp.replace(/\D/g,'')}','_blank')">💬 Chat on WhatsApp</button>
+    <div style="color:#94a3b8;font-size:13px;margin-bottom:4px">Edit Total Earnings</div>
+    <input type="number" id="edit-earn" value="${user.earnings||0}" style="width:100%;padding:9px;background:#334155;border:1px solid #475569;border-radius:8px;color:#fff;font-size:13px;outline:none;margin-bottom:8px">
+    <button class="btn-primary" style="margin-bottom:10px" onclick="saveUserEarnings('${username}')">Save Earnings</button>
+    <div style="color:#94a3b8;font-size:13px;margin-bottom:4px">Edit Account Balance</div>
+    <input type="number" id="edit-bal" value="${user.balance||0}" style="width:100%;padding:9px;background:#334155;border:1px solid #475569;border-radius:8px;color:#fff;font-size:13px;outline:none;margin-bottom:8px">
+    <button class="btn-primary" style="margin-bottom:10px" onclick="saveUserBalance('${username}')">Save Balance</button>
+    <div style="color:#94a3b8;font-size:13px;margin-bottom:4px">Reset Password</div>
+    <input type="password" id="reset-pwd" placeholder="New password for user" style="width:100%;padding:9px;background:#334155;border:1px solid #475569;border-radius:8px;color:#fff;font-size:13px;outline:none;margin-bottom:8px">
+    <button class="btn-primary btn-red" onclick="resetUserPwd('${username}')">Reset Password</button>`;
+  document.getElementById('user-modal').classList.add('open');
+}
+function saveUserEarnings(username){const v=parseInt(document.getElementById('edit-earn').value)||0;const users=getUsers();const u=users[username.toLowerCase()];if(u){u.earnings=v;setUsers(users)}showToast('✅ Earnings updated!')}
+function saveUserBalance(username){const v=parseInt(document.getElementById('edit-bal').value)||0;const users=getUsers();const u=users[username.toLowerCase()];if(u){u.balance=v;setUsers(users)}showToast('✅ Balance updated!')}
+function resetUserPwd(username){const p=document.getElementById('reset-pwd').value;if(p.length<4){showToast('Password too short');return}const users=getUsers();const u=users[username.toLowerCase()];if(u){u.password=p;setUsers(users)}showToast('✅ Password reset for @'+username)}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function adminDeleteUser(username){
+  if(!confirm('Delete user @'+username+'? This cannot be undone.'))return;
+  const users=getUsers();delete users[username.toLowerCase()];setUsers(users);renderAUsers();renderAdminHome();showToast('User @'+username+' deleted.');
+}
+function renderAActivations(){
+  const reqs=getActReqs();const list=document.getElementById('a-act-list');
+  if(!reqs.length){list.innerHTML='<div style="color:#64748b;text-align:center;padding:20px">No activation requests</div>';return}
+  list.innerHTML=reqs.map((r,i)=>`
+    <div class="u-row">
+      <div class="u-info" style="flex:1">
+        <h4>@${r.username} <span style="font-size:11px;color:#94a3b8">• ${r.country||''}</span></h4>
+        <p>Method: ${(r.method||'').toUpperCase()} • TXN: <strong style="color:#fbbf24">${r.txn}</strong></p>
+        <p style="font-size:11px">${r.date}</p>
+      </div>
+      <div style="display:flex;gap:5px">
+        ${r.status==='pending'?
+          `<button class="a-btn btn-approve" onclick="approveAct(${i})">Approve</button>
+           <button class="a-btn btn-rej" onclick="rejectAct(${i})">Reject</button>`:
+          `<span class="badge ${r.status==='approved'?'bg-green':'bg-red'}">${r.status}</span>`}
+      </div>
+    </div>`).join('');
+}
+function approveAct(i){const reqs=getActReqs();const r=reqs[i];r.status='approved';setActReqs(reqs);adminActivateUser(r.username,null);renderAActivations();renderAdminHome()}
+function rejectAct(i){const reqs=getActReqs();reqs[i].status='rejected';setActReqs(reqs);renderAActivations();showToast('Activation rejected.')}
+function renderAWithdrawals(){
+  const wds=getWithdrawals();const list=document.getElementById('a-wd-list');
+  if(!wds.length){list.innerHTML='<div style="color:#64748b;text-align:center;padding:20px">No withdrawal requests</div>';return}
+  list.innerHTML=wds.map((w,i)=>`
+    <div class="u-row">
+      <div class="u-info" style="flex:1">
+        <h4>@${w.username} — KES ${(w.amount||0).toLocaleString()}</h4>
+        <p>${w.method} → ${w.to}</p>
+        <p style="font-size:11px">Fee: KES ${w.fee||0} | Net: KES ${(w.net||0).toLocaleString()} • ${w.date}</p>
+      </div>
+      <div style="display:flex;gap:5px">
+        ${w.status==='pending'?
+          `<button class="a-btn btn-pay" onclick="payWD(${i})">Pay</button>
+           <button class="a-btn btn-rej" onclick="rejectWD(${i})">Reject</button>`:
+          `<span class="badge ${w.status==='paid'?'bg-green':'bg-red'}">${w.status}</span>`}
+      </div>
+    </div>`).join('');
+}
+function payWD(i){
+  const wds=getWithdrawals();wds[i].status='paid';
+  const users=getUsers();const u=users[wds[i].username.toLowerCase()];
+  if(u){u.withdrawn=(u.withdrawn||0)+wds[i].amount;u.pending=Math.max(0,(u.pending||0)-wds[i].amount);setUsers(users)}
+  setWithdrawals(wds);renderAWithdrawals();renderAdminHome();showToast('✅ Payment of KES '+wds[i].amount+' marked as paid for @'+wds[i].username);
+}
+function rejectWD(i){
+  const wds=getWithdrawals();
+  const users=getUsers();const u=users[wds[i].username.toLowerCase()];
+  if(u){u.balance=(u.balance||0)+wds[i].amount;u.pending=Math.max(0,(u.pending||0)-wds[i].amount);setUsers(users)}
+  wds[i].status='rejected';setWithdrawals(wds);renderAWithdrawals();showToast('Withdrawal rejected. Balance refunded to @'+wds[i].username);
+}
+function renderADeposits(){
+  const deps=getDeposits();const list=document.getElementById('a-dep-list');
+  if(!deps.length){list.innerHTML='<div style="color:#64748b;text-align:center;padding:20px">No pending deposits</div>';return}
+  list.innerHTML=deps.map((d,i)=>`
+    <div class="u-row">
+      <div class="u-info" style="flex:1">
+        <h4>@${d.username} — KES ${(d.amount||0).toLocaleString()}</h4>
+        <p>Ref: ${d.ref} • ${d.date}</p>
+      </div>
+      <div style="display:flex;gap:5px">
+        ${d.status==='pending'?
+          `<button class="a-btn btn-approve" onclick="approveDep(${i})">Approve</button>
+           <button class="a-btn btn-rej" onclick="rejectDep(${i})">Reject</button>`:
+          `<span class="badge ${d.status==='approved'?'bg-green':'bg-red'}">${d.status}</span>`}
+      </div>
+    </div>`).join('');
+}
+function approveDep(i){
+  const deps=getDeposits();deps[i].status='approved';
+  const users=getUsers();const u=users[deps[i].username.toLowerCase()];
+  if(u){u.balance=(u.balance||0)+deps[i].amount;setUsers(users)}
+  setDeposits(deps);renderADeposits();renderAdminHome();showToast('✅ Deposit of KES '+deps[i].amount+' approved for @'+deps[i].username);
+}
+function rejectDep(i){const deps=getDeposits();deps[i].status='rejected';setDeposits(deps);renderADeposits();showToast('Deposit rejected.')}
+function addAdmin(){
+  const u=document.getElementById('new-adm-user').value.trim();const p=document.getElementById('new-adm-pass').value;
+  if(!u||!p){showToast('Please fill in all fields');return}
+  const admins=getAdmins();admins.push({username:u,password:p});setAdmins(admins);
+  document.getElementById('new-adm-user').value='';document.getElementById('new-adm-pass').value='';
+  renderAdminsList();showToast('✅ Admin @'+u+' added successfully!');
+}
+function renderAdminsList(){
+  const admins=getAdmins();const list=document.getElementById('admins-list');
+  const all=[{username:'admin',password:'(master)'},...admins];
+  list.innerHTML=all.map((a,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid #334155"><span style="color:#f1f5f9;font-size:13px">@${a.username}</span>${i>0?`<button class="a-btn btn-rej" onclick="removeAdmin(${i-1})">Remove</button>`:'<span style="color:#fbbf24;font-size:12px">Master Admin</span>'}</div>`).join('');
+}
+function removeAdmin(i){const admins=getAdmins();admins.splice(i,1);setAdmins(admins);renderAdminsList();showToast('Admin removed.')}
+function changeAdminPwd(){const p=document.getElementById('adm-new-pwd').value;if(p.length<6){showToast('Min 6 characters');return}W('admin_pwd',p);document.getElementById('adm-new-pwd').value='';showToast('✅ Admin password updated!')}
+function sendAI(){
+  const inp=document.getElementById('ai-input');const txt=inp.value.trim();if(!txt)return;
+  const msgs=document.getElementById('ai-messages');
+  msgs.innerHTML+=`<div style="background:#0f172a;border-radius:10px;padding:10px;margin-bottom:8px;text-align:right"><p style="color:#94a3b8;font-size:12px;margin-bottom:4px">You</p><p style="color:#f1f5f9;font-size:13px">${txt}</p></div>`;
+  inp.value='';
+  const responses=['To change payment details, go to Settings tab and update M-PESA/PayPal fields.','To change activation fee, go to Settings → Fee Settings and update the amount.','To edit user balance, go to Users tab → click Info button on the user → Edit Balance field.','To add a new admin, go to Admins tab and fill in the new admin details.','I understand your request. Please go to the Settings tab to make changes to the website configuration.','To update referral commissions, go to Settings → Fee Settings → Level 1/2/3 fields.'];
+  setTimeout(()=>{
+    const r=responses[Math.floor(Math.random()*responses.length)];
+    msgs.innerHTML+=`<div style="background:#1e293b;border-radius:10px;padding:10px;margin-bottom:8px"><p style="color:#94a3b8;font-size:12px;margin-bottom:4px">🤖 AI Assistant</p><p style="color:#f1f5f9;font-size:13px;line-height:1.5">${r}</p></div>`;
+    document.getElementById('ai-chat').scrollTop=9999;
+  },1000);
+}
+function saveLink(type){
+  if(type==='wa'){const l=document.getElementById('wa-link-input').value.trim();if(!l){showToast('Enter WhatsApp link');return}W('wa_group',l);renderLinks();showToast('✅ WhatsApp group link saved!')}
+  if(type==='tg'){const l=document.getElementById('tg-link-input').value.trim();if(!l){showToast('Enter Telegram link');return}W('tg_channel',l);renderLinks();showToast('✅ Telegram channel link saved!')}
+}
+function renderLinks(){
+  document.getElementById('wa-link-display').textContent=getData('wa_group','Not set');
+  document.getElementById('tg-link-display').textContent=getData('tg_channel','Not set');
+  const wa=getData('wa_group','');const tg=getData('tg_channel','');
+  if(wa)document.getElementById('wa-link-input').value=wa;
+  if(tg)document.getElementById('tg-link-input').value=tg;
+}
+function createPost(){
+  const title=document.getElementById('post-title').value.trim();const content=document.getElementById('post-content').value.trim();
+  if(!title||!content){showToast('Please fill in title and content');return}
+  const posts=getPosts();
+  posts.unshift({id:Date.now(),title,content,date:new Date().toLocaleString()});
+  setPosts(posts);document.getElementById('post-title').value='';document.getElementById('post-content').value='';
+  renderAdminPosts();showToast('✅ Post published to Community!');
+}
+function renderAdminPosts(){
+  const posts=getPosts();const list=document.getElementById('admin-posts-list');
+  if(!posts.length){list.innerHTML='<div style="color:#64748b;text-align:center;padding:20px">No posts yet</div>';return}
+  list.innerHTML=posts.map((p,i)=>`
+    <div class="u-row">
+      <div class="u-info" style="flex:1"><h4>${p.title}</h4><p>${p.content.slice(0,60)}...</p><p style="font-size:11px">${p.date}</p></div>
+      <button class="a-btn btn-rej" onclick="deletePost(${i})">Delete</button>
+    </div>`).join('');
+}
+function deletePost(i){const posts=getPosts();posts.splice(i,1);setPosts(posts);renderAdminPosts();showToast('Post deleted.')}
+function saveSettings(){
+  const setts={
+    mpesa_num:document.getElementById('s-mpesa-num').value,
+    mpesa_name:document.getElementById('s-mpesa-name').value,
+    paypal:document.getElementById('s-paypal-email').value,
+    act_fee:parseInt(document.getElementById('s-act-fee').value)||150,
+    l1:parseInt(document.getElementById('s-l1').value)||80,
+    l2:parseInt(document.getElementById('s-l2').value)||20,
+    l3:parseInt(document.getElementById('s-l3').value)||10,
+    min_wd:parseInt(document.getElementById('s-min-wd').value)||150
+  };
+  W('setts',setts);showToast('✅ Settings saved successfully!');
+}
+
+// ========== INIT ==========
+(function init(){
+  const hash=window.location.hash.replace('#','');
+  const sess=getSession();
+  if(sess){
+    if(sess.isAdmin){showPage('page-admin');renderAdminHome();return}
+    const user=getUsers()[sess.username.toLowerCase()];
+    if(user){
+      if(user.isActive){enterApp();return}
+      else{showPage('page-activation');loadActPage();return}
+    }
+  }
+  if(hash.startsWith('register')){
+    const params=new URLSearchParams(hash.includes('?')?hash.split('?')[1]:'');
+    const ref=params.get('ref');
+    if(ref){document.getElementById('r-ref').value=ref;const ib=document.getElementById('inviter-bar');document.getElementById('inviter-name').textContent=ref;ib.style.display='flex'}
+    showPage('page-register');
+  } else if(hash==='forgot'){showPage('page-forgot')}
+  else if(hash==='admin'){showPage('page-admin-login')}
+  else{showPage('page-login')}
+})();
+</script>
+</body>
+</html>
